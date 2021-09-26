@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Raid Tool<% if(accounts.length >= 1){ %> - <%= accounts.filter(a=>a.accountInfo&&a.accountInfo.name).map(a=>a.accountInfo.name).join(" / ")%><% } %></title>
+  <link
+    rel="stylesheet"
+    href="/static/bootstrap.min.css?<%= bootstrapcss %>"
+  >
+  <link
+    rel="stylesheet"
+    href="/static/style.css?<%= stylecss %>"
+  >
+</head>
+
+<body>
+  <% if(typeof noNav === 'undefined' || !noNav){ %>
+  <nav class="navbar navbar-expand navbar-dark bg-primary">
+    <!-- navbar-expand-lg<div class="collapse navbar-collapse">-->
+      <ul class="navbar-nav mr-auto">
+        <% if(accounts.length >= 1){ %>
+        <li class="nav-item active">
+          <a
+            class="nav-link"
+            href="/"
+            tabindex="-1"
+          ><%= i18n.navOverview %></a>
+        </li>
+        <li class="nav-item active"><a
+            class="nav-link"
+            href="/logs"
+            tabindex="-1"
+          ><%= i18n.navArcdps %></a></li>
+        <li class="nav-item active"><a
+            class="nav-link"
+            href="/friends"
+            tabindex="-1"
+          ><%= i18n.navFriends %></a></li>
+          <% } %>
+          <li class="nav-item active">
+            <a
+              class="nav-link"
+              href="/settings"
+              tabindex="-1"
+            ><%= i18n.navSettings %></a>
+          </li>
+          <li class="nav-item-spacer">
+            <div class="progress progress-parsingLogs">
+              <div class="progress-bar bg-info" role="progressbar" style="overflow:hidden;"></div>
+              <div class="progress-bar-label"></div>
+            </div>
+          </li>
+          <li class="nav-item nav-item-space active">
+            <a
+              class="nav-link"
+              href="/credits"
+              tabindex="-1"
+            ><%= i18n.navCredits %></a>
+          </li>
+      </ul>
+    <!--</div>-->
+  </nav>
+  <% } %>
+  <%-
+    body
+    %>
+    <% if(typeof noNav === 'undefined' || !noNav){ %>
+    <script>
+      const logsHash = "<%=logsHash%>";
+      async function checkNewLog() {
+        try {
+          let params = new URLSearchParams(window.location.search);
+          params.append("check",logsHash)
+          const response = await fetch("?"+params.toString());
+          const json = await response.json();
+          if (json.refresh) {
+            location.reload();
+          }
+        } catch (error) {
+          console.warn(error);
+        }
+        setTimeout(checkNewLog, 600);
+      }
+      checkNewLog();
+    </script>
+    <script>
+      async function checkProgress() {
+        const elem = document.querySelector(".progress-parsingLogs");
+        if(!elem){
+          setTimeout(checkProgress, 600);
+          return;
+        }
+        const child = elem.querySelector(".progress-bar");
+        const label = elem.querySelector(".progress-bar-label");
+        try {
+          const response = await fetch("/settings/progress");
+          const json = await response.json();
+          if (json.parsingLogs > 0) {
+            elem.style.display ="flex";
+            child.style.width = ((json.parsedLogs/(json.parsingLogs||1))*100)+"%";
+            child.style.maxWidth = ((json.parsedLogs/(json.parsingLogs||1))*100)+"%";
+            label.textContent = "<%= i18n.navSearchForLogs %> "+(json.parsingLogs-json.parsedLogs) + " <%= i18n.navSearchForLogsLeft %>";
+          }else{
+            elem.style.display ="none";
+            child.style.width="0";
+            child.style.maxWidth="0";
+            label.textContent ="";
+          }
+        } catch (error) {
+          console.warn(error);
+        }
+        setTimeout(checkProgress, 600);
+      }
+      checkProgress();
+    </script>
+  <% } %>
+  <script src="/ext/luxon/luxon.min.js?<%= luxonversion %>"></script>
+<script>
+      function onResize(){
+        const logDisplays = document.querySelectorAll(".arc-log-display");
+        for (const logDisplay of logDisplays) {
+          const prev = logDisplay.previousElementSibling;
+          if(!prev){
+            const parent = logDisplay.parentElement;
+            if(!parent){
+              continue;
+            }
+            
+          const rect = parent.getBoundingClientRect();
+            logDisplay.style.height = (window.innerHeight - rect.bottom -34)+"px";
+            continue;
+          }
+          const rect = prev.getBoundingClientRect();
+          logDisplay.style.height = (window.innerHeight - rect.bottom-34)+"px";
+        }
+      } 
+      window.addEventListener("resize",onResize)
+      onResize();
+      setInterval(()=>{
+        const els = document.querySelectorAll("[data-rel-time]");
+        for (const el of els) {
+          el.textContent = luxon.DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"),10)).toRelative({locale: "<%= lang %>"});
+        }
+      },500);
+    </script>
+</body>
+
+</html>

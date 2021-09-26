@@ -1,0 +1,35 @@
+{
+  "name": "gw2-raid-tool",
+  "productName": "GW2 Raid Tool",
+  "version": "1.7.2",
+  "description": "Das ultimative Programm fürs Raiden",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "MuwuM",
+  "license": "MPL-2.0",
+  "devDependencies": {},
+  "dependencies": {
+    "@octokit/rest": "^18.11.1",
+    "chokidar": "^3.5.2",
+    "ejs": "^3.1.6",
+    "fast-glob": "^3.2.7",
+    "fs-extra": "^10.0.0",
+    "get-port": "^5.1.1",
+    "gw2": "0.0.1",
+    "jszip": "^3.7.1",
+    "koa": "^2.13.3",
+    "koa-better-router": "^2.1.1",
+    "koa-body": "^4.2.0",
+    "koa-ejs": "^4.3.0",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "luxon": "^2.0.2",
+    "nedb-promises": "^5.0.1",
+    "ps-list": "^7.2.0",
+    "semver": "^7.3.5",
+    "share-memory-win": "^1.2.1",
+    "urllib": "^2.37.4"
+  }
+}

@@ -1,0 +1,67 @@
+<main id="settings">
+  <div class="container">
+    <h1><%= i18n.headerSettings %></h1>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col"><%= i18n.headerSettingsAcount %></th>
+        <th scope="col"><%= i18n.headerSettingsToken %></th>
+        <!--<th scope="col"></th>
+        <th scope="col"></th>-->
+      </tr>
+    </thead>
+    <tbody>
+  <% for(const acc of accounts){ %>
+      <tr>
+        <th scope="row"><%=(acc.accountInfo && acc.accountInfo.name || "???") %></th>
+        <td><%=(acc.token)?"*****":"" %></td>
+        <!--<td>Column content</td>
+        <td>Column content</td>-->
+      </tr>
+  <% } %>
+    </tbody></table>
+    
+  <form class="form-group mt-5" action="/settings" method="post">
+    <div><%= i18n.settingsApiKeyInfo %><a href="https://account.arena.net/applications">https://account.arena.net/applications</a><%= i18n.settingsApiKeyInfo2 %></div>
+    <div class="input-group mb-3">
+      <input class="form-control" type="text" name="token" placeholder="<%= i18n.settingsAddTokenTokenPlaceholder %>">
+      <input class="btn btn-primary" type="submit" value="<%= i18n.settingsAddTokenToken %>">
+    </div>
+  </form>
+  
+  <form class="form-group mt-5" action="/settings/lang" method="post">
+    <div><%= i18n.settingsLanguage %></div>
+    <div class="input-group mb-3">
+    <select class="form-control" name="lang">
+      <% for (const ln of langs) {%>
+        <option value="<%= ln.id %>" <%= ln.id === lang ?'selected="selected"':'' %>><%= ln.label %></option>
+      <%} %>
+    </select>
+    <input class="btn btn-primary" type="submit" value="<%= i18n.settingsChangeButton %>"></div>
+  </form>
+
+  <form class="form-group mt-5" action="/settings/logsPath" method="post">
+    <div><%= i18n.settingsArcdpsLogDir %></div>
+    <div><%=logsPath%></div>
+    <input class="btn btn-primary" type="submit" value="<%= i18n.settingsChangeButton %>"> <%= i18n.settingsRequiresRestart %>
+  </form>
+
+  <form class="form-group mt-5" action="/settings/gw2Dir" method="post">
+    <div>Ordner für Gw2-64.exe:</div>
+    <div><%=gw2Dir%>\Gw2-64.exe</div>
+    <input class="btn btn-primary" type="submit" value="<%= i18n.settingsChangeButton %>"> <%= i18n.settingsRequiresRestart %>
+  </form>
+
+  <form class="form-group mt-5" action="/settings/resetLog" method="post">
+    <input class="form-control" type="text" name="reset" placeholder="<%= i18n.settingsResetPlaceholder %>">
+    <input class="btn btn-primary" type="submit" value="<%= i18n.settingsResetButton %>"> <%= i18n.settingsResetTakesLong %>
+  </form>
+
+</div>
+<div class="container" style="margin-top: 20vh; position: fixed;left:1rem;bottom: 0.5rem;">
+<div class="li-display-number-details">GW2 Raid Tool: v<%=appVersion%></div>
+<div class="li-display-number-details">EI-Version: <%=ei_version%></div>
+<div class="li-display-number-details">arcdps (Dx 9): <%=arc_version%> <%if(arcdpsVersionHasUpdates){%><a href="/settings/updateArcDps">Update verfügbar</a><%}%></div>
+<div class="li-display-number-details">arcdps (Dx 11): <%=arc11_version%> <%if(arcdps11VersionHasUpdates){%><a href="/settings/updateArcDps11">Update verfügbar</a><%}%></div>
+</div>
+</main>
