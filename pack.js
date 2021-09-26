@@ -90,47 +90,50 @@ const uploadConfig = require("./upload-config.json");
   pgk.version = semver.inc(pgk.version, "patch");
   await fs.outputJSON(path.join(dataDir, "package.json"), pgk, {spaces: 2});
 
-  console.log("Uploading files");
-  // eslint-disable-next-line no-async-promise-executor
-  const sftp = new Client();
+  if (!uploadConfig.noUpload) {
 
-  await sftp.connect({
-    host: uploadConfig.host,
-    port: uploadConfig.port,
-    username: uploadConfig.username,
-    privateKey: await fs.readFile(uploadConfig.privateKey)
-  });
+    console.log("Uploading files");
+    // eslint-disable-next-line no-async-promise-executor
+    const sftp = new Client();
 
-  const filesToUpload = await fg(["**/*"], {
-    dot: true,
-    cwd: installerDir
-  });
-  for (const fileToUpload of filesToUpload) {
-    const onlineFile = path.posix.join(uploadConfig.targetPath, fileToUpload);
-    let onlineStat = null;
-    try {
-      onlineStat = await sftp.stat(onlineFile);
-    } catch (error) {
-      onlineStat = null;
+    await sftp.connect({
+      host: uploadConfig.host,
+      port: uploadConfig.port,
+      username: uploadConfig.username,
+      privateKey: await fs.readFile(uploadConfig.privateKey)
+    });
+
+    const filesToUpload = await fg(["**/*"], {
+      dot: true,
+      cwd: installerDir
+    });
+    for (const fileToUpload of filesToUpload) {
+      const onlineFile = path.posix.join(uploadConfig.targetPath, fileToUpload);
+      let onlineStat = null;
+      try {
+        onlineStat = await sftp.stat(onlineFile);
+      } catch (error) {
+        onlineStat = null;
+      }
+
+      const offlineFile = path.join(installerDir, fileToUpload);
+      const offlineStats = await fs.stat(offlineFile);
+
+      if (onlineStat && offlineStats.mtimeMs <= onlineStat.modifyTime) {
+        console.log(`Skipping: ${fileToUpload}`);
+        continue;
+      }
+
+      console.log(`Uploading: ${fileToUpload}`);
+
+      await sftp.fastPut(offlineFile, `${onlineFile}.tmp`);
+      await sftp.delete(onlineFile, true);
+      await sftp.rename(`${onlineFile}.tmp`, onlineFile);
+
     }
-
-    const offlineFile = path.join(installerDir, fileToUpload);
-    const offlineStats = await fs.stat(offlineFile);
-
-    if (onlineStat && offlineStats.mtimeMs <= onlineStat.modifyTime) {
-      console.log(`Skipping: ${fileToUpload}`);
-      continue;
-    }
-
-    console.log(`Uploading: ${fileToUpload}`);
-
-    await sftp.fastPut(offlineFile, `${onlineFile}.tmp`);
-    await sftp.delete(onlineFile, true);
-    await sftp.rename(`${onlineFile}.tmp`, onlineFile);
-
+    await sftp.end();
+    console.log("Upload Completed");
   }
-  await sftp.end();
-  console.log("Upload Completed");
 
 })().catch((err) => {
   console.error(err);
