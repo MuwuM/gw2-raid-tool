@@ -65,6 +65,7 @@ function waitFor(glob, cwd) {
     }, 60000);
     const watcher = chokidar.watch(glob, {
       cwd,
+      ignoreInitial: false,
       awaitWriteFinish: {
         stabilityThreshold: 2000,
         pollInterval: 100
@@ -83,11 +84,12 @@ function waitFor(glob, cwd) {
   });
 }
 
-function logHeap(msg) {
+/*function logHeap(msg) {
   const mem = process.memoryUsage();
 
   console.log(`heap: ${(mem.heapUsed / mem.heapTotal * 100).toFixed(2)}% (${(mem.heapTotal / 1048576).toFixed(3)} MB) -> ${msg}`);
-}
+}*/
+function logHeap() {}
 
 let reqIdCount = 0;
 
@@ -176,8 +178,8 @@ const baseConfig = new Proxy({}, {
   }
 
 
-  async function checkLogs(baseFile, dateInfo, entry, parseFailed) {
-    const logFiles = await fg([`${baseFile}/${dateInfo[1]}-${dateInfo[2]}.log`], {
+  async function checkLogs(baseFile, dateName, entry, parseFailed) {
+    const logFiles = await fg([`${baseFile}/${dateName}.log`.replace(/^\.\//, "")], {
       dot: true,
       cwd: await baseConfig.logsPath
     });
@@ -316,12 +318,13 @@ const baseConfig = new Proxy({}, {
         return updateLogEntry();
       }
       const baseFile = path.dirname(entry);
-      const dateInfo = entry.match(/\/(\d{8})-(\d+)\.z?evtc$/);
+      const dateInfo = entry.match(/(^|\/)(\d{8})-(\d+)\.z?evtc$/);
 
       if (!dateInfo) {
         delete lockedEntry[entry];
         return;
       }
+      const dateName = `${dateInfo[2]}-${dateInfo[3]}`;
 
       const knownFriendCache = await db.known_friends.findOne({entry});
       const known = await db.logs.findOne({entry});
@@ -333,8 +336,8 @@ const baseConfig = new Proxy({}, {
       }
       //console.log(`try to find: ${entry}`);
       const htmlFiles = await fg([
-        `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.html`,
-        `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.htmlz`
+        `${baseFile}/${dateName}_*.html`.replace(/^\.\//, ""),
+        `${baseFile}/${dateName}_*.htmlz`.replace(/^\.\//, "")
       ], {
         dot: true,
         cwd: logsPath
@@ -356,7 +359,7 @@ const baseConfig = new Proxy({}, {
           throw new Error(err.stack || err);
         });
       }
-
+      //console.log({known});
       if (known) {
         delete lockedEntry[entry];
         return;
@@ -367,7 +370,7 @@ const baseConfig = new Proxy({}, {
         //console.log({htmlFile});
         //console.log({entry});
         logHeap("checkLogs");
-        if (!await checkLogs(baseFile, dateInfo, entry, false).catch((err) => {
+        if (!await checkLogs(baseFile, dateName, entry, false).catch((err) => {
           throw new Error(err.stack || err);
         })) {
           delete lockedEntry[entry];
@@ -388,7 +391,7 @@ const baseConfig = new Proxy({}, {
         } catch (error) {
           console.error(new Error(error.stack || error));
           await waitFor([entry.replace(/\.z?evtc$/, ".log")], logsPath);
-          if (!await checkLogs(baseFile, dateInfo, entry, true)) {
+          if (!await checkLogs(baseFile, dateName, entry, true)) {
             delete lockedEntry[entry];
             return;
           }
@@ -397,7 +400,7 @@ const baseConfig = new Proxy({}, {
         }
 
         logHeap("checkLogs");
-        if (!await checkLogs(baseFile, dateInfo, entry).catch((err) => {
+        if (!await checkLogs(baseFile, dateName, entry).catch((err) => {
           throw new Error(err.stack || err);
         })) {
           delete lockedEntry[entry];
@@ -408,17 +411,17 @@ const baseConfig = new Proxy({}, {
 
         logHeap("waitForHtml");
         const waitForHtml = waitFor([
-          `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.html`,
-          `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.htmlz`
+          `${baseFile}/${dateName}_*.html`.replace(/^\.\//, ""),
+          `${baseFile}/${dateName}_*.htmlz`.replace(/^\.\//, "")
         ], logsPath);
         const waitForJson = waitFor([
-          `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.json`,
-          `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.jsonz`
+          `${baseFile}/${dateName}_*.json`.replace(/^\.\//, ""),
+          `${baseFile}/${dateName}_*.jsonz`.replace(/^\.\//, "")
         ], logsPath);
 
         const htmlInnerFiles = await waitForHtml; /*fg([
-          `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.html`,
-          `${baseFile}/${dateInfo[1]}-${dateInfo[2]}_*.htmlz`
+          `${baseFile}/${dateName}_*.html`.replace(/^\.\//,""),
+          `${baseFile}/${dateName}_*.htmlz`.replace(/^\.\//,"")
         ], {
           dot: true,
           cwd: baseConfig.logsPath
@@ -428,7 +431,7 @@ const baseConfig = new Proxy({}, {
 
         const htmlFile2 = htmlInnerFiles && htmlInnerFiles[0] && path.join(logsPath, htmlInnerFiles[0].replace(/\.htmlz$/, ".html"));
         if (htmlFile2) {
-          if (!await checkLogs(baseFile, dateInfo, entry, false).catch((err) => {
+          if (!await checkLogs(baseFile, dateName, entry, false).catch((err) => {
             throw new Error(err.stack || err);
           })) {
             console.warn("checkLog failed");
@@ -458,7 +461,7 @@ const baseConfig = new Proxy({}, {
           return;
         }
       } else if (htmlFile) {
-        if (!await checkLogs(baseFile, dateInfo, entry, false).catch((err) => {
+        if (!await checkLogs(baseFile, dateName, entry, false).catch((err) => {
           throw new Error(err.stack || err);
         })) {
           delete lockedEntry[entry];
@@ -531,13 +534,19 @@ const baseConfig = new Proxy({}, {
     "**/*.zevtc",
     "**/*.evtc",
     "**/*.json",
-    "**/*.html"
+    "**/*.html",
+    "*.zevtc",
+    "*.evtc",
+    "*.json",
+    "*.html"
   ], {
     cwd: await baseConfig.logsPath,
+    ignoreInitial: false,
     awaitWriteFinish: true
   });
   watcher.on("add", async(chokPath) => {
     const entry = chokPath.replace(/\\/g, "/");
+    //console.log({entry});
     if (entry.match(/\.z?evtc$/)) {
       i++;
       baseConfig.parsingLogs = i;
@@ -563,7 +572,7 @@ const baseConfig = new Proxy({}, {
     }
   );
   for (const brokenFile of brokenFiles) {
-    console.log(`restore: ${brokenFile}`);
+    console.info(`restore: ${brokenFile}`);
     await fs.move(path.join(await baseConfig.logsPath, brokenFile), path.join(await baseConfig.logsPath, brokenFile.replace(/-broken$/, "")));
   }
 })();
