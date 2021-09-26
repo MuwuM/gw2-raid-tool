@@ -40,6 +40,7 @@ module.exports = {
   settingsApiKeyInfo2: ".",
   settingsAddTokenTokenPlaceholder: "Api key",
   settingsArcdpsLogDir: "Directory for arcdps logs:",
+  settingsGw2Dir: "Directory for Gw2-64.exe:",
   settingsChangeButton: "Change",
   settingsRequiresRestart: "(the tool is restarted afterwards)",
   settingsResetPlaceholder: "Write 'reset' here",

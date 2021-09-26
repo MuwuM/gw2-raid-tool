@@ -40,6 +40,7 @@ module.exports = {
   settingsApiKeyInfo2: ".",
   settingsAddTokenTokenPlaceholder: "Clé d'application",
   settingsArcdpsLogDir: "Dossier pour les journaux d'arcdps :",
+  settingsGw2Dir: "Dossier pour Gw2-64.exe:",
   settingsChangeButton: "Changez",
   settingsRequiresRestart: "(l'outil est redémarré après)",
   settingsResetPlaceholder: "Écrire 'reset' ici",
