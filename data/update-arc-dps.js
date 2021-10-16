@@ -30,7 +30,7 @@ function md5File(path) {
 module.exports = async({
   baseConfig, dialogs
 }) => {
-  if (!baseConfig.gw2Dir) {
+  if (!baseConfig.gw2Dir || baseConfig.arcDisabled) {
     return;
   }
   const binDir = path.join(baseConfig.gw2Dir, "bin64");

@@ -156,6 +156,8 @@ electronHandler({
 
   baseConfig.launchBuddyDir = savedConfig.launchBuddyDir;
 
+  baseConfig.arcDisabled = savedConfig.arcDisabled;
+
   baseConfig.gw2Instances = await updateGw2Instances({baseConfig});
 
   await updater({baseConfig});

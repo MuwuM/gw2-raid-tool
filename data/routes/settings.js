@@ -28,6 +28,7 @@ module.exports = async({
       gw2Dir: baseConfig.gw2Dir,
       launchBuddyDir: baseConfig.launchBuddyDir,
       ei_version: baseConfig.ei_version,
+      arcDisabled: baseConfig.arcDisabled,
       arc_version: baseConfig.arcdpsVersionDate,
       arcdpsVersionHasUpdates: baseConfig.arcdpsVersionHasUpdates,
       arc11_version: baseConfig.arcdps11VersionDate,
@@ -117,7 +118,6 @@ module.exports = async({
 
   });
   router.get("/settings/launchBuddyDir", async(ctx) => {
-    console.log(ctx.request.query);
     if (ctx.request.query.del === "true") {
       baseConfig.launchBuddyDir = null;
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
@@ -182,6 +182,51 @@ module.exports = async({
 
     ctx.redirect("/settings");
 
+  });
+  router.get("/settings/arcDisabled", async(ctx) => {
+    if (ctx.request.query.check === "true") {
+      if (!baseConfig.arcDisabled) {
+        try {
+          await updateArcDps({
+            baseConfig,
+            dialogs: false
+          });
+        } catch (error) {
+          console.error(error);
+        }
+        try {
+          await updateArcDps11({
+            baseConfig,
+            dialogs: false
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } else if (ctx.request.query.enable === "true") {
+      baseConfig.arcDisabled = false;
+      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
+      try {
+        await updateArcDps({
+          baseConfig,
+          dialogs: false
+        });
+      } catch (error) {
+        console.error(error);
+      }
+      try {
+        await updateArcDps11({
+          baseConfig,
+          dialogs: false
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    } else if (ctx.request.query.disable === "true") {
+      baseConfig.arcDisabled = true;
+      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
+    }
+    ctx.redirect("/settings");
   });
   router.get("/start-game", async(ctx) => {
     if (baseConfig.launchBuddyDir) {

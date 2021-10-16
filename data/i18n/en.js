@@ -58,5 +58,10 @@ module.exports = {
   navSearchForLogsLeft: "remaining",
   startGame: "Start game",
   startLaunchBuddy: "Start Launchbuddy",
-  notInstalled: "not installed"
+  notInstalled: "not installed",
+  settingsArcDpsEnabled: "ArcDps Auto Update",
+  settingsArcDpsSetDisabled: "ArcDps Auto Update is disabled",
+  settingsEnableButton: "Activate",
+  settingsDisableButton: "Disable",
+  settingsCheckUpdatesButton: "Check for updates"
 };
