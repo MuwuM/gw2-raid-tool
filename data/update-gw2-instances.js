@@ -10,7 +10,9 @@ module.exports = async(/*{baseConfig}*/) => {
       gw2Instances.running = (await psList()).filter((p) => p.name === "Gw2-64.exe");
     } catch (error) {
       console.error(error);
-    } try {
+    }
+
+    try {
       gw2Instances.lauchbuddy = (await psList()).filter((p) => p.name === "Gw2.Launchbuddy.exe");
     } catch (error) {
       console.error(error);
