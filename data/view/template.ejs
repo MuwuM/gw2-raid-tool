@@ -49,6 +49,23 @@
               tabindex="-1"
             ><%= i18n.navSettings %></a>
           </li>
+          <% 
+          if(launchBuddyDir){ 
+            if(gw2Instances.lauchbuddy.length < 1){
+            %>
+            <li class="nav-item active"><a
+                class="btn btn-success"
+                href="/start-game?rel=<%= encodeURIComponent(pageUrl) %>"
+                tabindex="-1"
+              ><%= i18n.startLaunchBuddy %></a></li>
+            <% }
+          } else if(gw2Dir && gw2Instances.running.length < 1){ %>
+            <li class="nav-item active"><a
+                class="btn btn-success"
+                href="/start-game?rel=<%= encodeURIComponent(pageUrl) %>"
+                tabindex="-1"
+              ><%= i18n.startGame %></a></li>
+          <% } %>
           <li class="nav-item-spacer">
             <div class="progress progress-parsingLogs">
               <div class="progress-bar bg-info" role="progressbar" style="overflow:hidden;"></div>

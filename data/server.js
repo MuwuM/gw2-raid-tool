@@ -64,7 +64,11 @@ module.exports = async({
         lang: baseConfig.lang,
         i18n: i18n[baseConfig.lang],
         accounts,
-        noNav: ctx.request.query.inner
+        noNav: ctx.request.query.inner,
+        gw2Dir: baseConfig.gw2Dir,
+        gw2Instances: baseConfig.gw2Instances,
+        launchBuddyDir: baseConfig.launchBuddyDir,
+        pageUrl: ctx.request.url
       });
     };
     await next();
@@ -86,7 +90,13 @@ module.exports = async({
       router,
       db,
       baseConfig,
-      hashLog
+      hashLog(file) {
+        return hashLog(`${file}.${JSON.stringify({
+          gw2Dir: baseConfig.gw2Dir,
+          anyGw2InstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.running && baseConfig.gw2Instances.running.length > 0,
+          anyLBInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.lauchbuddy && baseConfig.gw2Instances.lauchbuddy.length > 0
+        })}`);
+      }
     });
   }
 

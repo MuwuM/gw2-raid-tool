@@ -52,13 +52,26 @@
     <input class="btn btn-primary" type="submit" value="<%= i18n.settingsChangeButton %>"> <%= i18n.settingsRequiresRestart %>
   </form>
 
+  <form class="form-group mt-5" action="/settings/launchBuddyDir" method="post">
+    <div><%= i18n.settingsLaunchBuddyDir %></div>
+    <% if(launchBuddyDir){%>
+    <div><%=launchBuddyDir%>\Gw2.Launchbuddy.exe</div>
+    <% }else{%>
+      <div class="font-italic"><%= i18n.notInstalled %></div>
+    <%}%>
+    <input class="btn btn-primary" type="submit" value="<%= i18n.settingsChangeButton %>">
+    <% if(launchBuddyDir){%>
+      <a class="btn btn-danger" href="/settings/launchBuddyDir?del=true"><%= i18n.settingsDeleteButton %></a>
+      <%}%>
+  </form>
+
   <form class="form-group mt-5" action="/settings/resetLog" method="post">
     <input class="form-control" type="text" name="reset" placeholder="<%= i18n.settingsResetPlaceholder %>">
     <input class="btn btn-primary" type="submit" value="<%= i18n.settingsResetButton %>"> <%= i18n.settingsResetTakesLong %>
   </form>
 
 </div>
-<div class="container" style="margin-top: 20vh; position: fixed;left:1rem;bottom: 0.5rem;">
+<div class="container" style="margin: 5rem auto;">
 <div class="li-display-number-details">GW2 Raid Tool: v<%=appVersion%></div>
 <div class="li-display-number-details">EI-Version: <%=ei_version%></div>
 <div class="li-display-number-details">arcdps (Dx 9): <%=arc_version%> <%if(arcdpsVersionHasUpdates){%><a href="/settings/updateArcDps">Update verfügbar</a><%}%></div>

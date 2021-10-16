@@ -41,7 +41,9 @@ module.exports = {
   settingsAddTokenTokenPlaceholder: "API-Schlüssel",
   settingsArcdpsLogDir: "Ordner für arcdps Logs:",
   settingsGw2Dir: "Ordner für Gw2-64.exe:",
+  settingsLaunchBuddyDir: "Ordner für Gw2 Launchbuddy",
   settingsChangeButton: "Ändern",
+  settingsDeleteButton: "Löschen",
   settingsRequiresRestart: "(das Tool wird danach neugestartet)",
   settingsResetPlaceholder: "Hier 'reset' reinschreiben",
   settingsResetButton: "Logs neu einlesen",
@@ -53,5 +55,8 @@ module.exports = {
   navSettings: "Einstellungen",
   navCredits: "Credits",
   navSearchForLogs: "Suche nach Logs:",
-  navSearchForLogsLeft: "verbleibend"
+  navSearchForLogsLeft: "verbleibend",
+  startGame: "Spiel starten",
+  startLaunchBuddy: "Launchbuddy starten",
+  notInstalled: "nicht installiert"
 };

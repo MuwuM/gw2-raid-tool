@@ -3,12 +3,17 @@ const {
 } = require("electron");
 const gw2 = require("gw2");
 const path = require("path");
+const util = require("util");
+const wincmd = require("node-windows");
+const elevate = util.promisify(wincmd.elevate);
 
 const hashLog = require("../hash-log");
 const updateAccStats = require("../update-acc-stats");
 const updateArcDps = require("../update-arc-dps");
 const updateArcDps11 = require("../update-arc-dps-11");
 const i18n = require("../i18n");
+
+const {spawn} = require("child_process");
 
 module.exports = async({
   router, db, baseConfig
@@ -21,6 +26,7 @@ module.exports = async({
       appVersion: baseConfig.appVersion,
       logsPath: baseConfig.logsPath,
       gw2Dir: baseConfig.gw2Dir,
+      launchBuddyDir: baseConfig.launchBuddyDir,
       ei_version: baseConfig.ei_version,
       arc_version: baseConfig.arcdpsVersionDate,
       arcdpsVersionHasUpdates: baseConfig.arcdpsVersionHasUpdates,
@@ -110,6 +116,38 @@ module.exports = async({
     return renderSettings(ctx);
 
   });
+  router.get("/settings/launchBuddyDir", async(ctx) => {
+    console.log(ctx.request.query);
+    if (ctx.request.query.del === "true") {
+      baseConfig.launchBuddyDir = null;
+      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
+    }
+    ctx.redirect("/settings");
+  });
+  router.post("/settings/launchBuddyDir", async(ctx) => {
+    if (ctx.request.query.del === "true") {
+      baseConfig.launchBuddyDir = null;
+      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
+    } else {
+      const res = await dialog.showOpenDialog({
+        title: "Wähle deine GW2 LaunchBuddy Installation aus:",
+        filters: [
+          {
+            name: "Gw2.Launchbuddy.exe",
+            extensions: ["exe"]
+          }
+        ],
+        properties: ["openFile"],
+        buttonLabel: "Übernehmen und neustarten",
+        defaultPath: baseConfig.launchBuddyDir || ""
+      });
+      if (!res.canceled && res.filePaths.length > 0) {
+        baseConfig.launchBuddyDir = path.dirname(res.filePaths[0]);
+        await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
+      }
+    }
+    ctx.redirect("/settings");
+  });
   router.get("/settings/updateArcDps", async(ctx) => {
 
     await updateArcDps({
@@ -144,5 +182,29 @@ module.exports = async({
 
     ctx.redirect("/settings");
 
+  });
+  router.get("/start-game", async(ctx) => {
+    if (baseConfig.launchBuddyDir) {
+      if (baseConfig.gw2Instances.lauchbuddy.length < 1) {
+        const started = await elevate(path.join(baseConfig.launchBuddyDir, "Gw2.Launchbuddy.exe"), {cwd: baseConfig.launchBuddyDir});
+        baseConfig.gw2Instances.lauchbuddy.push({
+          name: "Gw2.Launchbuddy.exe",
+          pid: started.pid
+        });
+      }
+    } else {
+      if (baseConfig.gw2Dir && baseConfig.gw2Instances.running.length < 1) {
+        const started = spawn(path.join(baseConfig.gw2Dir, "Gw2-64.exe"), {
+          cwd: baseConfig.gw2Dir,
+          detached: true,
+          stdio: "ignore"
+        });
+        baseConfig.gw2Instances.running.push({
+          name: "Gw2-64.exe",
+          pid: started.pid
+        });
+      }
+    }
+    ctx.redirect(decodeURIComponent(ctx.request.query.rel));
   });
 };

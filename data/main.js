@@ -154,6 +154,8 @@ electronHandler({
   }
   baseConfig.gw2Dir = savedConfig.gw2Dir;
 
+  baseConfig.launchBuddyDir = savedConfig.launchBuddyDir;
+
   baseConfig.gw2Instances = await updateGw2Instances({baseConfig});
 
   await updater({baseConfig});
