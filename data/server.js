@@ -1,4 +1,4 @@
-const getPort = require("get-port");
+const {getPort} = require("get-port-please");
 const Koa = require("koa");
 const render = require("koa-ejs");
 const path = require("path");
