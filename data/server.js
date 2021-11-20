@@ -68,6 +68,7 @@ module.exports = async({
         gw2Dir: baseConfig.gw2Dir,
         gw2Instances: baseConfig.gw2Instances,
         launchBuddyDir: baseConfig.launchBuddyDir,
+        anyNvidiaShareInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.nvidiaShare && baseConfig.gw2Instances.nvidiaShare.length > 0,
         pageUrl: ctx.request.url
       });
     };
@@ -94,7 +95,8 @@ module.exports = async({
         return hashLog(`${file}.${JSON.stringify({
           gw2Dir: baseConfig.gw2Dir,
           anyGw2InstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.running && baseConfig.gw2Instances.running.length > 0,
-          anyLBInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.lauchbuddy && baseConfig.gw2Instances.lauchbuddy.length > 0
+          anyLBInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.lauchbuddy && baseConfig.gw2Instances.lauchbuddy.length > 0,
+          anyNvidiaShareInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.nvidiaShare && baseConfig.gw2Instances.nvidiaShare.length > 0
         })}`);
       }
     });

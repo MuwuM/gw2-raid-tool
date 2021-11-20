@@ -1,7 +1,7 @@
 {
   "name": "gw2-raid-tool",
   "productName": "GW2 Raid Tool",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Das ultimative Programm fürs Raiden",
   "main": "main.js",
   "scripts": {

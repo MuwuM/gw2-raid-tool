@@ -63,5 +63,6 @@ module.exports = {
   settingsArcDpsSetDisabled: "ArcDps Auto Update ist deaktiviert",
   settingsEnableButton: "Aktivieren",
   settingsDisableButton: "Deaktivieren",
-  settingsCheckUpdatesButton: "Nach Updates suchen"
+  settingsCheckUpdatesButton: "Nach Updates suchen",
+  nvidiaShareEnabled: "NVIDIA Share ist aktiv!"
 };

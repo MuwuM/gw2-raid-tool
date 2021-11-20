@@ -49,6 +49,13 @@
               tabindex="-1"
             ><%= i18n.navSettings %></a>
           </li>
+          <% if(anyNvidiaShareInstanceRunning){ %>
+            <li class="nav-item active"><a
+              class="btn btn-danger"
+              href="https://nvidia.custhelp.com/app/answers/detail/a_id/4228/~/disabling-the-geforce-experience-share-in-game-overlay"
+              tabindex="-1"
+            ><%= i18n.nvidiaShareEnabled %></a></li>
+          <% } %> 
           <li class="nav-item-spacer">
             <div class="progress progress-parsingLogs">
               <div class="progress-bar bg-info" role="progressbar" style="overflow:hidden;"></div>
