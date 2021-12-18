@@ -11,6 +11,7 @@ const gw2Interface = require("./gw2-interface");
 const server = require("./server");
 const updater = require("./updater");
 const updateGw2Instances = require("./update-gw2-instances");
+const updateMumbleLinkData = require("./update-mumble-links");
 const i18n = require("./i18n");
 const {version: appVersion} = require("./package.json");
 
@@ -155,6 +156,7 @@ electronHandler({
   baseConfig.gw2Dir = savedConfig.gw2Dir;
 
   baseConfig.launchBuddyDir = savedConfig.launchBuddyDir;
+  baseConfig.launchBuddyConfigDir = path.join(electronApp.getPath("appData"), "Gw2 Launchbuddy");
 
   baseConfig.arcDisabled = savedConfig.arcDisabled;
 
@@ -169,6 +171,11 @@ electronHandler({
   console.log({eiConfig: baseConfig.eiConfig});
   await gw2Interface({db});
   await arcInterface({
+    db,
+    baseConfig
+  });
+
+  updateMumbleLinkData({
     db,
     baseConfig
   });

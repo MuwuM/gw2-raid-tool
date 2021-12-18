@@ -64,5 +64,6 @@ module.exports = {
   settingsEnableButton: "Activez",
   settingsDisableButton: "Désactiver",
   settingsCheckUpdatesButton: "Rechercher les mises à jour",
-  nvidiaShareEnabled: "NVIDIA Share est activé!"
+  nvidiaShareEnabled: "NVIDIA Share est activé!",
+  navMap: "??Map??"
 };

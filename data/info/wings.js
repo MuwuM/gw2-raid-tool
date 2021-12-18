@@ -2,6 +2,7 @@ module.exports = [
   {
     w: 1,
     id: "spirit_vale",
+    map_id: 1062,
     steps: [
       {
         id: "vale_guardian",
@@ -43,6 +44,7 @@ module.exports = [
   {
     w: 2,
     id: "salvation_pass",
+    map_id: 1149,
     steps: [
       {
         id: "slothasor",
@@ -76,6 +78,7 @@ module.exports = [
   {
     w: 3,
     id: "stronghold_of_the_faithful",
+    map_id: 1156,
     steps: [
       {
         id: "escort",
@@ -117,6 +120,7 @@ module.exports = [
   {
     w: 4,
     id: "bastion_of_the_penitent",
+    map_id: 1188,
     steps: [
       {
         id: "cairn",
@@ -159,6 +163,7 @@ module.exports = [
   {
     w: 5,
     id: "hall_of_chains",
+    map_id: 1264,
     steps: [
       {
         id: "soulless_horror",
@@ -205,6 +210,7 @@ module.exports = [
   {
     w: 6,
     id: "mythwright_gambit",
+    map_id: 1303,
     steps: [
       {
         id: "conjured_amalgamate",
@@ -238,6 +244,7 @@ module.exports = [
   {
     w: 7,
     id: "the_key_of_ahdashim",
+    map_id: 1323,
     steps: [
       {
         id: "gate",
