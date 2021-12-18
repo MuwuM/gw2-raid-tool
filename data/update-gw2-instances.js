@@ -1,4 +1,4 @@
-const psList = require("ps-list");
+const processlist = require("node-processlist");
 
 module.exports = async(/*{baseConfig}*/) => {
   const gw2Instances = {
@@ -9,7 +9,7 @@ module.exports = async(/*{baseConfig}*/) => {
   async function updateInstances() {
     let list;
     try {
-      list = await psList();
+      list = await processlist.getProcesses({});
     } catch (error) {
       console.error(error);
     }
