@@ -29,6 +29,7 @@ function enhanceLogs(logs) {
   };
 
   let fightName = null;
+  let recordedByName = null;
   let collapseNumber = 1;
   for (const log of copyLogs) {
     //2020-07-03 23:23:53 +02:00
@@ -37,10 +38,19 @@ function enhanceLogs(logs) {
     if (cleanFightName === fightName) {
       collapseNumber += 1;
       log.displayCollapse = collapseNumber;
+      if (recordedByName === log.recordedBy) {
+        log.displayNameCollapse = false;
+      } else {
+        log.displayNameCollapse = true;
+      }
+      recordedByName = log.recordedBy;
     } else {
       collapseNumber = 1;
+      recordedByName = log.recordedBy;
+      log.displayNameCollapse = true;
     }
     fightName = cleanFightName;
+
 
     if (log.success) {
       stats.kills += 1;
@@ -105,10 +115,6 @@ async function paginatedLogs(ctx, db, query) {
 module.exports = async({
   router, hashLog, db, baseConfig
 }) => {
-
-  const arcProgress = null;
-
-
   router.get("/logs", async(ctx) => {
 
     const {
@@ -122,7 +128,6 @@ module.exports = async({
     await ctx.renderView("logs", {
       logs: enhanceLogs(logs).logs,
       logsHash,
-      arcProgress,
       page,
       maxPages
     });

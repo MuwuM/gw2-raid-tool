@@ -317,3 +317,20 @@ nav+main.arc-log-display.arc-log-display-friend{
   line-height: 1rem;
   text-shadow: 1px 1px 2px #000;
 }
+.arc-list-row{
+  flex-wrap: wrap;
+}
+.arc-list-row .arc-list-img-box{
+  flex: 0 0 2.5rem;
+  text-align: center;
+}
+.arc-list-row .arc-list-img-bossname{
+  padding: 0 0.5rem;
+  flex: 1 1 50%;
+  text-align: left;
+}
+.arc-list-row .arc-list-img-logby{
+  flex: 0 0 auto;
+  text-align: left;
+  margin-left: 3rem;
+}
