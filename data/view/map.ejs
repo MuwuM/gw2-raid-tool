@@ -2,12 +2,12 @@
   <%  if(mumbleLinkActive && mumbleLinkActive.identity){%>
     <div style="display: flex;flex-direction: column;">
   <div style="flex: 0 0 auto;"><h1><%= mumbleLinkActive.identity.name %></h1></div>
-  <!--<pre>
+  <pre>
     <%= JSON.stringify(uiStates,null,2) %>
-    </pre>-->
-    <% if(activeHelp){%>
+    </pre><!---->
+    <!--<% if(activeHelp){%>
     <iframe src="https://raid-static.de/<%=lang%>/#<%=activeHelp['name_'+lang] %>" frameborder="0" style="width: 100%;height: 80vh; flex: 1 1 auto;"></iframe>
-    <%} %>
+    <%} %>-->
   </div>
     <%} %>
 </main>
