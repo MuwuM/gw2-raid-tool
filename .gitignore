@@ -6,7 +6,9 @@ li_cache.json
 known_logs.json
 build
 build-dist
+build-dist-dev
 installer-dist
+installer-dist-dev
 installer-dist-old
 prod
 GuildWars2EliteInsights

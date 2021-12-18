@@ -18,12 +18,21 @@ const uploadConfig = require("./upload-config.json");
   const electronVersion = pgkLock.dependencies.electron.version;
 
 
-  const buildDir = path.resolve(__dirname, "build-dist");
-  const installerDir = path.resolve(__dirname, "installer-dist");
+  const parsedVersion = semver.parse(pgk.version);
+  const isDevBuild = parsedVersion.prerelease.includes("dev");
+  console.log({isDevBuild});
+
+  let buildDir = path.resolve(__dirname, "build-dist");
+  let installerDir = path.resolve(__dirname, "installer-dist");
+  if (isDevBuild) {
+    buildDir = path.resolve(__dirname, "build-dist-dev");
+    installerDir = path.resolve(__dirname, "installer-dist-dev");
+  }
   //const distConfigDir = path.resolve(__dirname, "dist-config");
 
   const appIcon = path.resolve(__dirname, "data", "icon.ico");
   const installerIcon = path.resolve(__dirname, "data", "installer.ico");
+
 
   const appPaths = await packager({
     icon: appIcon,
@@ -66,7 +75,6 @@ const uploadConfig = require("./upload-config.json");
   //}
   //console.log("copied config files");
 
-
   const exeName = pgk.name.replace(/-/g, "_");
   await electronInstaller.createWindowsInstaller({
     appDirectory: targetDir,
@@ -87,10 +95,14 @@ const uploadConfig = require("./upload-config.json");
   });
   console.log("It worked!");
 
-  pgk.version = semver.inc(pgk.version, "patch");
+  parsedVersion.patch = 1 + parsedVersion.patch;
+  pgk.version = parsedVersion.format();
   await fs.outputJSON(path.join(dataDir, "package.json"), pgk, {spaces: 2});
-
   if (!uploadConfig.noUpload) {
+    let uploadConfigTargetPath = uploadConfig.targetPath;
+    if (isDevBuild) {
+      uploadConfigTargetPath = uploadConfig.targetPathDev;
+    }
 
     console.log("Uploading files");
     // eslint-disable-next-line no-async-promise-executor
@@ -108,7 +120,7 @@ const uploadConfig = require("./upload-config.json");
       cwd: installerDir
     });
     for (const fileToUpload of filesToUpload) {
-      const onlineFile = path.posix.join(uploadConfig.targetPath, fileToUpload);
+      const onlineFile = path.posix.join(uploadConfigTargetPath, fileToUpload);
       let onlineStat = null;
       try {
         onlineStat = await sftp.stat(onlineFile);
