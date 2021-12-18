@@ -126,7 +126,11 @@ module.exports = async({baseConfig}) => {
     ] of Object.entries(processesMap)) {
       if (!baseConfig.gw2Instances.running.find((i) => `${i.pid}` === `${pid}`)) {
         if (accesses[key]) {
-          await accesses[key].close();
+          try {
+            await accesses[key].closeMapping();
+          } catch (error) {
+            console.error(error);
+          }
           delete accesses[key];
         }
         if (baseConfig.mumbleLinkStats[key]) {
@@ -158,7 +162,7 @@ module.exports = async({baseConfig}) => {
           console.warn(`Could not find LaunchBuddy config at: ${launchBuddyAccsPath}`);
         }
       }
-
+      console.info({currentMumbleLinkIds});
       for (const file of currentMumbleLinkIds) {
         if (!accesses[file]) {
           const map = new NodeIPC.FileMapping();
@@ -167,12 +171,23 @@ module.exports = async({baseConfig}) => {
             accesses[file] = map;
             baseConfig.mumbleLinkStats[file] = {};
           } catch (error) {
-            try {
-              map.createMapping(null, file, size);
-              accesses[file] = map;
-              baseConfig.mumbleLinkStats[file] = {};
-            } catch (error) {
-              console.error(`Error creating File [${file}]: ${error}`);
+            if (`${error}`.match(/error code:\s*6(\s+|$)/)) {
+              try {
+                map.createMapping(null, file, size);
+                map.openMapping(file, size);
+
+                const data = Buffer.alloc(size);
+                map.readInto(data, 0, 0, size);
+                accesses[file] = map;
+                baseConfig.mumbleLinkStats[file] = {};
+              } catch (error) {
+                console.error(new Error(`Error creating File [${file}]: ${error}`));
+                delete accesses[file];
+                delete baseConfig.mumbleLinkStats[file];
+                continue;
+              }
+            } else {
+              console.error(new Error(`Error opening File [${file}]: ${error}`));
               delete accesses[file];
               delete baseConfig.mumbleLinkStats[file];
               continue;
