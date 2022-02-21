@@ -3,7 +3,7 @@ const path = require("path");
 const os = require("os");
 
 module.exports = async({
-  db, baseConfig
+  db, baseConfig, eventHub
 }) => {
 
   const pctMem = Math.floor(os.freemem() / 10485760);
@@ -55,7 +55,6 @@ module.exports = async({
           reqId
         });
       }
-
     } else if (msg === "getBaseConfig") {
       child.send({
         msg: "cfgRes",
@@ -64,6 +63,7 @@ module.exports = async({
       });
     } else if (msg === "setBaseConfig") {
       baseConfig[prop] = value;
+      eventHub.emit("baseConfig", {baseConfig});
     }
   });
 

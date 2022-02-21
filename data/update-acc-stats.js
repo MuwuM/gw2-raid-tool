@@ -1,7 +1,7 @@
 const itemIds = require("./info/item-ids");
 
 module.exports = async({
-  db, client, account
+  db, client, account, eventHub
 }) => {
 
 
@@ -169,6 +169,7 @@ module.exports = async({
     };
     if (!account.kps || JSON.stringify(kps) !== JSON.stringify(account.kps)) {
       await db.accounts.update({_id: account._id}, {$set: {kps}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
   }
 
@@ -176,6 +177,7 @@ module.exports = async({
     const completedSteps = await client.get("account/raids", {token: account.token});
     if (!account.completedSteps || JSON.stringify(completedSteps) !== JSON.stringify(account.completedSteps)) {
       await db.accounts.update({_id: account._id}, {$set: {completedSteps}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
   }
 

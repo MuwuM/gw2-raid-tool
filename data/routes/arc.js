@@ -113,8 +113,66 @@ async function paginatedLogs(ctx, db, query) {
 }
 
 module.exports = async({
-  router, hashLog, db, baseConfig
+  router, hashLog, db, baseConfig, eventHub
 }) => {
+
+  let lastLog = JSON.stringify({});
+  let lastFriendsLog = JSON.stringify({});
+  let nextTick;
+
+  const logFilters = {
+    p: 0,
+    config: {}
+  };
+
+  eventHub.on("logFilter", (data) => {
+    console.log("logFilter changed", data);
+    clearTimeout(nextTick);
+    logFilters.p = data.p || 0;
+    logFilters.config = data.config || {};
+    lastLog = JSON.stringify({});
+    nextTick = setTimeout(updateLogs, 1);
+  });
+  eventHub.on("friendsFilter", (data) => {
+    console.log("friendsFilter changed", data);
+    clearTimeout(nextTick);
+    lastFriendsLog = JSON.stringify({});
+    nextTick = setTimeout(updateLogs, 1);
+  });
+
+  async function updateLogs() {
+    const {
+      page, maxPages, logs
+    } = await paginatedLogs({query: {p: logFilters.p}}, db, logFilters.config);
+    const newLog = JSON.stringify({
+      page,
+      maxPages,
+      logs
+    });
+    if (lastLog !== newLog) {
+      console.log("Log changed");
+      eventHub.emit("logs", {
+        page,
+        maxPages,
+        logs
+      });
+      lastLog = newLog;
+    }
+
+    const friends = await db.friends.find({sharedLogs: {$gte: 10}}).sort({sharedLogs: -1});
+
+    const newFriendsLog = JSON.stringify({friends});
+    if (lastFriendsLog !== newFriendsLog) {
+      console.log("newFriendsLog changed");
+      eventHub.emit("friends", {friends});
+      lastFriendsLog = newFriendsLog;
+    }
+
+    nextTick = setTimeout(updateLogs, 500);
+  }
+
+  nextTick = setTimeout(updateLogs, 1);
+
   router.get("/logs", async(ctx) => {
 
     const {

@@ -1,7 +1,7 @@
 {
   "name": "gw2-raid-tool",
   "productName": "GW2 Raid Tool",
-  "version": "1.9.4",
+  "version": "2.0.1-dev",
   "description": "Das ultimative Programm fürs Raiden",
   "main": "main.js",
   "scripts": {
@@ -29,6 +29,8 @@
     "node-processlist": "^1.0.2",
     "node-windows": "^1.0.0-beta.6",
     "semver": "^7.3.5",
-    "urllib": "^2.38.0"
+    "socket.io": "^4.4.1",
+    "urllib": "^2.38.0",
+    "vue": "^3.2.31"
   }
 }

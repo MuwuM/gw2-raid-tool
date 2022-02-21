@@ -1,12 +1,13 @@
 const processlist = require("node-processlist");
 
-module.exports = async(/*{baseConfig}*/) => {
+module.exports = async({eventHub}) => {
   const gw2Instances = {
     running: [],
     launchBuddy: [],
     nvidiaShare: []
   };
   async function updateInstances() {
+    const oldInstances = JSON.stringify(gw2Instances);
     let list;
     try {
       list = await processlist.getProcesses({});
@@ -31,6 +32,10 @@ module.exports = async(/*{baseConfig}*/) => {
       } catch (error) {
         console.error(error);
       }
+    }
+    const newInstances = JSON.stringify(gw2Instances);
+    if (oldInstances !== newInstances) {
+      eventHub.emit("gw2Instances", {gw2Instances});
     }
     setTimeout(updateInstances, 1000);
   }

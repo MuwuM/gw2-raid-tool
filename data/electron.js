@@ -82,12 +82,13 @@ module.exports = async({
       appDomain, db
     } = await serverReady;
 
-    const accs = await db.accounts.find({});
+    /*const accs = await db.accounts.find({});
     if (accs.length < 1) {
       win.loadURL(`${appDomain}/settings`);
     } else {
       win.loadURL(appDomain);
-    }
+    }*/
+    win.loadURL(`${appDomain}/logs`);
     win.webContents.on("will-navigate", (event, url) => {
       if (!url.startsWith(appDomain)) {
         event.preventDefault();

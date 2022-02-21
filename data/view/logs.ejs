@@ -3,15 +3,15 @@ class="arc-log-display-wrapper"
   
   id="logs"
 >
+<div class="emptyspacer"></div>
 <div class="arc-log-display">
-  <%- await include('loglist', {logs: logs,page:page,maxPages:maxPages}); %>
-  <% if(logs[0]){ %>
-    <iframe
+  <%- await include('loglist'); %>
+    <iframe v-if="logPath"
       name="arc-log-display-iframe"
       class="arc-log-display-iframe"
-      src="/log/<%=logs[0].hash%>"
+      :src="logPath"
       frameborder="0"
       sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
-    ></iframe><%}%>
+    ></iframe>
   </div>
 </main>

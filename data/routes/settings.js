@@ -16,7 +16,7 @@ const i18n = require("../i18n");
 const {spawn} = require("child_process");
 
 module.exports = async({
-  router, db, baseConfig
+  router, db, baseConfig, eventHub
 }) => {
 
   async function renderSettings(ctx) {
@@ -76,6 +76,8 @@ module.exports = async({
     if (ctx.request.body && ctx.request.body.lang) {
       if (i18n.langIds.includes(ctx.request.body.lang)) {
         baseConfig.lang = ctx.request.body.lang;
+
+        eventHub.emit("baseConfig", {baseConfig});
         await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {lang: baseConfig.lang}});
       }
     }
@@ -110,6 +112,7 @@ module.exports = async({
     });
     if (!res.canceled && res.filePaths.length > 0) {
       baseConfig.gw2Dir = path.dirname(res.filePaths[0]);
+      eventHub.emit("baseConfig", {baseConfig});
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {gw2Dir: baseConfig.gw2Dir}});
     }
     app.relaunch();
@@ -120,6 +123,7 @@ module.exports = async({
   router.get("/settings/launchBuddyDir", async(ctx) => {
     if (ctx.request.query.del === "true") {
       baseConfig.launchBuddyDir = null;
+      eventHub.emit("baseConfig", {baseConfig});
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
     }
     ctx.redirect("/settings");
@@ -127,6 +131,7 @@ module.exports = async({
   router.post("/settings/launchBuddyDir", async(ctx) => {
     if (ctx.request.query.del === "true") {
       baseConfig.launchBuddyDir = null;
+      eventHub.emit("baseConfig", {baseConfig});
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
     } else {
       const res = await dialog.showOpenDialog({
@@ -143,6 +148,7 @@ module.exports = async({
       });
       if (!res.canceled && res.filePaths.length > 0) {
         baseConfig.launchBuddyDir = path.dirname(res.filePaths[0]);
+        eventHub.emit("baseConfig", {baseConfig});
         await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
       }
     }
@@ -154,6 +160,7 @@ module.exports = async({
       baseConfig,
       dialogs: true
     });
+    eventHub.emit("baseConfig", {baseConfig});
 
     ctx.redirect("/settings");
 
@@ -164,6 +171,7 @@ module.exports = async({
       baseConfig,
       dialogs: true
     });
+    eventHub.emit("baseConfig", {baseConfig});
 
     ctx.redirect("/settings");
 
@@ -191,6 +199,7 @@ module.exports = async({
             baseConfig,
             dialogs: false
           });
+          eventHub.emit("baseConfig", {baseConfig});
         } catch (error) {
           console.error(error);
         }
@@ -199,18 +208,21 @@ module.exports = async({
             baseConfig,
             dialogs: false
           });
+          eventHub.emit("baseConfig", {baseConfig});
         } catch (error) {
           console.error(error);
         }
       }
     } else if (ctx.request.query.enable === "true") {
       baseConfig.arcDisabled = false;
+      eventHub.emit("baseConfig", {baseConfig});
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
       try {
         await updateArcDps({
           baseConfig,
           dialogs: false
         });
+        eventHub.emit("baseConfig", {baseConfig});
       } catch (error) {
         console.error(error);
       }
@@ -219,11 +231,13 @@ module.exports = async({
           baseConfig,
           dialogs: false
         });
+        eventHub.emit("baseConfig", {baseConfig});
       } catch (error) {
         console.error(error);
       }
     } else if (ctx.request.query.disable === "true") {
       baseConfig.arcDisabled = true;
+      eventHub.emit("baseConfig", {baseConfig});
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
     }
     ctx.redirect("/settings");
@@ -236,6 +250,7 @@ module.exports = async({
           name: "Gw2.Launchbuddy.exe",
           pid: started.pid
         });
+        eventHub.emit("baseConfig", {baseConfig});
       }
     } else {
       if (baseConfig.gw2Dir && baseConfig.gw2Instances.running.length < 1) {
@@ -248,6 +263,7 @@ module.exports = async({
           name: "Gw2-64.exe",
           pid: started.pid
         });
+        eventHub.emit("baseConfig", {baseConfig});
       }
     }
     ctx.redirect(decodeURIComponent(ctx.request.query.rel));

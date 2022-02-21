@@ -14,6 +14,10 @@ const updateGw2Instances = require("./update-gw2-instances");
 const i18n = require("./i18n");
 const {version: appVersion} = require("./package.json");
 
+const eventHub = require("./event-hub");
+const wings = require("./info/wings");
+const pgk = require("./package.json");
+
 
 let markUpdaterDone;
 const updaterDone = new Promise((res) => markUpdaterDone = res);
@@ -158,7 +162,10 @@ electronHandler({
 
   baseConfig.arcDisabled = savedConfig.arcDisabled;
 
-  baseConfig.gw2Instances = await updateGw2Instances({baseConfig});
+  baseConfig.gw2Instances = await updateGw2Instances({
+    baseConfig,
+    eventHub
+  });
 
   await updater({baseConfig});
   markUpdaterDone();
@@ -167,20 +174,49 @@ electronHandler({
   baseConfig.eiConfig = path.resolve(electronApp.getAppPath(), "config.conf");
 
   console.log({eiConfig: baseConfig.eiConfig});
-  await gw2Interface({db});
+  await gw2Interface({
+    db,
+    eventHub
+  });
   await arcInterface({
     db,
-    baseConfig
+    baseConfig,
+    eventHub
   });
 
-  const {port} = await server({
+  const {
+    port, io
+  } = await server({
     db,
-    baseConfig
+    baseConfig,
+    eventHub
   });
+
+  baseConfig.langs = i18n.langIds.map((id, index) => ({
+    id,
+    label: i18n.langLabels[index]
+  }));
+  baseConfig.deps = Object.keys(pgk.dependencies);
+
+  io.on("connection", async(socket) => {
+    eventHub.sockets.push(socket);
+    socket.emit("accounts", {accounts: await db.accounts.find({})});
+    socket.emit("baseConfig", {baseConfig});
+    socket.emit("wings", {wings});
+    for (const handler of eventHub.onHandler) {
+      socket.on(...handler.args);
+    }
+    socket.on("disconnect", () => {
+      eventHub.sockets = eventHub.sockets.filter((s) => s === socket);
+    });
+  });
+
+  await eventHub.registerIo(io);
   const appDomain = `http://127.0.0.1:${port}`;
   markServerReady({
     appDomain,
-    db
+    db,
+    io
   });
 })().catch((err) => {
   console.error(err);

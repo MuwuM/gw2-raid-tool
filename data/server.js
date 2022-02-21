@@ -7,13 +7,15 @@ const serve = require("koa-static");
 const mount = require("koa-mount");
 const koaBody = require("koa-body");
 const fs = require("fs-extra");
+const http = require("http");
+const SocketIo = require("socket.io");
 
 const crypto = require("crypto");
 const hashLog = require("./hash-log");
 const i18n = require("./i18n");
 
 module.exports = async({
-  db, baseConfig
+  db, baseConfig, eventHub
 }) => {
   const port = await getPort({port: 7002});
 
@@ -77,6 +79,19 @@ module.exports = async({
 
   koaApp.use(koaBody({multipart: true}));
 
+  const i18nFiles = await fs.readdir(path.join(__dirname, "i18n"));
+  const i18nContent = [];
+  for (const file of i18nFiles) {
+    if (!file.endsWith(".js")) {
+      continue;
+    }
+    const fileContent = `${await fs.readFile(path.join(__dirname, "i18n", file))}`;
+    const lang = path.basename(file, ".js");
+    i18nContent.push(fileContent.replace(/module\.exports\s*=\s*\{/, `window['i18n/${lang}'] = {`));
+  }
+  router.get("/i18n.js", (ctx) => {
+    ctx.body = i18nContent.join("\n");
+  });
 
   const files = await fs.readdir(path.join(__dirname, "routes"));
 
@@ -91,6 +106,7 @@ module.exports = async({
       router,
       db,
       baseConfig,
+      eventHub,
       hashLog(file) {
         return hashLog(`${file}.${JSON.stringify({
           gw2Dir: baseConfig.gw2Dir,
@@ -102,6 +118,7 @@ module.exports = async({
     });
   }
 
+  koaApp.use(mount("/", serve(`${__dirname}/public`)));
   koaApp.use(mount("/img", serve(`${__dirname}/img`, {maxAge: 36000000})));
   koaApp.use(mount("/static", serve(`${__dirname}/static`, {
     maxAge: 31556952000,
@@ -113,9 +130,21 @@ module.exports = async({
     maxAge: 31556952000,
     immutable: true
   })));
+  const vueDir = path.join(path.dirname(require.resolve("vue")), "dist");
+  console.log({vueDir});
+  koaApp.use(mount("/ext/vue", serve(vueDir, {
+    maxAge: 31556952000,
+    immutable: true
+  })));
 
   koaApp.use(router.middleware());
-  koaApp.listen(port);
 
-  return {port};
+  const httpServer = http.createServer(koaApp.callback());
+  const io = SocketIo(httpServer, {});
+  httpServer.listen(port);
+
+  return {
+    port,
+    io
+  };
 };
