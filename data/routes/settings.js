@@ -7,7 +7,6 @@ const util = require("util");
 const wincmd = require("node-windows");
 const elevate = util.promisify(wincmd.elevate);
 
-const hashLog = require("../hash-log");
 const updateAccStats = require("../update-acc-stats");
 const updateArcDps = require("../update-arc-dps");
 const updateArcDps11 = require("../update-arc-dps-11");
@@ -20,39 +19,8 @@ module.exports = async({
 }) => {
 
   async function renderSettings(ctx) {
-    const accs = await db.accounts.find({});
-    const data = {
-      accounts: accs,
-      appVersion: baseConfig.appVersion,
-      logsPath: baseConfig.logsPath,
-      gw2Dir: baseConfig.gw2Dir,
-      launchBuddyDir: baseConfig.launchBuddyDir,
-      ei_version: baseConfig.ei_version,
-      arcDisabled: baseConfig.arcDisabled,
-      arc_version: baseConfig.arcdpsVersionDate,
-      arcdpsVersionHasUpdates: baseConfig.arcdpsVersionHasUpdates,
-      arc11_version: baseConfig.arcdps11VersionDate,
-      arcdps11VersionHasUpdates: baseConfig.arcdps11VersionHasUpdates,
-      langs: i18n.langIds.map((id, index) => ({
-        id,
-        label: i18n.langLabels[index]
-      }))
-    };
-    const logsHash = await hashLog(JSON.stringify(data));
-    await ctx.renderView("settings", {
-      ...data,
-      logsHash
-    });
+    await ctx.renderView("settings", {});
   }
-
-  router.get("/settings/progress", async(ctx) => {
-    ctx.type = "application/json";
-    ctx.body = JSON.stringify({
-      parsingLogs: baseConfig.parsingLogs,
-      parsedLogs: baseConfig.parsedLogs
-    });
-    return;
-  });
 
   router.get("/settings", async(ctx) => renderSettings(ctx));
   router.post("/settings", async(ctx) => {

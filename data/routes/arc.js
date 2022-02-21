@@ -141,20 +141,58 @@ module.exports = async({
   });
 
   async function updateLogs() {
+
+    let stats = null;
+    const conf = {};
+    if (logFilters.config.bossId) {
+      const bossId = parseInt(decodeURIComponent(logFilters.config.bossId), 10);
+
+      if (Number.isInteger(bossId)) {
+        let bossInfo = wings.map((ws) => ws.steps).flat()
+          .find((s) => ensureArray(s.triggerID).includes(bossId));
+
+        if (!bossInfo) {
+          bossInfo = {triggerID: bossId};
+        }
+
+        conf.triggerID = {$in: ensureArray(bossInfo.triggerID)};
+        const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]];
+        stats = {
+          bossIcon,
+          bossInfo
+        };
+      }
+    }
+
+
     const {
-      page, maxPages, logs
-    } = await paginatedLogs({query: {p: logFilters.p}}, db, logFilters.config);
+      page, maxPages, logs, stats: readStats
+    } = await paginatedLogs({query: {p: logFilters.p}}, db, conf);
+    if (stats) {
+      stats = {
+        ...stats,
+        ...readStats
+      };
+      if (stats.bossInfo && !stats.bossInfo.name_en) {
+        stats.bossInfo.name_en = (logs[0] && logs[0].fightName && logs[0].fightName.replace(/\s+CM\s*$/, "")) || "???";
+      }
+      if (stats.bossInfo && !stats.bossInfo.name_de) {
+        stats.bossInfo.name_de = stats.bossInfo.name_en;
+      }
+    }
     const newLog = JSON.stringify({
       page,
       maxPages,
-      logs
+      logs,
+      stats
     });
     if (lastLog !== newLog) {
       console.log("Log changed");
       eventHub.emit("logs", {
         page,
         maxPages,
-        logs
+        logs,
+        stats
       });
       lastLog = newLog;
     }

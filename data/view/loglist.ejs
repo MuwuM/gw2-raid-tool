@@ -1,11 +1,11 @@
 <div class="arc-list">
   <nav>
     <ul class="pagination justify-content-center">
-      <li :class="{'page-item':true, 'disabled':(logsPage <= 0)}"><a class="page-link" @click="showLogPage(0,$event)">«</a></li>
-      <li :class="{'page-item':true, 'disabled':(logsPage <= 0)}"><a class="page-link" @click="showLogPage(Math.max(logsPage-1,0),$event)">‹</a></li>
+      <li :class="{'page-item':true, 'disabled':(logsPage <= 0)}"><a class="page-link" @click="showLogPage(0,null,$event)">«</a></li>
+      <li :class="{'page-item':true, 'disabled':(logsPage <= 0)}"><a class="page-link" @click="showLogPage(Math.max(logsPage-1,0),null,$event)">‹</a></li>
       <li class="page-item disabled w-50 text-center"><a class="page-link">{{(logsPage+1) }}/{{logsMaxPages}}</a></li>
-      <li :class="{'page-item':true, 'disabled':(logsPage >= logsMaxPages-1)}"><a class="page-link" @click="showLogPage(Math.min(logsMaxPages-1,logsPage+1),$event)">›</a></li>
-      <li :class="{'page-item':true, 'disabled':(logsPage >= logsMaxPages-1)}"><a class="page-link" @click="showLogPage(logsMaxPages-1,$event)">»</a></li>
+      <li :class="{'page-item':true, 'disabled':(logsPage >= logsMaxPages-1)}"><a class="page-link" @click="showLogPage(Math.min(logsMaxPages-1,logsPage+1),null,$event)">›</a></li>
+      <li :class="{'page-item':true, 'disabled':(logsPage >= logsMaxPages-1)}"><a class="page-link" @click="showLogPage(logsMaxPages-1,null,$event)">»</a></li>
     </ul>
   </nav>
   <div class="list-group">

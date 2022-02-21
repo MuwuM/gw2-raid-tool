@@ -7,7 +7,7 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
-  <title>Raid Tool<% if(accounts.length >= 1){ %> - <%= accounts.filter(a=>a.accountInfo&&a.accountInfo.name).map(a=>a.accountInfo.name).join(" / ")%><% } %></title>
+  <title>Raid Tool</title>
   <link
     rel="stylesheet"
     href="/static/bootstrap.min.css?<%= bootstrapcss %>"
@@ -28,20 +28,20 @@
               class="nav-link"
               href="/"
               tabindex="-1"
-              @click="selectPage('overview',$event)"
+              @click="selectPage('overview',{},$event)"
             >{{i18n.navOverview}}</a>
           </li>
           <li class="nav-item active"><a
               class="nav-link"
               href="/logs"
               tabindex="-1"
-              @click="selectPage('logs',$event)"
+              @click="selectPage('logs',{},$event)"
             >{{i18n.navArcdps}}</a></li>
           <li class="nav-item active"><a
               class="nav-link"
               href="/friends"
               tabindex="-1"
-              @click="selectPage('friends',$event)"
+              @click="selectPage('friends',{},$event)"
             >{{i18n.navFriends}}</a></li>
           </template>
             <li class="nav-item active">
@@ -49,7 +49,7 @@
                 class="nav-link"
                 href="/settings"
                 tabindex="-1"
-                @click="selectPage('settings',$event)"
+                @click="selectPage('settings',{},$event)"
               >{{i18n.navSettings}}</a>
             </li>
               <li class="nav-item active" v-if="anyNvidiaShareInstanceRunning"><a
@@ -58,13 +58,13 @@
                 tabindex="-1"
               >{{i18n.nvidiaShareEnabled}}</a></li>
             <li class="nav-item-spacer">
-              <div v-if="baseConfig.parsingLogs > 0" class="progress progress-parsingLogs" style="display: flex;">
+              <div v-if="progressConfig.parsingLogs > 0" class="progress progress-parsingLogs" style="display: flex;">
                 <div class="progress-bar bg-info" role="progressbar" :style="{
                   overflow:'hidden',
-                  width:`${(baseConfig.parsedLogs / (baseConfig.parsingLogs || 1)) * 100}%`,
-                  maxWidth: `${(baseConfig.parsedLogs / (baseConfig.parsingLogs || 1)) * 100}%`
+                  width:`${(progressConfig.parsedLogs / (progressConfig.parsingLogs || 1)) * 100}%`,
+                  maxWidth: `${(progressConfig.parsedLogs / (progressConfig.parsingLogs || 1)) * 100}%`
                 }"></div>
-                <div class="progress-bar-label">{{i18n.navSearchForLogs}} {{baseConfig.parsingLogs - baseConfig.parsedLogs}} {{i18n.navSearchForLogsLeft}}</div>
+                <div class="progress-bar-label">{{i18n.navSearchForLogs}} {{progressConfig.parsingLogs - progressConfig.parsedLogs}} {{i18n.navSearchForLogsLeft}}</div>
               </div>
             </li>
             <li class="nav-item active" v-if="baseConfig.launchBuddyDir && gw2Instances.lauchbuddy && gw2Instances.lauchbuddy.length < 1"><a
@@ -82,7 +82,7 @@
                 class="nav-link"
                 href="/credits"
                 tabindex="-1"
-                @click="selectPage('credits',$event)"
+                @click="selectPage('credits',{},$event)"
               >{{i18n.navCredits}}</a>
             </li>
         </ul>
@@ -92,6 +92,7 @@
     <div v-if="page === 'friends'"><%- await include('friends', {}); %></div>
     <div v-if="page === 'settings'"><%- await include('settings', {}); %></div>
     <div v-if="page === 'credits'"><%- await include('credits', {}); %></div>
+    <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
   </div>
     <script src="/socket.io/socket.io.js"></script>
   <script src="/ext/vue/vue.global.js"></script>

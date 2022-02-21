@@ -108,12 +108,14 @@ electronHandler({
 (async() => {
   //
   const processDir = electronApp.getPath("userData");
+  const progressConfig = {
+    parsingLogs: 0,
+    parsedLogs: 0
+  };
   const baseConfig = {
     dbBaseDir: processDir,
     processDir,
-    appVersion,
-    parsingLogs: 0,
-    parsedLogs: 0
+    appVersion
   };
   //await new Promise(() => {});
   const db = await dbConnect({baseConfig});
@@ -181,6 +183,7 @@ electronHandler({
   await arcInterface({
     db,
     baseConfig,
+    progressConfig,
     eventHub
   });
 

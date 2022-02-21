@@ -4,25 +4,25 @@
 >
 <div class="container">
   <div class="jumbotron">
-<h2 class="boss-info-title"><% if(bossIcon){%><img class="li-display-img" src="<%=bossIcon%>" alt="<%= bossInfo.name_de %>"><%}%><%= bossInfo.name_de %></h2>
-<div>
-  <span><%= i18n.killsLabel %> <%= stats.kills %> <%= i18n.cmOfKills(stats.cmKills) %></span>
-  <span><%= i18n.failsLabel %> <%= stats.fails %></span>
+<h2 v-if="stats&&stats.bossInfo" class="boss-info-title"><img v-if="stats.bossIcon" class="li-display-img" :src="stats.bossIcon" :alt="stats.bossInfo['name_'+lang]">{{stats.bossInfo['name_'+lang]}}</h2>
+<div v-if="stats">
+  <span>{{i18n.killsLabel}} {{stats.kills}} {{i18n.cmOfKills(stats.cmKills)}}</span>
+  <span>{{i18n.failsLabel}} {{stats.fails}}</span>
 </div>
 </div>
 </div>
+<div class="emptyspacer"></div>
 <div
   class="arc-log-display arc-log-display-friend"
 >
-  <%- await include('loglist', {logs: logs,page:page,maxPages:maxPages}); %>
-  <% if(logs[0]){ %>
-  <iframe
-    name="arc-log-display-iframe"
-    class="arc-log-display-iframe"
-    src="/log/<%=logs[0].hash%>"
-    frameborder="0"
-    sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
-  ></iframe><%}%>
+<%- await include('loglist'); %>
+<iframe v-if="logPath"
+  name="arc-log-display-iframe"
+  class="arc-log-display-iframe"
+  :src="logPath"
+  frameborder="0"
+  sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
+></iframe>
 </div>
 </div>
 </main>

@@ -41,9 +41,11 @@ const app = Vue.createApp({
   data() {
     return {
       page: "overview",
+      pageConfig: {},
       accounts: [],
       anyNvidiaShareInstanceRunning: false,
       baseConfig: {},
+      progressConfig: {},
       totalKps: {},
       gw2Instances: {
         running: [],
@@ -80,15 +82,18 @@ const app = Vue.createApp({
     renameRune(p) {
       socket.emit("renameRune", p);
     },
-    selectPage(page, event) {
+    selectPage(page, info, event) {
       if (event && typeof event.preventDefault === "function") {
         event.preventDefault();
       }
       this.page = page;
+      this.pageConfig = info;
       if (page === "logs") {
-        this.showLogPage(0);
+        this.showLogPage(0, {});
       } else if (page === "friends") {
         this.showFriendsPage(0);
+      } else if (page === "boss") {
+        this.showLogPage(0, {bossId: this.pageConfig && this.pageConfig.id});
       }
     },
     svgBossBorder(accounts, step) {
@@ -228,12 +233,16 @@ const app = Vue.createApp({
         this.activeLog = null;
       }
     },
-    showLogPage(page, event) {
+    showLogPage(page, filters, event) {
       if (event && typeof event.preventDefault === "function") {
         event.preventDefault();
       }
       this.logFilters.p = page;
+      if (typeof filters === "object") {
+        this.logFilters.config = filters;
+      }
       const logFilter = {...this.logFilters};
+
       socket.emit("logFilter", logFilter);
     },
     showFriendsPage(page, event) {
@@ -245,7 +254,10 @@ const app = Vue.createApp({
     }
   },
   updated() {
+    document.title = `Raid Tool${(this.accounts.length >= 1) ? ` - ${this.accounts.filter((a) => a.accountInfo && a.accountInfo.name).map((a) => a.accountInfo.name)
+      .join(" / ")}` : ""}`;
     onResize();
+    checkIframeClicks();
   }
 });
 
@@ -288,6 +300,10 @@ socket.on("baseConfig", (data) => {
   mnt.baseConfig = data.baseConfig;
   mnt.lang = data.baseConfig.lang;
 });
+socket.on("progressConfig", (data) => {
+  //console.log("baseConfig", data);
+  mnt.progressConfig = data.progressConfig;
+});
 socket.on("gw2Instances", (data) => {
   console.log("gw2Instances", data);
   mnt.gw2Instances = data.gw2Instances;
@@ -302,6 +318,7 @@ socket.on("logs", (data) => {
   mnt.logs = data.logs;
   mnt.logsPage = data.page;
   mnt.logsMaxPages = data.maxPages;
+  mnt.stats = data.stats;
   if (!mnt.activeLog && mnt.logs[0]) {
     mnt.selectLog(mnt.logs[0]);
   }
@@ -311,3 +328,42 @@ socket.on("friends", (data) => {
   mnt.friends = data.friends;
 });
 
+function handleClick(event) {
+  const a = event.target.closest("a");
+  const baseUrl = new URL("/", window.location.href);
+  if (!event.defaultPrevented && a && a.href && a.href.startsWith(baseUrl.href)) {
+    const url = new URL(a.href, window.location.href);
+
+    const path = url.pathname;
+    const pathParts = path.split("/");
+    console.log(pathParts);
+    if (!pathParts[1]) {
+      mnt.selectPage("overview", {}, event);
+    } else {
+      mnt.selectPage(pathParts[1], {id: pathParts[2]}, event);
+    }
+  }
+}
+
+function checkIframeClicks() {
+  const iframes = document.querySelectorAll("iframe");
+  console.log({iframes});
+  for (const iframe of iframes) {
+    if (!iframe._raidToolClickHandlerOnLoad) {
+      iframe.addEventListener("load", () => {
+        iframe.contentWindow.document.addEventListener("click", handleClick);
+        iframe.contentWindow.document._raidToolClickHandler = true;
+      });
+      iframe._raidToolClickHandlerOnLoad = true;
+    }
+    if (!iframe.contentWindow.document._raidToolClickHandler) {
+      iframe.contentWindow.document.addEventListener("click", handleClick);
+      iframe.contentWindow.document._raidToolClickHandler = true;
+    }
+  }
+
+}
+
+//setInterval(checkIframeClicks, 100);
+
+document.addEventListener("click", handleClick);

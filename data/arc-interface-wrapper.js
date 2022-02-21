@@ -3,7 +3,7 @@ const path = require("path");
 const os = require("os");
 
 module.exports = async({
-  db, baseConfig, eventHub
+  db, baseConfig, progressConfig, eventHub
 }) => {
 
   const pctMem = Math.floor(os.freemem() / 10485760);
@@ -64,6 +64,15 @@ module.exports = async({
     } else if (msg === "setBaseConfig") {
       baseConfig[prop] = value;
       eventHub.emit("baseConfig", {baseConfig});
+    } else if (msg === "getProgessConfig") {
+      child.send({
+        msg: "cfgProgessRes",
+        cfgRes: progressConfig[prop],
+        reqId
+      });
+    } else if (msg === "setProgressConfig") {
+      progressConfig[prop] = value;
+      eventHub.emit("progressConfig", {progressConfig});
     }
   });
 

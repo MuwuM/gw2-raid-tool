@@ -165,6 +165,45 @@ const baseConfig = new Proxy({}, {
     });
   }
 });
+const progressConfig = new Proxy({}, {
+  get(t, prop) {
+    if (!t[`get-${prop}`]) {
+      t[`get-${prop}`] = new Promise((res, rej) => {
+        reqIdCount++;
+        const reqId = reqIdCount;
+        const respHandler = (resp) => {
+          if (resp && resp.msg === "error" && resp.reqId === reqId) {
+            process.off("message", respHandler);
+            rej(resp.err);
+            return;
+          }
+          if (!resp || resp.msg !== "cfgProgressRes" || resp.reqId !== reqId) {
+            return;
+          }
+          process.off("message", respHandler);
+          res(resp.cfgRes);
+        };
+        process.on("message", respHandler);
+        process.send({
+          msg: "getProgressConfig",
+          reqId,
+          prop
+        });
+      });
+    }
+    return t[`get-${prop}`];
+  },
+  set(t, prop, value) {
+    reqIdCount++;
+    const reqId = reqIdCount;
+    process.send({
+      msg: "setProgressConfig",
+      reqId,
+      prop,
+      value
+    });
+  }
+});
 
 (async() => {
   for (const [
@@ -514,12 +553,12 @@ const baseConfig = new Proxy({}, {
       console.error(error);
     }
     j++;
-    baseConfig.parsedLogs = j;
+    progressConfig.parsedLogs = j;
     if (i === j) {
       i = 0;
       j = 0;
-      baseConfig.parsingLogs = i;
-      baseConfig.parsedLogs = j;
+      progressConfig.parsingLogs = i;
+      progressConfig.parsedLogs = j;
     }
     logHeap(`Queue-size: ${i - j}`);
 
@@ -549,7 +588,7 @@ const baseConfig = new Proxy({}, {
     //console.log({entry});
     if (entry.match(/\.z?evtc$/)) {
       i++;
-      baseConfig.parsingLogs = i;
+      progressConfig.parsingLogs = i;
       logEntries.push(entry);
       setImmediate(handleLogEntry);
     }
