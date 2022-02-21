@@ -22,12 +22,6 @@ function ensureArray(fightName) {
 function enhanceLogs(logs) {
   const copyLogs = JSON.parse(JSON.stringify(logs.filter((l) => l)));
 
-  const stats = {
-    kills: 0,
-    cmKills: 0,
-    fails: 0
-  };
-
   let fightName = null;
   let recordedByName = null;
   let collapseNumber = 1;
@@ -50,21 +44,8 @@ function enhanceLogs(logs) {
       log.displayNameCollapse = true;
     }
     fightName = cleanFightName;
-
-
-    if (log.success) {
-      stats.kills += 1;
-      if (log.isCM) {
-        stats.cmKills += 1;
-      }
-    } else {
-      stats.fails += 1;
-    }
   }
-  return {
-    logs: copyLogs,
-    stats
-  };
+  return copyLogs;
 }
 
 const kittyGolemTriggerIds = [
@@ -105,7 +86,7 @@ async function paginatedLogs(ctx, db, query) {
     ]})
   };
   return {
-    logs,
+    logs: enhanceLogs(logs),
     maxPages,
     page,
     stats
@@ -113,7 +94,7 @@ async function paginatedLogs(ctx, db, query) {
 }
 
 module.exports = async({
-  router, hashLog, db, baseConfig, eventHub
+  router, db, baseConfig, eventHub
 }) => {
 
   let lastLog = JSON.stringify({});
@@ -225,21 +206,7 @@ module.exports = async({
   nextTick = setTimeout(updateLogs, 1);
 
   router.get("/logs", async(ctx) => {
-
-    const {
-      page, maxPages, logs
-    } = await paginatedLogs(ctx, db, {});
-
-    const logsHash = await hashLog(JSON.stringify({
-      page,
-      logs: logs.map((l) => l.hash)
-    }));
-    await ctx.renderView("logs", {
-      logs: enhanceLogs(logs).logs,
-      logsHash,
-      page,
-      maxPages
-    });
+    await ctx.renderView("logs", {});
   });
   router.get("/log/:hash", async(ctx) => {
     const log = await db.logs.findOne({hash: ctx.params.hash});
@@ -303,92 +270,14 @@ module.exports = async({
 
 
   router.get("/friends", async(ctx) => {
-    const friends = await db.friends.find({sharedLogs: {$gte: 10}}).sort({sharedLogs: -1});
-    //.limit(100);
-    const logsHash = await hashLog(JSON.stringify({friends}));
-    await ctx.renderView("friends", {
-      friends,
-      logsHash
-    });
+    await ctx.renderView("friends", {});
   });
   router.get("/friends/:acc", async(ctx) => {
-    const account = decodeURIComponent(ctx.params.acc);
-    let friend = await db.friends.findOne({account});
-
-    const {
-      page, maxPages, logs, stats
-    } = await paginatedLogs(ctx, db, {players: {$elemMatch: account}});
-    if (!friend && logs.length > 0) {
-      friend = await db.friends.insert({
-        account,
-        chars: [],
-        sharedLogs: 0
-      });
-    }
-    if (!friend) {
-      ctx.throw(404);
-    }
-    const {logs: copyLogs} = enhanceLogs(logs);
-    const data = {
-      stats,
-      page,
-      maxPages,
-      friend,
-      logs: logs.map((l) => l.hash)
-    };
-
-    const logsHash = await hashLog(JSON.stringify(data));
-    await ctx.renderView("friend", {
-      ...data,
-      logs: copyLogs,
-      logsHash
-    });
+    await ctx.renderView("friend", {});
   });
 
   router.get("/boss/:bossId", async(ctx) => {
-    const bossId = parseInt(decodeURIComponent(ctx.params.bossId), 10);
-
-    if (!Number.isInteger(bossId)) {
-      ctx.throw(404);
-      return;
-    }
-
-    let bossInfo = wings.map((ws) => ws.steps).flat()
-      .find((s) => ensureArray(s.triggerID).includes(bossId));
-
-    if (!bossInfo) {
-      bossInfo = {triggerID: bossId};
-    }
-
-
-    const {
-      page, maxPages, logs, stats
-    } = await paginatedLogs(ctx, db, {triggerID: {$in: ensureArray(bossInfo.triggerID)}});
-
-    const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]];
-    const {logs: copyLogs} = enhanceLogs(logs);
-
-    if (!bossInfo.name_en) {
-      bossInfo.name_en = (copyLogs[0] && copyLogs[0].fightName && copyLogs[0].fightName.replace(/\s+CM\s*$/, "")) || "???";
-    }
-    if (!bossInfo.name_de) {
-      bossInfo.name_de = bossInfo.name_en;
-    }
-
-    const data = {
-      page,
-      maxPages,
-      bossInfo,
-      bossIcon,
-      stats,
-      logs: logs.map((l) => l.hash)
-    };
-    const logsHash = await hashLog(JSON.stringify(data));
-    await ctx.renderView("boss", {
-      ...data,
-      logs: copyLogs,
-      logsHash
-    });
+    await ctx.renderView("boss", {});
   });
 
   const maxage = 31556952000;
