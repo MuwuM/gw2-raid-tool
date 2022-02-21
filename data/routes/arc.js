@@ -163,6 +163,19 @@ module.exports = async({
         };
       }
     }
+    if (logFilters.config.friend) {
+      const account = decodeURIComponent(logFilters.config.friend);
+      let friend = await db.friends.findOne({account});
+      if (!friend && logs.length > 0) {
+        friend = await db.friends.insert({
+          account,
+          chars: [],
+          sharedLogs: 0
+        });
+      }
+      conf.players = {$elemMatch: account};
+      stats = {friend};
+    }
 
 
     const {

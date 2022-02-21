@@ -2,33 +2,37 @@
   id="friend"
   class="arc-log-display-wrapper"
 >
-<div class="container">
-  <div class="jumbotron">
-<h2><%= friend.account %></h2>
-<div class="friend-badges"><% for(const n of (friend.chars||[])){ %>
-    <span class="friend-badge"><img class="friend-icon" src="/img/profession/<%=n.profession[0].name%>.png"> <span class="friend-name"><%= n.name %></span></span>
-  <% } %></div>
-<hr>
-<div><%= i18n.sharedLogsLabel %> <%= friend.sharedLogs %></div>
-<div>
-  <span><%= i18n.killsLabel %> <%= stats.kills %> <%= i18n.cmOfKills(stats.cmKills) %></span>
-  <span><%= i18n.failsLabel %> <%= stats.fails %></span>
-</div>
+  <div class="container">
+    <div class="jumbotron" v-if="stats">
+      <h2 v-if="stats.friend">{{stats.friend.account}}</h2>
+      <div v-if="stats.friend" class="friend-badges">
+        <span
+          v-for="n in (stats.friend.chars||[])"
+          class="friend-badge"
+        ><img
+            class="friend-icon"
+            :src="'/img/profession/'+n.profession[0].name+'.png'"
+          > <span class="friend-name">{{n.name}}</span></span>
+      </div>
+      <hr>
+      <div v-if="stats.friend">{{i18n.sharedLogsLabel}} {{stats.friend.sharedLogs}}</div>
+      <div v-if="stats">
+        <span>{{i18n.killsLabel}} {{stats.kills}} {{i18n.cmOfKills(stats.cmKills)}}</span>
+        <span>{{i18n.failsLabel}} {{stats.fails}}</span>
+      </div>
 
-</div>
-</div>
-<div
-  class="arc-log-display arc-log-display-friend"
->
-  <%- await include('loglist', {logs: logs,page:page,maxPages:maxPages}); %>
-  <% if(logs[0]){ %>
-  <iframe
-    name="arc-log-display-iframe"
-    class="arc-log-display-iframe"
-    src="/log/<%=logs[0].hash%>"
-    frameborder="0"
-    sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
-  ></iframe><%}%>
-</div>
-</div>
+    </div>
+  </div>
+  <div class="emptyspacer"></div>
+  <div class="arc-log-display arc-log-display-friend">
+    <%- await include('loglist'); %>
+      <iframe
+        v-if="logPath"
+        name="arc-log-display-iframe"
+        class="arc-log-display-iframe"
+        :src="logPath"
+        frameborder="0"
+        sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
+      ></iframe>
+  </div>
 </main>

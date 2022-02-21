@@ -91,7 +91,13 @@ const app = Vue.createApp({
       if (page === "logs") {
         this.showLogPage(0, {});
       } else if (page === "friends") {
-        this.showFriendsPage(0);
+        const friend = this.pageConfig && this.pageConfig.id;
+        if (friend) {
+          this.page = "friend";
+          this.showLogPage(0, {friend});
+        } else {
+          this.showFriendsPage(0);
+        }
       } else if (page === "boss") {
         this.showLogPage(0, {bossId: this.pageConfig && this.pageConfig.id});
       }
@@ -238,7 +244,7 @@ const app = Vue.createApp({
         event.preventDefault();
       }
       this.logFilters.p = page;
-      if (typeof filters === "object") {
+      if (typeof filters === "object" && filters) {
         this.logFilters.config = filters;
       }
       const logFilter = {...this.logFilters};
@@ -347,7 +353,6 @@ function handleClick(event) {
 
 function checkIframeClicks() {
   const iframes = document.querySelectorAll("iframe");
-  console.log({iframes});
   for (const iframe of iframes) {
     if (!iframe._raidToolClickHandlerOnLoad) {
       iframe.addEventListener("load", () => {
