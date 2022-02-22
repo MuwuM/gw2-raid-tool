@@ -93,10 +93,10 @@ const app = Vue.createApp({
       }
       this.page = page;
       this.pageConfig = info;
-      console.log({
+      /*console.log({
         page,
         info
-      });
+      });*/
       if (page === "logs") {
         this.showLogPage(0, {});
       } else if (page === "friends") {
@@ -375,7 +375,7 @@ const app = Vue.createApp({
 const mnt = app.mount("#app");
 
 socket.on("accounts", (data) => {
-  console.log("accounts", data);
+  //console.log("accounts", data);
   mnt.accounts = data.accounts;
 
   const accs = mnt.accounts.filter((a) => a.kps && a.accountInfo);
@@ -419,11 +419,11 @@ socket.on("progressConfig", (data) => {
   mnt.progressConfig = data.progressConfig;
 });
 socket.on("wings", (data) => {
-  console.log("wings", data);
+  //console.log("wings", data);
   mnt.wings = data.wings;
 });
 socket.on("logs", (data) => {
-  console.log("logs", data);
+  //console.log("logs", data);
   mnt.logs = data.logs;
   mnt.logsPage = data.page;
   mnt.logsMaxPages = data.maxPages;
@@ -436,7 +436,7 @@ socket.on("logs", (data) => {
   }
 });
 socket.on("friends", (data) => {
-  console.log("friends", data);
+  //console.log("friends", data);
   mnt.friends = data.friends;
 });
 
@@ -448,7 +448,7 @@ function handleClick(event) {
 
     const path = url.pathname;
     const pathParts = path.split("/");
-    console.log(pathParts);
+    //console.log(pathParts);
     if (!pathParts[1]) {
       mnt.selectPage("overview", {}, event);
     } else {

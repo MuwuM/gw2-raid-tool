@@ -115,7 +115,7 @@ module.exports = async({
     immutable: true
   })));
   const vueDir = path.join(path.dirname(require.resolve("vue")), "dist");
-  console.log({vueDir});
+  //console.log({vueDir});
   koaApp.use(mount("/ext/vue", serve(vueDir, {
     maxAge: 31556952000,
     immutable: true

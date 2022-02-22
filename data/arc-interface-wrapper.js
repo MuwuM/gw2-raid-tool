@@ -7,7 +7,7 @@ module.exports = async({
 }) => {
 
   const pctMem = Math.floor(os.freemem() / 10485760);
-  console.log(`Using ${pctMem}MB for parsing:`);
+  console.info(`Using ${pctMem}MB for parsing:`);
   const child = fork(path.join(__dirname, "./arc-interface.js"), {
     stdio: "inherit",
     execArgv: [`--max-old-space-size=${Math.max(1024, pctMem)}`]
@@ -23,7 +23,7 @@ module.exports = async({
     if (isExiting) {
       return;
     }
-    console.log({"child.exitCode": child.exitCode});
+    console.warn({"child.exitCode": child.exitCode});
     if (child.exitCode === 134) {
       setTimeout(() => {
         module.exports({

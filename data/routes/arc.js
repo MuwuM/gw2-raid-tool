@@ -113,7 +113,7 @@ module.exports = async({
   };
 
   eventHub.on("logFilter", async(data) => {
-    console.log("logFilter changed", data);
+    //console.log("logFilter changed", data);
     clearTimeout(nextTick);
     logFilters.p = data.p || 0;
     logFilters.config = data.config || {};
@@ -121,7 +121,7 @@ module.exports = async({
     nextTick = setTimeout(updateLogs, 1);
   });
   eventHub.on("friendsFilter", async(data) => {
-    console.log("friendsFilter changed", data);
+    //console.log("friendsFilter changed", data);
     clearTimeout(nextTick);
     lastFriendsLog = await hashLog(JSON.stringify({}));
     nextTick = setTimeout(updateLogs, 1);
@@ -187,10 +187,10 @@ module.exports = async({
       stats
     }));
     if (lastLog !== newLog) {
-      console.log("Log changed", {
+      /*console.log("Log changed", {
         lastLog,
         newLog
-      });
+      });*/
       eventHub.emit("logs", {
         page,
         maxPages,
@@ -204,7 +204,7 @@ module.exports = async({
 
     const newFriendsLog = await hashLog(JSON.stringify({friends}));
     if (lastFriendsLog !== newFriendsLog) {
-      console.log("newFriendsLog changed");
+      //console.log("newFriendsLog changed");
       eventHub.emit("friends", {friends});
       lastFriendsLog = newFriendsLog;
     }
@@ -232,7 +232,7 @@ module.exports = async({
   });
 
   eventHub.on("uploadLog", async({hash}) => {
-    console.log(`starting upload: ${hash}`);
+    //console.log(`starting upload: ${hash}`);
     const log = await db.logs.findOne({hash});
     if (log && log.entry && !log.permalink) {
       logsUploading[log.hash] = true;

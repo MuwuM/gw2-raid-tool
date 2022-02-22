@@ -162,7 +162,7 @@ module.exports = async({
         91225,
         91234 /*Coalescence */
       ].includes(item.id)) {
-        console.log(`Gift of Compassion: ${item.id}`);
+        //console.log(`Gift of Compassion: ${item.id}`);
         li += (item.count || 0) * 150;
       } else if ([43319].includes(item.id)) {
         zhaitaffy += (item.count || 0);

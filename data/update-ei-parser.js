@@ -24,7 +24,7 @@ module.exports = async({baseConfig}) => {
       repo: eiRepo.repo
     });
     ei_version = eiReleases.data.name;
-    console.log(`Latest Version: ${ei_version}`);
+    console.info(`Latest EI-Version: ${ei_version}`);
     const versionFolder = path.join(eiLocalPath, ei_version);
     if (!await fs.pathExists(versionFolder)) {
       const zipFile = eiReleases.data.assets.find((a) => a.name === "GW2EI.zip");
@@ -54,7 +54,7 @@ module.exports = async({baseConfig}) => {
         }
         //console.log(zibFileContent);
 
-        console.log(`Updated Version: ${ei_version}`);
+        console.info(`Updated EI-Version: ${ei_version}`);
       }
     }
     eiPath = path.join(versionFolder, "GuildWars2EliteInsights.exe");

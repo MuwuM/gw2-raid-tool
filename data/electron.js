@@ -139,7 +139,7 @@ module.exports = async({
       menu.popup({window: win});
       return false;
     });
-    console.log("loaded");
+    //console.log("loaded");
   }
 
   electronApp.on("window-all-closed", () => {

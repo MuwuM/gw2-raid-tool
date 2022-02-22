@@ -20,7 +20,7 @@ const uploadConfig = require("./upload-config.json");
 
   const parsedVersion = semver.parse(pgk.version);
   const isDevBuild = parsedVersion.prerelease.includes("dev");
-  console.log({isDevBuild});
+  console.info({isDevBuild});
 
   let buildDir = path.resolve(__dirname, "build-dist");
   let installerDir = path.resolve(__dirname, "installer-dist");
@@ -48,7 +48,7 @@ const uploadConfig = require("./upload-config.json");
     afterCopy: [
       async(buildPath, electronVersion, platform, arch, callback) => {
         try {
-          console.log(`rebuilding: ${buildPath}`);
+          console.info(`rebuilding: ${buildPath}`);
           await rebuild.rebuild({
             buildPath,
             electronVersion,
@@ -64,7 +64,7 @@ const uploadConfig = require("./upload-config.json");
 
 
   const targetDir = appPaths[0];
-  console.log(targetDir);
+  console.info(targetDir);
 
   //const configFiles = await fg(["**/*"], {
   //  dot: true,
@@ -93,7 +93,7 @@ const uploadConfig = require("./upload-config.json");
     noMsi: true
 
   });
-  console.log("It worked!");
+  console.info("It worked!");
 
   parsedVersion.patch = 1 + parsedVersion.patch;
   pgk.version = parsedVersion.format();
@@ -104,7 +104,7 @@ const uploadConfig = require("./upload-config.json");
       uploadConfigTargetPath = uploadConfig.targetPathDev;
     }
 
-    console.log("Uploading files");
+    console.info("Uploading files");
     // eslint-disable-next-line no-async-promise-executor
     const sftp = new Client();
 
@@ -132,11 +132,11 @@ const uploadConfig = require("./upload-config.json");
       const offlineStats = await fs.stat(offlineFile);
 
       if (onlineStat && offlineStats.mtimeMs <= onlineStat.modifyTime) {
-        console.log(`Skipping: ${fileToUpload}`);
+        console.info(`Skipping: ${fileToUpload}`);
         continue;
       }
 
-      console.log(`Uploading: ${fileToUpload}`);
+      console.info(`Uploading: ${fileToUpload}`);
 
       await sftp.fastPut(offlineFile, `${onlineFile}.tmp`);
       await sftp.delete(onlineFile, true);
@@ -144,7 +144,7 @@ const uploadConfig = require("./upload-config.json");
 
     }
     await sftp.end();
-    console.log("Upload Completed");
+    console.info("Upload Completed");
   }
 
 })().catch((err) => {

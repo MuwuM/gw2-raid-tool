@@ -175,7 +175,7 @@ electronHandler({
   baseConfig.logsPath = savedConfig.logsPath || path.join(electronApp.getPath("documents"), "Guild Wars 2/addons/arcdps/arcdps.cbtlogs");
   baseConfig.eiConfig = path.resolve(electronApp.getAppPath(), "config.conf");
 
-  console.log({eiConfig: baseConfig.eiConfig});
+  //console.log({eiConfig: baseConfig.eiConfig});
   await gw2Interface({
     db,
     eventHub
