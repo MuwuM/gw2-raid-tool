@@ -6,10 +6,10 @@ class="arc-log-display-wrapper"
 <div class="emptyspacer"></div>
 <div class="arc-log-display">
   <%- await include('loglist'); %>
-    <iframe v-if="logPath"
+    <iframe v-if="activeLog"
       name="arc-log-display-iframe"
       class="arc-log-display-iframe"
-      :src="logPath"
+      :src="logPath(activeLog, logs)"
       frameborder="0"
       sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
     ></iframe>

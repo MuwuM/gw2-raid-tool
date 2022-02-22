@@ -69,7 +69,13 @@ href="/static/style.css?${ctx._global.stylecss}"
   file = file.replace(/<h3 class="card-header text-center">{{ encounter\.name }}<\/h3>/, "<h3 class=\"card-header text-center\"><a :href=\"'/boss/'+encodeURIComponent(encounter.triggerID)\" target=\"_top\">{{encounter.name}}</a></h3>");
 
   const poweredBy = "<div class=\"d-flex flex-row justify-content-center align-items-center\"><a href=\"https://baaron4.github.io/GW2-Elite-Insights-Parser/\" target=\"_top\">parsed with Elite-Insights</a></div>";
-  if (log.permalink) {
+  if (ctx.query && ctx.query.is === "uploading") {
+    file = file.replace(/<div v-if="(cr(\s*\|\|\s*healingExtShow)?)"/, `${poweredBy}<div class="d-flex flex-row justify-content-center align-items-center">
+    <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
+    ... uploading
+    </div>
+    </div><div v-if="$1"`);
+  } else if (log.permalink) {
     file = file.replace(/<div v-if="(cr(\s*\|\|\s*healingExtShow)?)"/, `${poweredBy}<div class="d-flex flex-row justify-content-center align-items-center">
     <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
     <input class="form-control" onclick="this.select();" type="text" value="${log.permalink}" readonly="readonly">

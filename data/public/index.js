@@ -54,7 +54,6 @@ const app = Vue.createApp({
       },
       wings: [],
       lang: "de",
-      logPath: false,
       logs: [],
       logsPage: 0,
       logsMaxPages: 1,
@@ -86,8 +85,16 @@ const app = Vue.createApp({
       if (event && typeof event.preventDefault === "function") {
         event.preventDefault();
       }
+      if (page === "log" && info && info.id && info.action === "upload") {
+        this.uploadLog(info.id);
+        return;
+      }
       this.page = page;
       this.pageConfig = info;
+      console.log({
+        page,
+        info
+      });
       if (page === "logs") {
         this.showLogPage(0, {});
       } else if (page === "friends") {
@@ -232,10 +239,8 @@ const app = Vue.createApp({
         event.preventDefault();
       }
       if (log) {
-        this.logPath = `/log/${log.hash}`;
         this.activeLog = log.hash;
       } else {
-        this.logPath = false;
         this.activeLog = null;
       }
     },
@@ -257,6 +262,16 @@ const app = Vue.createApp({
       }
       const friendsFilter = {};
       socket.emit("friendsFilter", friendsFilter);
+    },
+    uploadLog(logHash) {
+      socket.emit("uploadLog", {hash: logHash});
+    },
+    logPath(activeLog, logs) {
+      const log = logs.find((l) => l.hash === activeLog);
+      if (log && log.isUploading) {
+        return `/log/${activeLog}?is=uploading`;
+      }
+      return `/log/${activeLog}`;
     }
   },
   updated() {
@@ -325,6 +340,9 @@ socket.on("logs", (data) => {
   mnt.logsPage = data.page;
   mnt.logsMaxPages = data.maxPages;
   mnt.stats = data.stats;
+  if (!mnt.logs.find((l) => l.hash === mnt.activeLog)) {
+    mnt.activeLog = null;
+  }
   if (!mnt.activeLog && mnt.logs[0]) {
     mnt.selectLog(mnt.logs[0]);
   }
@@ -346,7 +364,10 @@ function handleClick(event) {
     if (!pathParts[1]) {
       mnt.selectPage("overview", {}, event);
     } else {
-      mnt.selectPage(pathParts[1], {id: pathParts[2]}, event);
+      mnt.selectPage(pathParts[1], {
+        id: pathParts[2],
+        action: pathParts[3]
+      }, event);
     }
   }
 }

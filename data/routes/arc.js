@@ -8,9 +8,12 @@ const zip = promisify(zlib.deflate);
 const unzip = promisify(zlib.unzip);
 const adjustArcHtml = require("../util/adjust-arc-html");
 const fightIconMap = require("../info/fight-icon-map");
+const hashLog = require("../hash-log");
 
 
 const wings = require("../info/wings");
+
+const logsUploading = {};
 
 function ensureArray(fightName) {
   if (Array.isArray(fightName)) {
@@ -26,6 +29,9 @@ function enhanceLogs(logs) {
   let recordedByName = null;
   let collapseNumber = 1;
   for (const log of copyLogs) {
+    if (logsUploading[log.hash]) {
+      log.isUploading = true;
+    }
     //2020-07-03 23:23:53 +02:00
     log.timeEndDiff = DateTime.fromMillis(log.timeEndMs).toRelative({locale: "de"});
     const cleanFightName = log.fightName.replace(/\s+/g, "");
@@ -97,8 +103,8 @@ module.exports = async({
   router, db, baseConfig, eventHub
 }) => {
 
-  let lastLog = JSON.stringify({});
-  let lastFriendsLog = JSON.stringify({});
+  let lastLog = await hashLog(JSON.stringify({}));
+  let lastFriendsLog = await hashLog(JSON.stringify({}));
   let nextTick;
 
   const logFilters = {
@@ -106,18 +112,18 @@ module.exports = async({
     config: {}
   };
 
-  eventHub.on("logFilter", (data) => {
+  eventHub.on("logFilter", async(data) => {
     console.log("logFilter changed", data);
     clearTimeout(nextTick);
     logFilters.p = data.p || 0;
     logFilters.config = data.config || {};
-    lastLog = JSON.stringify({});
+    lastLog = await hashLog(JSON.stringify({}));
     nextTick = setTimeout(updateLogs, 1);
   });
-  eventHub.on("friendsFilter", (data) => {
+  eventHub.on("friendsFilter", async(data) => {
     console.log("friendsFilter changed", data);
     clearTimeout(nextTick);
-    lastFriendsLog = JSON.stringify({});
+    lastFriendsLog = await hashLog(JSON.stringify({}));
     nextTick = setTimeout(updateLogs, 1);
   });
 
@@ -174,14 +180,17 @@ module.exports = async({
         stats.bossInfo.name_de = stats.bossInfo.name_en;
       }
     }
-    const newLog = JSON.stringify({
+    const newLog = await hashLog(JSON.stringify({
       page,
       maxPages,
-      logs,
+      logs: logs.map((l) => l.hash),
       stats
-    });
+    }));
     if (lastLog !== newLog) {
-      console.log("Log changed");
+      console.log("Log changed", {
+        lastLog,
+        newLog
+      });
       eventHub.emit("logs", {
         page,
         maxPages,
@@ -193,7 +202,7 @@ module.exports = async({
 
     const friends = await db.friends.find({sharedLogs: {$gte: 10}}).sort({sharedLogs: -1});
 
-    const newFriendsLog = JSON.stringify({friends});
+    const newFriendsLog = await hashLog(JSON.stringify({friends}));
     if (lastFriendsLog !== newFriendsLog) {
       console.log("newFriendsLog changed");
       eventHub.emit("friends", {friends});
@@ -221,7 +230,45 @@ module.exports = async({
       }
     }
   });
-  router.get("/log/:hash/upload", async(ctx) => {
+
+  eventHub.on("uploadLog", async({hash}) => {
+    console.log(`starting upload: ${hash}`);
+    const log = await db.logs.findOne({hash});
+    if (log && log.entry && !log.permalink) {
+      logsUploading[log.hash] = true;
+      log.permalinkFailed = false;
+      await db.logs.update({_id: log._id}, {$set: {permalinkFailed: log.permalinkFailed}});
+      clearTimeout(nextTick);
+      lastLog = await hashLog(JSON.stringify({}));
+      nextTick = setTimeout(updateLogs, 1);
+      try {
+        const res = await urllib.request("https://dps.report/uploadContent?json=1&generator=ei", {
+          timeout: 240000,
+          dataType: "json",
+          method: "POST",
+          files: {file: fs.createReadStream(path.join(baseConfig.logsPath, log.entry))}
+        });
+        if (res.data && res.data.permalink) {
+          log.permalink = res.data.permalink;
+          await db.logs.update({_id: log._id}, {$set: {permalink: log.permalink}});
+        }
+        delete logsUploading[log.hash];
+        clearTimeout(nextTick);
+        lastLog = await hashLog(JSON.stringify({}));
+        nextTick = setTimeout(updateLogs, 1);
+      } catch (error) {
+        console.error(error);
+        log.permalinkFailed = true;
+        delete logsUploading[log.hash];
+        await db.logs.update({_id: log._id}, {$set: {permalinkFailed: log.permalinkFailed}});
+        clearTimeout(nextTick);
+        lastLog = await hashLog(JSON.stringify({}));
+        nextTick = setTimeout(updateLogs, 1);
+      }
+    }
+  });
+
+  /*router.get("/log/:hash/upload", async(ctx) => {
     const log = await db.logs.findOne({hash: ctx.params.hash});
     if (log && log.entry && !log.permalink) {
       log.permalinkFailed = false;
@@ -252,7 +299,7 @@ module.exports = async({
       ctx.status = 302;
       ctx.redirect(`/log/${log.hash}`);
     }
-  });
+  });*/
   router.get("/log/:hash/uploading", async(ctx) => {
     const log = await db.logs.findOne({hash: ctx.params.hash});
     if (log && log.entry) {

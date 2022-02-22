@@ -1,5 +1,5 @@
 <div class="arc-list">
-  <nav>
+  <nav style="position: sticky; top: 0; z-index: 10;">
     <ul class="pagination justify-content-center">
       <li :class="{'page-item':true, 'disabled':(logsPage <= 0)}"><a class="page-link" @click="showLogPage(0,null,$event)">«</a></li>
       <li :class="{'page-item':true, 'disabled':(logsPage <= 0)}"><a class="page-link" @click="showLogPage(Math.max(logsPage-1,0),null,$event)">‹</a></li>
@@ -32,6 +32,7 @@
         </div>
       </div>
         <span v-if="log.displayNameCollapse" class="arc-list-img-logby badge badge-primary badge-pill">{{log.recordedBy}}</span>
+        <span v-if="log.isUploading">⬆️</span>
       </template>
       <template v-if="!log.displayCollapse">
         <div class="arc-list-img-box">
@@ -50,6 +51,7 @@
           </div>
         </div>
         <span class="arc-list-img-logby badge badge-primary badge-pill">{{log.recordedBy}}</span>
+        <span v-if="log.isUploading">⬆️</span>
       </template>
   </a>
   <nav>
