@@ -23,36 +23,58 @@ module.exports = async({
   }
 
   router.get("/settings", async(ctx) => renderSettings(ctx));
-  router.post("/settings", async(ctx) => {
-    if (ctx.request.body && ctx.request.body.token) {
-      const acc = await db.accounts.insert({token: ctx.request.body.token});
+  eventHub.on("addAccount", async({token}) => {
+    if (token) {
+      const acc = await db.accounts.insert({token});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
       const client = new gw2.Client();
       const accountInfo = await client.get("account", {token: acc.token});
       await db.accounts.update({_id: acc._id}, {$set: {accountInfo}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
       const account = await db.accounts.findOne({_id: acc._id});
       await updateAccStats({
         db,
         client,
-        account
+        account,
+        eventHub
       });
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
-    return renderSettings(ctx);
   });
+  eventHub.on("removeAccount", async({token}) => {
+    if (token) {
+      const acc = await db.accounts.findOne({token});
+      if (acc) {
 
-
-  router.post("/settings/lang", async(ctx) => {
-    if (ctx.request.body && ctx.request.body.lang) {
-      if (i18n.langIds.includes(ctx.request.body.lang)) {
-        baseConfig.lang = ctx.request.body.lang;
-
+        const res = await dialog.showMessageBox({
+          message: "Wirklich löschen",
+          type: "warning",
+          buttons: [
+            "Löschen",
+            "Abbrechen"
+          ],
+          defaultId: 1,
+          cancelId: 1
+        });
+        if (res.response === 0) {
+          await db.accounts.remove({_id: acc._id});
+          eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+        }
+      }
+    }
+  });
+  eventHub.on("changeLang", async({lang}) => {
+    console.log("changeLang", {lang});
+    if (lang) {
+      if (i18n.langIds.includes(lang)) {
+        baseConfig.lang = lang;
         eventHub.emit("baseConfig", {baseConfig});
         await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {lang: baseConfig.lang}});
       }
     }
-    return renderSettings(ctx);
   });
-
-  router.post("/settings/logsPath", async(ctx) => {
+  eventHub.on("selectLogsPath", async() => {
+    console.log("selectLogsPath", {});
     const res = await dialog.showOpenDialog({
       title: "arcdps Logs Ordner",
       properties: ["openDirectory"],
@@ -62,10 +84,9 @@ module.exports = async({
     await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {logsPath: res.filePaths[0]}});
     app.relaunch();
     app.exit(0);
-    return renderSettings(ctx);
-
   });
-  router.post("/settings/gw2Dir", async(ctx) => {
+  eventHub.on("selectGw2Dir", async() => {
+    console.log("selectGw2Dir", {});
     const res = await dialog.showOpenDialog({
       title: "Wähle deine Guild Wars 2 Installation aus:",
       filters: [
@@ -85,67 +106,37 @@ module.exports = async({
     }
     app.relaunch();
     app.exit(0);
-    return renderSettings(ctx);
-
   });
-  router.get("/settings/launchBuddyDir", async(ctx) => {
-    if (ctx.request.query.del === "true") {
-      baseConfig.launchBuddyDir = null;
+
+  eventHub.on("selectLaunchBuddyDir", async() => {
+    console.log("selectLaunchBuddyDir", {});
+    const res = await dialog.showOpenDialog({
+      title: "Wähle deine GW2 LaunchBuddy Installation aus:",
+      filters: [
+        {
+          name: "Gw2.Launchbuddy.exe",
+          extensions: ["exe"]
+        }
+      ],
+      properties: ["openFile"],
+      buttonLabel: "Übernehmen und neustarten",
+      defaultPath: baseConfig.launchBuddyDir || ""
+    });
+    if (!res.canceled && res.filePaths.length > 0) {
+      baseConfig.launchBuddyDir = path.dirname(res.filePaths[0]);
       eventHub.emit("baseConfig", {baseConfig});
       await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
     }
-    ctx.redirect("/settings");
   });
-  router.post("/settings/launchBuddyDir", async(ctx) => {
-    if (ctx.request.query.del === "true") {
-      baseConfig.launchBuddyDir = null;
-      eventHub.emit("baseConfig", {baseConfig});
-      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
-    } else {
-      const res = await dialog.showOpenDialog({
-        title: "Wähle deine GW2 LaunchBuddy Installation aus:",
-        filters: [
-          {
-            name: "Gw2.Launchbuddy.exe",
-            extensions: ["exe"]
-          }
-        ],
-        properties: ["openFile"],
-        buttonLabel: "Übernehmen und neustarten",
-        defaultPath: baseConfig.launchBuddyDir || ""
-      });
-      if (!res.canceled && res.filePaths.length > 0) {
-        baseConfig.launchBuddyDir = path.dirname(res.filePaths[0]);
-        eventHub.emit("baseConfig", {baseConfig});
-        await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
-      }
-    }
-    ctx.redirect("/settings");
-  });
-  router.get("/settings/updateArcDps", async(ctx) => {
-
-    await updateArcDps({
-      baseConfig,
-      dialogs: true
-    });
+  eventHub.on("removeLaunchBuddyDir", async() => {
+    console.log("removeLaunchBuddyDir", {});
+    baseConfig.launchBuddyDir = null;
     eventHub.emit("baseConfig", {baseConfig});
-
-    ctx.redirect("/settings");
-
+    await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {launchBuddyDir: baseConfig.launchBuddyDir}});
   });
-  router.get("/settings/updateArcDps11", async(ctx) => {
-
-    await updateArcDps11({
-      baseConfig,
-      dialogs: true
-    });
-    eventHub.emit("baseConfig", {baseConfig});
-
-    ctx.redirect("/settings");
-
-  });
-  router.post("/settings/resetLog", async(ctx) => {
-    if (ctx.request.body && ctx.request.body.reset === "reset") {
+  eventHub.on("resetAllLogs", async({confirmReset}) => {
+    console.log("resetAllLogs", {confirmReset});
+    if (confirmReset === "reset") {
       await db.logs.remove({}, {multi: true});
       await db.known_friends.remove({}, {multi: true});
       await db.friends.remove({}, {multi: true});
@@ -155,36 +146,27 @@ module.exports = async({
     } else {
       await dialog.showMessageBox({message: "Bitte trage 'reset' ein um zu bestätigen, dass du wirklich alle Logs neu einlesen willst willst."});
     }
-
-    ctx.redirect("/settings");
-
   });
-  router.get("/settings/arcDisabled", async(ctx) => {
-    if (ctx.request.query.check === "true") {
-      if (!baseConfig.arcDisabled) {
-        try {
-          await updateArcDps({
-            baseConfig,
-            dialogs: false
-          });
-          eventHub.emit("baseConfig", {baseConfig});
-        } catch (error) {
-          console.error(error);
-        }
-        try {
-          await updateArcDps11({
-            baseConfig,
-            dialogs: false
-          });
-          eventHub.emit("baseConfig", {baseConfig});
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    } else if (ctx.request.query.enable === "true") {
-      baseConfig.arcDisabled = false;
-      eventHub.emit("baseConfig", {baseConfig});
-      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
+
+  eventHub.on("updateArcDps", async() => {
+    console.log("updateArcDps", {});
+    await updateArcDps({
+      baseConfig,
+      dialogs: true
+    });
+    eventHub.emit("baseConfig", {baseConfig});
+  });
+  eventHub.on("updateArcDps11", async() => {
+    console.log("updateArcDps11", {});
+    await updateArcDps11({
+      baseConfig,
+      dialogs: true
+    });
+    eventHub.emit("baseConfig", {baseConfig});
+  });
+  eventHub.on("checkArcUpdates", async() => {
+    console.log("checkArcUpdates", {});
+    if (!baseConfig.arcDisabled) {
       try {
         await updateArcDps({
           baseConfig,
@@ -203,14 +185,41 @@ module.exports = async({
       } catch (error) {
         console.error(error);
       }
-    } else if (ctx.request.query.disable === "true") {
-      baseConfig.arcDisabled = true;
-      eventHub.emit("baseConfig", {baseConfig});
-      await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
     }
-    ctx.redirect("/settings");
   });
-  router.get("/start-game", async(ctx) => {
+  eventHub.on("disableArcUpdates", async() => {
+    console.log("disableArcUpdates", {});
+    baseConfig.arcDisabled = true;
+    eventHub.emit("baseConfig", {baseConfig});
+    await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
+  });
+  eventHub.on("enableArcUpdates", async() => {
+    console.log("enableArcUpdates", {});
+    baseConfig.arcDisabled = false;
+    eventHub.emit("baseConfig", {baseConfig});
+    await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
+    try {
+      await updateArcDps({
+        baseConfig,
+        dialogs: false
+      });
+      eventHub.emit("baseConfig", {baseConfig});
+    } catch (error) {
+      console.error(error);
+    }
+    try {
+      await updateArcDps11({
+        baseConfig,
+        dialogs: false
+      });
+      eventHub.emit("baseConfig", {baseConfig});
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  eventHub.on("startGame", async() => {
+    console.log("startGame", {});
     if (baseConfig.launchBuddyDir) {
       if (baseConfig.gw2Instances.lauchbuddy.length < 1) {
         const started = await elevate(path.join(baseConfig.launchBuddyDir, "Gw2.Launchbuddy.exe"), {cwd: baseConfig.launchBuddyDir});
@@ -234,6 +243,6 @@ module.exports = async({
         eventHub.emit("baseConfig", {baseConfig});
       }
     }
-    ctx.redirect(decodeURIComponent(ctx.request.query.rel));
   });
+
 };

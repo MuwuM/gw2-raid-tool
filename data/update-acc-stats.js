@@ -1,11 +1,30 @@
+const {DateTime} = require("luxon");
 const itemIds = require("./info/item-ids");
+const wings = require("./info/wings");
+
+
+const strikeWings = wings.filter((w) => w.isStrike);
+
+const strikeIds = [];
+for (const w of strikeWings) {
+  for (const step of w.steps) {
+    if (step.triggerID) {
+      strikeIds.push(step.triggerID);
+    }
+  }
+}
 
 module.exports = async({
   db, client, account, eventHub
 }) => {
-
+  if (!account) {
+    return;
+  }
 
   async function liOfAccount() {
+    if (!account) {
+      return;
+    }
     const sharedInventary = await client.get("account/inventory", {token: account.token});
     const bank = await client.get("account/bank", {token: account.token});
     const materials = await client.get("account/materials", {token: account.token});
@@ -174,6 +193,9 @@ module.exports = async({
   }
 
   async function updateCompletedSteps() {
+    if (!account) {
+      return;
+    }
     const completedSteps = await client.get("account/raids", {token: account.token});
     if (!account.completedSteps || JSON.stringify(completedSteps) !== JSON.stringify(account.completedSteps)) {
       await db.accounts.update({_id: account._id}, {$set: {completedSteps}});
@@ -190,5 +212,63 @@ module.exports = async({
     await updateCompletedSteps();
   } catch (error) {
     console.error(error);
+  }
+};
+
+module.exports.localUpdates = async({
+  db, account, eventHub
+}) => {
+
+  if (!account) {
+    return;
+  }
+
+  if (account.accountInfo && account.accountInfo.name) {
+
+    const completedCMs = {};
+    const startOfRaidReset = DateTime.utc().startOf("week")
+      .plus({
+        hours: 7,
+        minutes: 30
+      });
+    const endOfRaidReset = startOfRaidReset.plus({days: 7});
+    const cms = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfRaidReset.toMillis(),
+        $lte: endOfRaidReset.toMillis()
+      },
+      isCM: true,
+      players: {$elemMatch: account.accountInfo.name}
+    });
+    for (const cm of cms) {
+      completedCMs[cm.triggerID] = true;
+    }
+
+    if (!account.completedCMs || JSON.stringify(completedCMs) !== JSON.stringify(account.completedCMs)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedCMs}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    }
+  }
+  if (account.accountInfo && account.accountInfo.name) {
+
+    const completedStrikesDaily = {};
+    const startOfStrikeDailyReset = DateTime.utc().startOf("day");
+    const endOfStrikeDailyReset = startOfStrikeDailyReset.plus({days: 1});
+    const strikes = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfStrikeDailyReset.toMillis(),
+        $lte: endOfStrikeDailyReset.toMillis()
+      },
+      triggerID: {$in: strikeIds},
+      players: {$elemMatch: account.accountInfo.name}
+    });
+    for (const strike of strikes) {
+      completedStrikesDaily[strike.triggerID] = true;
+    }
+
+    if (!account.completedStrikesDaily || JSON.stringify(completedStrikesDaily) !== JSON.stringify(account.completedStrikesDaily)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedStrikesDaily}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    }
   }
 };

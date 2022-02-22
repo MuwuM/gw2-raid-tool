@@ -36,9 +36,9 @@ module.exports = {
   17028: "/img/Fraktal-Relikt_Icon.png",
   16948: "/img/Fraktal-Relikt_Icon.png",
 
-  22154: "/img/Sammelknoten_Ewiges_Eis.png",
-  22492: "/img/Sammelknoten_Ewiges_Eis.png",
-  22343: "/img/Sammelknoten_Ewiges_Eis.png",
-  22521: "/img/Sammelknoten_Ewiges_Eis.png",
-  22711: "/img/Sammelknoten_Ewiges_Eis.png"
+  22154: "/img/Icebrood_Construct.png",
+  22492: "/img/Fraenir_of_Jormag.png",
+  22343: "/img/KodanVoiceAndClaw.png",
+  22521: "/img/Boneskinner.png",
+  22711: "/img/Whisper_of_Jormag.png"
 };

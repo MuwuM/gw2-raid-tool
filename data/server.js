@@ -11,8 +11,6 @@ const http = require("http");
 const SocketIo = require("socket.io");
 
 const crypto = require("crypto");
-const hashLog = require("./hash-log");
-const i18n = require("./i18n");
 
 module.exports = async({
   db, baseConfig, eventHub
@@ -42,42 +40,12 @@ module.exports = async({
     hash.update(await fs.readFile(require.resolve(pack)));
     return hash.digest("hex").substring(0, 25);
   }
+  async function hashStr(str) {
+    const hash = crypto.createHash("md5");
+    hash.update(str);
+    return hash.digest("hex").substring(0, 25);
+  }
 
-  let _global = null;
-  koaApp.use(async(ctx, next) => {
-    if (!_global) {
-      _global = {
-        stylecss: await hashStaticFile("style.css"),
-        bootstrapcss: await hashStaticFile("bootstrap.min.css"),
-        luxonversion: hashNodeModule("luxon")
-      };
-    }
-    ctx._global = _global;
-    ctx.renderView = async(name, opts) => {
-      if (ctx.request.query.check) {
-        ctx.type = "application/json";
-        ctx.body = JSON.stringify({refresh: ctx.request.query.check !== opts.logsHash});
-        return;
-      }
-      const accounts = opts.accounts || await db.accounts.find({});
-      return ctx.render(name, {
-        ..._global,
-        ...opts,
-        lang: baseConfig.lang,
-        i18n: i18n[baseConfig.lang],
-        accounts,
-        noNav: ctx.request.query.inner,
-        gw2Dir: baseConfig.gw2Dir,
-        gw2Instances: baseConfig.gw2Instances,
-        launchBuddyDir: baseConfig.launchBuddyDir,
-        anyNvidiaShareInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.nvidiaShare && baseConfig.gw2Instances.nvidiaShare.length > 0,
-        pageUrl: ctx.request.url
-      });
-    };
-    await next();
-  });
-
-  koaApp.use(koaBody({multipart: true}));
 
   const i18nFiles = await fs.readdir(path.join(__dirname, "i18n"));
   const i18nContent = [];
@@ -89,6 +57,30 @@ module.exports = async({
     const lang = path.basename(file, ".js");
     i18nContent.push(fileContent.replace(/module\.exports\s*=\s*\{/, `window['i18n/${lang}'] = {`));
   }
+
+  let _global = null;
+  koaApp.use(async(ctx, next) => {
+    if (!_global) {
+      _global = {
+        stylecss: await hashStaticFile("style.css"),
+        bootstrapcss: await hashStaticFile("bootstrap.min.css"),
+        luxonversion: await hashNodeModule("luxon"),
+        socketversion: await hashNodeModule("socket.io"),
+        vueversion: await hashNodeModule("vue"),
+        i18nversion: await hashStr(i18nContent.join("\n")),
+        indexjsversion: await hashStaticFile("../public/index.js")
+      };
+    }
+    ctx._global = _global;
+    ctx.renderView = async() => ctx.render("overview", {
+      ..._global,
+      lang: baseConfig.lang
+    });
+    await next();
+  });
+
+  koaApp.use(koaBody({multipart: true}));
+
   router.get("/i18n.js", (ctx) => {
     ctx.body = i18nContent.join("\n");
   });
@@ -106,15 +98,7 @@ module.exports = async({
       router,
       db,
       baseConfig,
-      eventHub,
-      hashLog(file) {
-        return hashLog(`${file}.${JSON.stringify({
-          gw2Dir: baseConfig.gw2Dir,
-          anyGw2InstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.running && baseConfig.gw2Instances.running.length > 0,
-          anyLBInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.lauchbuddy && baseConfig.gw2Instances.lauchbuddy.length > 0,
-          anyNvidiaShareInstanceRunning: baseConfig.gw2Instances && baseConfig.gw2Instances.nvidiaShare && baseConfig.gw2Instances.nvidiaShare.length > 0
-        })}`);
-      }
+      eventHub
     });
   }
 

@@ -1,4 +1,4 @@
-/* globals io,Vue,window,document */
+/* globals io,Vue,window,document,luxon */
 const socket = io();
 
 const colors = [
@@ -63,7 +63,9 @@ const app = Vue.createApp({
         p: 0,
         config: {}
       },
-      friends: []
+      friends: [],
+      token: "",
+      confirmReset: ""
     };
   },
   computed: {
@@ -109,7 +111,7 @@ const app = Vue.createApp({
         this.showLogPage(0, {bossId: this.pageConfig && this.pageConfig.id});
       }
     },
-    svgBossBorder(accounts, step) {
+    svgBossBorder(accounts, step, wing) {
       const parts = [];
       let rot = 0;
       const border = 12;
@@ -223,7 +225,9 @@ const app = Vue.createApp({
         d.push(`${x1Inline},${y1Inline}`);
         rot = rotEnd;
         let opacity = 0.2;
-        if (acc.completedSteps && acc.completedSteps.includes(step.id)) {
+        if (!wing.isStrike && acc.completedSteps && acc.completedSteps.includes(step.id)) {
+          opacity = 1;
+        } else if (wing.isStrike && acc.completedStrikesDaily && acc.completedStrikesDaily[step.triggerID]) {
           opacity = 1;
         }
         parts.push({
@@ -265,6 +269,92 @@ const app = Vue.createApp({
     },
     uploadLog(logHash) {
       socket.emit("uploadLog", {hash: logHash});
+    },
+    addAccount(token, event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("addAccount", {token});
+      this.token = "";
+    },
+    removeAccount(token, event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("removeAccount", {token});
+    },
+    changeLang(lang, event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("changeLang", {lang});
+    },
+    selectLogsPath(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("selectLogsPath", {});
+    },
+    selectGw2Dir(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("selectGw2Dir", {});
+    },
+    selectLaunchBuddyDir(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("selectLaunchBuddyDir", {});
+    },
+    removeLaunchBuddyDir(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("removeLaunchBuddyDir", {});
+    },
+    updateArcDps(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("updateArcDps", {});
+    },
+    updateArcDps11(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("updateArcDps11", {});
+    },
+    checkArcUpdates(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("checkArcUpdates", {});
+    },
+    disableArcUpdates(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("disableArcUpdates", {});
+    },
+    enableArcUpdates(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("enableArcUpdates", {});
+    },
+    resetAllLogs(confirmReset, event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("resetAllLogs", {confirmReset});
+      this.confirmReset = "";
+    },
+    startGame(event) {
+      if (event && typeof event.preventDefault === "function") {
+        event.preventDefault();
+      }
+      socket.emit("startGame", {});
     },
     logPath(activeLog, logs) {
       const log = logs.find((l) => l.hash === activeLog);
@@ -320,15 +410,13 @@ socket.on("baseConfig", (data) => {
   //console.log("baseConfig", data);
   mnt.baseConfig = data.baseConfig;
   mnt.lang = data.baseConfig.lang;
+  mnt.gw2Instances = data.baseConfig.gw2Instances;
+  mnt.anyNvidiaShareInstanceRunning = data.baseConfig.gw2Instances.nvidiaShare && (data.baseConfig.gw2Instances.nvidiaShare.length > 0);
+
 });
 socket.on("progressConfig", (data) => {
   //console.log("baseConfig", data);
   mnt.progressConfig = data.progressConfig;
-});
-socket.on("gw2Instances", (data) => {
-  console.log("gw2Instances", data);
-  mnt.gw2Instances = data.gw2Instances;
-  mnt.anyNvidiaShareInstanceRunning = data.gw2Instances.nvidiaShare && (data.gw2Instances.nvidiaShare.length >= 0);
 });
 socket.on("wings", (data) => {
   console.log("wings", data);
@@ -393,3 +481,10 @@ function checkIframeClicks() {
 //setInterval(checkIframeClicks, 100);
 
 document.addEventListener("click", handleClick);
+
+setInterval(() => {
+  const els = document.querySelectorAll("[data-rel-time]");
+  for (const el of els) {
+    el.textContent = luxon.DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"), 10)).toRelative({locale: mnt.lang});
+  }
+}, 500);

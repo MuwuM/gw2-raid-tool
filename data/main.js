@@ -164,7 +164,7 @@ electronHandler({
 
   baseConfig.arcDisabled = savedConfig.arcDisabled;
 
-  baseConfig.gw2Instances = await updateGw2Instances({
+  await updateGw2Instances({
     baseConfig,
     eventHub
   });
@@ -204,6 +204,7 @@ electronHandler({
   io.on("connection", async(socket) => {
     eventHub.sockets.push(socket);
     socket.emit("accounts", {accounts: await db.accounts.find({})});
+    eventHub.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
     socket.emit("wings", {wings});
     for (const handler of eventHub.onHandler) {

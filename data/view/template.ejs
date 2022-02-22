@@ -26,20 +26,20 @@
           <li class="nav-item active">
             <a
               class="nav-link"
-              href="/"
+              href="#"
               tabindex="-1"
               @click="selectPage('overview',{},$event)"
             >{{i18n.navOverview}}</a>
           </li>
           <li class="nav-item active"><a
               class="nav-link"
-              href="/logs"
+              href="#"
               tabindex="-1"
               @click="selectPage('logs',{},$event)"
             >{{i18n.navArcdps}}</a></li>
           <li class="nav-item active"><a
               class="nav-link"
-              href="/friends"
+              href="#"
               tabindex="-1"
               @click="selectPage('friends',{},$event)"
             >{{i18n.navFriends}}</a></li>
@@ -47,7 +47,7 @@
             <li class="nav-item active">
               <a
                 class="nav-link"
-                href="/settings"
+                href="#"
                 tabindex="-1"
                 @click="selectPage('settings',{},$event)"
               >{{i18n.navSettings}}</a>
@@ -69,18 +69,20 @@
             </li>
             <li class="nav-item active" v-if="baseConfig.launchBuddyDir && gw2Instances.lauchbuddy && gw2Instances.lauchbuddy.length < 1"><a
                   class="btn btn-success"
-                  href="/start-game?rel=<%= encodeURIComponent(pageUrl) %>"
+                  href="#"
+                  @click="startGame($event)"
                   tabindex="-1"
                 >{{i18n.startLaunchBuddy}}</a></li>
             <li class="nav-item active" v-if="!baseConfig.launchBuddyDir && (baseConfig.gw2Dir && gw2Instances.running&& gw2Instances.running.length < 1)"><a
                   class="btn btn-success"
-                  href="/start-game?rel=<%= encodeURIComponent(pageUrl) %>"
+                  href="#"
+                  @click="startGame($event)"
                   tabindex="-1"
                 >{{i18n.startGame}}</a></li>
             <li class="nav-item nav-item-space active">
               <a
                 class="nav-link"
-                href="/credits"
+                href="#"
                 tabindex="-1"
                 @click="selectPage('credits',{},$event)"
               >{{i18n.navCredits}}</a>
@@ -95,20 +97,11 @@
     <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
     <div v-if="page === 'friend'"><%- await include('friend', {}); %></div>
   </div>
-    <script src="/socket.io/socket.io.js"></script>
-  <script src="/ext/vue/vue.global.js"></script>
-  <script src="/i18n.js"></script>
-  <script src="/index.js"></script>
+    <script src="/socket.io/socket.io.js?<%= socketversion %>"></script>
+  <script src="/ext/vue/vue.global.js?<%= vueversion %>"></script>
+  <script src="/i18n.js?<%= i18nversion %>"></script>
+  <script src="/index.js?<%= indexjsversion %>"></script>
   <script src="/ext/luxon/luxon.min.js?<%= luxonversion %>"></script>
-<script>
-      
-      setInterval(()=>{
-        const els = document.querySelectorAll("[data-rel-time]");
-        for (const el of els) {
-          el.textContent = luxon.DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"),10)).toRelative({locale: "<%= lang %>"});
-        }
-      },500);
-    </script>
 </body>
 
 </html>

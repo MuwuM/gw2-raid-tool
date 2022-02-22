@@ -211,7 +211,7 @@ const progressConfig = new Proxy({}, {
     fightIcon
   ] of Object.entries(fightIconMap)) {
     await db.logs.update({
-      triggerID,
+      triggerID: parseInt(triggerID, 10),
       fightIcon: {$ne: fightIcon}
     }, {$set: {fightIcon}}, {multi: true});
   }
