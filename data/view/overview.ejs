@@ -56,6 +56,8 @@
   <strong :style="{color:acc.color}">{{acc.accountInfo.name}}</strong>
 </div>
             </template>
+            <span v-if="wing.isStrike" class="li-display-number-details">{{i18n.dailyResetInfo}}</span>
+            <span v-if="!wing.isStrike" class="li-display-number-details">{{i18n.weeklyResetInfo}}</span>
         </div>
           </a>
     </div>

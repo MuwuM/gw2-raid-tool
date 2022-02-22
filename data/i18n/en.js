@@ -21,6 +21,8 @@ module.exports = {
   friendsHeaderKills: "Kills",
   friendsHeaderSharedKills: "Shared Boss Kills",
   noKP: "No KPS",
+  dailyResetInfo: "Daily",
+  weeklyResetInfo: "Weekly",
   labelLi: "Legendary Insight",
   showLiLd(li) {
     return `${li} LI/LD`;
