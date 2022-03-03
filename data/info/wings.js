@@ -379,8 +379,38 @@ module.exports = [
         name_en: "Aetherblade Hideout",
         name_de: "Aetherblade Hideout",
         name_fr: "Aetherblade Hideout",
-        /*triggerID: 22154,*/
+        triggerID: 24033,
         img: "MaiTrin.png",
+        hasCM: true
+      },
+      {
+        id: "xunlai_jade_junkyard",
+        type: "Boss",
+        name_en: "Xunlai Jade Junkyard",
+        name_de: "Xunlai Jade Junkyard",
+        name_fr: "Xunlai Jade Junkyard",
+        triggerID: 23957,
+        img: "Ankka.png",
+        hasCM: true
+      },
+      {
+        id: "kaineng_overlook",
+        type: "Boss",
+        name_en: "Kaineng Overlook",
+        name_de: "Kaineng Overlook",
+        name_fr: "Kaineng Overlook",
+        triggerID: 24485,
+        img: "MinisterLi.png",
+        hasCM: true
+      },
+      {
+        id: "harvest_temple",
+        type: "Boss",
+        name_en: "Harvest Temple",
+        name_de: "Harvest Temple",
+        name_fr: "Harvest Temple",
+        triggerID: 24375,
+        img: "DragonVoid.png",
         hasCM: true
       }
     ]

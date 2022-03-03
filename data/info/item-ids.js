@@ -102,7 +102,12 @@ const raidBossKpItems = {
   88645: "qadim",
   91246: "adina",
   91270: "sabir",
-  91175: "qadim_the_peerless"
+  91175: "qadim_the_peerless",
+  95638: "aetherblade_hideout",
+  95982: "xunlai_jade_junkyard",
+  97451: "kaineng_overlook",
+  97132: "harvest_temple"
+
 };
 
 const raidBossCofferItems = {
