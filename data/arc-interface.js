@@ -143,6 +143,7 @@ const baseConfig = new Proxy({}, {
           }
           process.off("message", respHandler);
           res(resp.cfgRes);
+          delete t[`get-${prop}`];
         };
         process.on("message", respHandler);
         process.send({
@@ -154,58 +155,56 @@ const baseConfig = new Proxy({}, {
     }
     return t[`get-${prop}`];
   },
-  set(t, prop, value) {
-    reqIdCount++;
+  set(/*t, prop, value*/) {
+    /*reqIdCount++;
     const reqId = reqIdCount;
     process.send({
       msg: "setBaseConfig",
       reqId,
       prop,
       value
-    });
+    });*/
   }
 });
+const delayProgressConfig = {};
 const progressConfig = new Proxy({}, {
-  get(t, prop) {
-    if (!t[`get-${prop}`]) {
-      t[`get-${prop}`] = new Promise((res, rej) => {
+  get() {},
+  set(t, prop, value) {
+    if (prop.startsWith("$")) {
+      const realProp = prop.substring(1);
+      if (delayProgressConfig[realProp]) {
+        clearTimeout(delayProgressConfig[realProp]);
+      }
+      delete delayProgressConfig[realProp];
+      reqIdCount++;
+      const reqId = reqIdCount;
+      process.send({
+        msg: "setProgressConfig",
+        reqId,
+        prop: realProp,
+        value
+      });
+    } else {
+      if (delayProgressConfig[prop]) {
+        clearTimeout(delayProgressConfig[prop]);
+      }
+      delayProgressConfig[prop] = setTimeout(() => {
+        delete delayProgressConfig[prop];
         reqIdCount++;
         const reqId = reqIdCount;
-        const respHandler = (resp) => {
-          if (resp && resp.msg === "error" && resp.reqId === reqId) {
-            process.off("message", respHandler);
-            rej(resp.err);
-            return;
-          }
-          if (!resp || resp.msg !== "cfgProgressRes" || resp.reqId !== reqId) {
-            return;
-          }
-          process.off("message", respHandler);
-          res(resp.cfgRes);
-        };
-        process.on("message", respHandler);
         process.send({
-          msg: "getProgressConfig",
+          msg: "setProgressConfig",
           reqId,
-          prop
+          prop,
+          value
         });
-      });
+      }, 1);
     }
-    return t[`get-${prop}`];
-  },
-  set(t, prop, value) {
-    reqIdCount++;
-    const reqId = reqIdCount;
-    process.send({
-      msg: "setProgressConfig",
-      reqId,
-      prop,
-      value
-    });
   }
 });
 
 (async() => {
+  const logsPath = await baseConfig.logsPath;
   for (const [
     triggerID,
     fightIcon
@@ -218,11 +217,11 @@ const progressConfig = new Proxy({}, {
 
 
   async function checkLogs(baseFile, dateName, entry, parseFailed) {
-    const logFiles = await fg([`${baseFile}/${dateName}.log`.replace(/^\.\//, "")], {
-      dot: true,
-      cwd: await baseConfig.logsPath
-    });
-    const logFile = logFiles && logFiles[0] && path.join(await baseConfig.logsPath, logFiles[0]);
+    const logFiles = [];
+    if (await fs.pathExists(path.join(logsPath, `${baseFile}/${dateName}.log`))) {
+      logFiles.push(`${baseFile}/${dateName}.log`);
+    }
+    const logFile = logFiles && logFiles[0] && path.join(logsPath, logFiles[0]);
     //console.log(`checkLogs: ${logFile}`);
     if (logFile) {
       const log = `${await fs.readFile(logFile)}`;
@@ -235,7 +234,7 @@ const progressConfig = new Proxy({}, {
       if (!result.startsWith("Completed parsing")) {
         if (result.match(/(^Fight is too short(:.+)?$|^Buffs can not be stackless$)/)) {
           console.warn(`Removed broken: ${entry}`);
-          await fs.remove(path.join(await baseConfig.logsPath, entry));
+          await fs.remove(path.join(logsPath, entry));
         } else {
           if (await fs.pathExists(`${logFile}-backup`)) {
             await fs.remove(`${logFile}-backup`);
@@ -247,7 +246,7 @@ const progressConfig = new Proxy({}, {
       return true;
     } else if (parseFailed) {
       console.warn(`Removed broken: ${entry}`);
-      const entryPath = path.join(await baseConfig.logsPath, entry);
+      const entryPath = path.join(logsPath, entry);
       if (await fs.pathExists(`${entryPath}-broken`)) {
         await fs.remove(`${entryPath}-broken`);
       }
@@ -277,7 +276,7 @@ const progressConfig = new Proxy({}, {
       }
       if (!htmlStats || htmlStats.size <= 8) {
         console.warn(`Removed broken: ${entry}`);
-        await fs.remove(path.join(await baseConfig.logsPath, entry));
+        await fs.remove(path.join(logsPath, entry));
         if (await fs.pathExists(htmlFile)) {
           await fs.remove(htmlFile);
         }
@@ -340,10 +339,7 @@ const progressConfig = new Proxy({}, {
       return;
     }
     lockedEntry[entry] = true;
-    const logsPath = await baseConfig.logsPath;
     try {
-
-
       if (entry.match(/[()]/)) {
         console.info(`rename: ${path.resolve(logsPath, entry)}`);
         const targetEntry = entry.replace(/[()]/g, "");
@@ -383,7 +379,6 @@ const progressConfig = new Proxy({}, {
       });
 
       const htmlFile = htmlFiles && htmlFiles[0] && path.join(logsPath, htmlFiles[0].replace(/\.htmlz$/, ".html"));
-
       //console.log({htmlFile});
 
       if (htmlFile && (!knownFriendCache || knownFriendCache.status === "failed")) {
@@ -458,13 +453,7 @@ const progressConfig = new Proxy({}, {
           `${baseFile}/${dateName}_*.jsonz`.replace(/^\.\//, "")
         ], logsPath);
 
-        const htmlInnerFiles = await waitForHtml; /*fg([
-          `${baseFile}/${dateName}_*.html`.replace(/^\.\//,""),
-          `${baseFile}/${dateName}_*.htmlz`.replace(/^\.\//,"")
-        ], {
-          dot: true,
-          cwd: baseConfig.logsPath
-        });*/
+        const htmlInnerFiles = await waitForHtml;
         await waitForJson;
         console.info(`JSON/HTML ready: ${entry}`);
 
@@ -510,7 +499,6 @@ const progressConfig = new Proxy({}, {
           throw new Error(err.stack || err);
         });
       }
-
       delete lockedEntry[entry];
     } catch (error) {
       console.error(new Error(error.stack || error));
@@ -520,13 +508,13 @@ const progressConfig = new Proxy({}, {
 
   let i = 0;
   let j = 0;
+  let chokidarReady = false;
 
   const logEntries = [];
   const compressEntries = [];
   let processingLogEntries = false;
 
   async function handleCompress() {
-    const logsPath = await baseConfig.logsPath;
     while (compressEntries.length > 0) {
       const uncompressedJSON = compressEntries.shift();
       console.info(`compressing: ${uncompressedJSON}`);
@@ -535,6 +523,10 @@ const progressConfig = new Proxy({}, {
       await fs.remove(path.join(logsPath, uncompressedJSON));
     }
   }
+  // let maxTime = 0;
+  // let timeSum = 0;
+  // let timeSumCount = 0;
+  // let maxEntry = "";
   async function handleLogEntry() {
     if (processingLogEntries) {
       return;
@@ -543,22 +535,41 @@ const progressConfig = new Proxy({}, {
 
     const entry = logEntries.shift();
     if (!entry) {
-      await handleCompress();
+      try {
+        await handleCompress();
+      } catch (error) {
+        console.error(error);
+      }
       processingLogEntries = false;
       return;
     }
     try {
+      // const s1 = Date.now();
       await updateLogEntry(entry);
+      // const s2 = Date.now();
+      // if (s2 - s1 > maxTime) {
+      //   maxTime = Math.max(maxTime, s2 - s1);
+      //   maxEntry = entry;
+      // }
+      // timeSum += s2 - s1;
+      // timeSumCount += 1;
+      // console.log({
+      //   "s1-s2": s2 - s1,
+      //   "avg": timeSum / timeSumCount,
+      //   timeSum,
+      //   maxTime,
+      //   maxEntry
+      // });
     } catch (error) {
       console.error(error);
     }
     j++;
     progressConfig.parsedLogs = j;
-    if (i === j) {
+    if (i === j && chokidarReady) {
       i = 0;
       j = 0;
-      progressConfig.parsingLogs = i;
-      progressConfig.parsedLogs = j;
+      progressConfig.$parsingLogs = i;
+      progressConfig.$parsedLogs = j;
     }
     logHeap(`Queue-size: ${i - j}`);
 
@@ -566,8 +577,6 @@ const progressConfig = new Proxy({}, {
     processingLogEntries = false;
     setImmediate(handleLogEntry);
   }
-
-  //setInterval(() => logHeap("Tick"), 5000);
 
   const watcher = chokidar.watch([
     "**/*.zevtc",
@@ -579,7 +588,7 @@ const progressConfig = new Proxy({}, {
     "*.json",
     "*.html"
   ], {
-    cwd: await baseConfig.logsPath,
+    cwd: logsPath,
     ignoreInitial: false,
     awaitWriteFinish: true
   });
@@ -597,7 +606,16 @@ const progressConfig = new Proxy({}, {
       compressEntries.push(uncompressedJSON);
       setImmediate(handleLogEntry);
     }
-
+  });
+  watcher.on("ready", () => {
+    chokidarReady = true;
+    if (i === j && chokidarReady) {
+      i = 0;
+      j = 0;
+    }
+    progressConfig.$parsingLogs = i;
+    progressConfig.$parsedLogs = j;
+    console.log("All events added.");
   });
 
   const brokenFiles = await fg(
@@ -607,11 +625,11 @@ const progressConfig = new Proxy({}, {
     ]
     , {
       dot: true,
-      cwd: await baseConfig.logsPath
+      cwd: logsPath
     }
   );
   for (const brokenFile of brokenFiles) {
     console.info(`restore: ${brokenFile}`);
-    await fs.move(path.join(await baseConfig.logsPath, brokenFile), path.join(await baseConfig.logsPath, brokenFile.replace(/-broken$/, "")));
+    await fs.move(path.join(logsPath, brokenFile), path.join(logsPath, brokenFile.replace(/-broken$/, "")));
   }
 })();
