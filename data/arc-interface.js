@@ -523,10 +523,6 @@ const progressConfig = new Proxy({}, {
       await fs.remove(path.join(logsPath, uncompressedJSON));
     }
   }
-  // let maxTime = 0;
-  // let timeSum = 0;
-  // let timeSumCount = 0;
-  // let maxEntry = "";
   async function handleLogEntry() {
     if (processingLogEntries) {
       return;
@@ -544,22 +540,7 @@ const progressConfig = new Proxy({}, {
       return;
     }
     try {
-      // const s1 = Date.now();
       await updateLogEntry(entry);
-      // const s2 = Date.now();
-      // if (s2 - s1 > maxTime) {
-      //   maxTime = Math.max(maxTime, s2 - s1);
-      //   maxEntry = entry;
-      // }
-      // timeSum += s2 - s1;
-      // timeSumCount += 1;
-      // console.log({
-      //   "s1-s2": s2 - s1,
-      //   "avg": timeSum / timeSumCount,
-      //   timeSum,
-      //   maxTime,
-      //   maxEntry
-      // });
     } catch (error) {
       console.error(error);
     }
@@ -579,12 +560,10 @@ const progressConfig = new Proxy({}, {
   }
 
   const watcher = chokidar.watch([
-    "**/*.zevtc",
-    "**/*.evtc",
+    "**/*.?(z)evtc",
     "**/*.json",
     "**/*.html",
-    "*.zevtc",
-    "*.evtc",
+    "*.?(z)evtc",
     "*.json",
     "*.html"
   ], {
@@ -599,12 +578,16 @@ const progressConfig = new Proxy({}, {
       i++;
       progressConfig.parsingLogs = i;
       logEntries.push(entry);
-      setImmediate(handleLogEntry);
+      if (chokidarReady) {
+        setImmediate(handleLogEntry);
+      }
     }
     if (entry.match(/\.(json|html)$/)) {
       const uncompressedJSON = chokPath.replace(/\\/g, "/");
       compressEntries.push(uncompressedJSON);
-      setImmediate(handleLogEntry);
+      if (chokidarReady) {
+        setImmediate(handleLogEntry);
+      }
     }
   });
   watcher.on("ready", () => {
@@ -615,7 +598,8 @@ const progressConfig = new Proxy({}, {
     }
     progressConfig.$parsingLogs = i;
     progressConfig.$parsedLogs = j;
-    console.log("All events added.");
+    console.info("All events added.");
+    setImmediate(handleLogEntry);
   });
 
   const brokenFiles = await fg(
