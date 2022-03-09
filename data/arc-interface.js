@@ -354,7 +354,7 @@ const progressConfig = new Proxy({}, {
           console.error(new Error(error.stack || error));
         }
         delete lockedEntry[entry];
-        return updateLogEntry();
+        return updateLogEntry(targetEntry);
       }
       const baseFile = path.dirname(entry);
       const dateInfo = entry.match(/(^|\/)(\d{8})-(\d+)\.z?evtc$/);

@@ -41,22 +41,26 @@ module.exports = async({
       if (!character.bags) {
         character.bags = await client.get(`characters/${character.name}/inventory`, {token: account.token});
       }
-      for (const bag of character.bags) {
-        if (!bag) {
-          continue;
+      if (Array.isArray(character.bags)) {
+        for (const bag of character.bags) {
+          if (!bag) {
+            continue;
+          }
+          inventary = inventary.concat(bag.inventory.filter((i) => i).map((i) => ({
+            ...i,
+            "@char": character.name
+          })));
         }
-        inventary = inventary.concat(bag.inventory.filter((i) => i).map((i) => {
-          i["@char"] = character.name;
-          return i;
-        }));
       }
       if (!character.equipment) {
         character.equipment = await client.get(`characters/${character.name}/equipment`, {token: account.token});
       }
-      inventary = inventary.concat(character.equipment.filter((i) => i).map((i) => {
-        i["@char"] = character.name;
-        return i;
-      }));
+      if (Array.isArray(character.equipment)) {
+        inventary = inventary.concat(character.equipment.filter((i) => i).map((i) => ({
+          ...i,
+          "@char": character.name
+        })));
+      }
     }
     let li = 0;
     let fractal = 0;
