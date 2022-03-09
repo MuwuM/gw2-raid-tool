@@ -6,10 +6,15 @@ const wings = require("./info/wings");
 const strikeWings = wings.filter((w) => w.isStrike);
 
 const strikeIds = [];
+const strikeIdsWeekly = [];
 for (const w of strikeWings) {
   for (const step of w.steps) {
     if (step.triggerID) {
-      strikeIds.push(step.triggerID);
+      if (w.isStrikeWeekly) {
+        strikeIdsWeekly.push(step.triggerID);
+      } else {
+        strikeIds.push(step.triggerID);
+      }
     }
   }
 }
@@ -238,6 +243,7 @@ module.exports.localUpdates = async({
         $lte: endOfRaidReset.toMillis()
       },
       isCM: true,
+      success: true,
       players: {$elemMatch: account.accountInfo.name}
     });
     for (const cm of cms) {
@@ -254,13 +260,15 @@ module.exports.localUpdates = async({
     const completedStrikesDaily = {};
     const startOfStrikeDailyReset = DateTime.utc().startOf("day");
     const endOfStrikeDailyReset = startOfStrikeDailyReset.plus({days: 1});
+
     const strikes = await db.logs.find({
       timeEndMs: {
         $gt: startOfStrikeDailyReset.toMillis(),
         $lte: endOfStrikeDailyReset.toMillis()
       },
       triggerID: {$in: strikeIds},
-      players: {$elemMatch: account.accountInfo.name}
+      players: {$elemMatch: account.accountInfo.name},
+      success: true
     });
     for (const strike of strikes) {
       completedStrikesDaily[strike.triggerID] = true;
@@ -268,6 +276,32 @@ module.exports.localUpdates = async({
 
     if (!account.completedStrikesDaily || JSON.stringify(completedStrikesDaily) !== JSON.stringify(account.completedStrikesDaily)) {
       await db.accounts.update({_id: account._id}, {$set: {completedStrikesDaily}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    }
+  }
+  if (account.accountInfo && account.accountInfo.name) {
+
+    const completedStrikesWeekly = {};
+    const startOfStrikeWeeklyReset = DateTime.utc().startOf("week")
+      .plus({
+        hours: 7,
+        minutes: 30
+      });
+    const endOfStrikeWeeklyReset = startOfStrikeWeeklyReset.plus({days: 7});
+    const strikes = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfStrikeWeeklyReset.toMillis(),
+        $lte: endOfStrikeWeeklyReset.toMillis()
+      },
+      triggerID: {$in: strikeIdsWeekly},
+      players: {$elemMatch: account.accountInfo.name},
+      success: true
+    });
+    for (const strike of strikes) {
+      completedStrikesWeekly[strike.triggerID] = true;
+    }
+    if (!account.completedStrikesWeekly || JSON.stringify(completedStrikesWeekly) !== JSON.stringify(account.completedStrikesWeekly)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedStrikesWeekly}});
       eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
   }

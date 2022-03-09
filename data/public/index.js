@@ -227,6 +227,8 @@ const app = Vue.createApp({
         let opacity = 0.2;
         if (!wing.isStrike && acc.completedSteps && acc.completedSteps.includes(step.id)) {
           opacity = 1;
+        } else if (wing.isStrike && wing.isStrikeWeekly && acc.completedStrikesWeekly && acc.completedStrikesWeekly[step.triggerID]) {
+          opacity = 1;
         } else if (wing.isStrike && acc.completedStrikesDaily && acc.completedStrikesDaily[step.triggerID]) {
           opacity = 1;
         }

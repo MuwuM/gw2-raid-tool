@@ -368,6 +368,7 @@ module.exports = [
     w: "StrikeEoD",
     w_img: "2270831-t.png",
     isStrike: true,
+    isStrikeWeekly: true,
     name_en: "Strike Mission: End of Dragons",
     name_de: "Angriffsmission: End of Dragons",
     name_fr: "Mission d'attaque: End of Dragons",
@@ -409,7 +410,7 @@ module.exports = [
         name_en: "Harvest Temple",
         name_de: "Harvest Temple",
         name_fr: "Harvest Temple",
-        triggerID: 24375,
+        triggerID: 1378, /*24375, /*43488*/
         img: "DragonVoid.png",
         hasCM: true
       }
