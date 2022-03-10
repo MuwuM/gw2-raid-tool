@@ -6,8 +6,16 @@ body{
   width: 100%;
   /*max-width:60rem;*/
   margin: 0 auto;
-  background:#333333;
+  background:transparent;
   color:#cecece;
+}
+html.bg-img{
+  background-image: url("./Strike_Mission-_Aetherblade_Hideout_loading_screen.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  min-width: 100vw;
 }
 
 ::-webkit-scrollbar {
@@ -232,6 +240,7 @@ nav+main.arc-log-display.arc-log-display-friend{
   margin-top: 45vh;
   font-size: 10vh;
   text-align: center;
+  z-index: 1;
 }
 @keyframes blink {50% { color: transparent }}
 .center-big-splash .dot{

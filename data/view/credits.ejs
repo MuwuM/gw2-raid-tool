@@ -1,5 +1,5 @@
 <main id="credits">
-  <div class="container">
+  <div class="container pb-5">
     <h1>Credits</h1>
     <h3 class="credits-name">GW2-Elite-Insights-Parser</h3>
     <div>{{i18n.creditsEiPart1}} <a href="https://baaron4.github.io/GW2-Elite-Insights-Parser/">Elite-Insights</a> {{i18n.creditsEiPart2 }}</div>
@@ -19,4 +19,5 @@
     
     <h2 class="credits-section">{{i18n.creditsMorePackages}}</h2>
     <div class="credits-deps"><span class="credits-dep" v-for="dep of baseConfig.deps"><a :href="'https://www.npmjs.com/package/'+encodeURIComponent(dep)">{{dep}}</a><template v-if="dep !== baseConfig.deps[baseConfig.deps.length -1]">,</template></span></div> 
+  </div>
 </main>
