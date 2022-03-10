@@ -120,7 +120,7 @@ module.exports = async({
     lastLog = await hashLog(JSON.stringify({}));
     nextTick = setTimeout(updateLogs, 1);
   });
-  eventHub.on("friendsFilter", async(data) => {
+  eventHub.on("friendsFilter", async(/*data*/) => {
     //console.log("friendsFilter changed", data);
     clearTimeout(nextTick);
     lastFriendsLog = await hashLog(JSON.stringify({}));
@@ -267,54 +267,6 @@ module.exports = async({
       }
     }
   });
-
-  /*router.get("/log/:hash/upload", async(ctx) => {
-    const log = await db.logs.findOne({hash: ctx.params.hash});
-    if (log && log.entry && !log.permalink) {
-      log.permalinkFailed = false;
-      await db.logs.update({_id: log._id}, {$set: {permalinkFailed: log.permalinkFailed}});
-      ctx.status = 302;
-      ctx.redirect(`/log/${log.hash}/uploading`);
-      setTimeout(async() => {
-        try {
-          const res = await urllib.request("https://dps.report/uploadContent?json=1&generator=ei", {
-            timeout: 240000,
-            dataType: "json",
-            method: "POST",
-            files: {file: fs.createReadStream(path.join(baseConfig.logsPath, log.entry))}
-          });
-          if (res.data && res.data.permalink) {
-            log.permalink = res.data.permalink;
-            await db.logs.update({_id: log._id}, {$set: {permalink: log.permalink}});
-          }
-        } catch (error) {
-          console.error(error);
-          log.permalinkFailed = true;
-          await db.logs.update({_id: log._id}, {$set: {permalinkFailed: log.permalinkFailed}});
-        }
-      }, 1);
-
-
-    } else {
-      ctx.status = 302;
-      ctx.redirect(`/log/${log.hash}`);
-    }
-  });*/
-  router.get("/log/:hash/uploading", async(ctx) => {
-    const log = await db.logs.findOne({hash: ctx.params.hash});
-    if (log && log.entry) {
-      if (log.permalink || log.permalinkFailed) {
-        ctx.status = 302;
-        ctx.redirect(`/log/${log.hash}`);
-      } else {
-        ctx.body = "<html><head><meta http-equiv=\"refresh\" content=\"1\"><style>html{margin:0;padding:5rem;background:#272b30;}h1{color:rgb(170, 170, 170);}</style></head><body><h1>Uploading ...</h1></body>";
-      }
-    } else {
-      ctx.status = 302;
-      ctx.redirect(`/log/${log.hash}`);
-    }
-  });
-
 
   router.get("/friends", async(ctx) => {
     await ctx.renderView("friends", {});

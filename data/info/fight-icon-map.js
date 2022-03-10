@@ -40,5 +40,10 @@ module.exports = {
   22492: "/img/Fraenir_of_Jormag.png",
   22343: "/img/KodanVoiceAndClaw.png",
   22521: "/img/Boneskinner.png",
-  22711: "/img/Whisper_of_Jormag.png"
+  22711: "/img/Whisper_of_Jormag.png",
+
+  24033: "/img/MaiTrin.png",
+  23957: "/img/Ankka.png",
+  24485: "/img/MinisterLi.png",
+  1378: "/img/DragonVoid.png"
 };
