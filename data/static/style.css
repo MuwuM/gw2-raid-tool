@@ -10,10 +10,6 @@ body{
   color:#cecece;
 }
 html.bg-img{
-  background-image: url("./Strike_Mission-_Aetherblade_Hideout_loading_screen.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   min-height: 100vh;
   min-width: 100vw;
 }
@@ -237,10 +233,13 @@ nav+main.arc-log-display.arc-log-display-friend{
   opacity: 0.2;
 }
 .center-big-splash{
+  isolation: isolate;
   margin-top: 45vh;
   font-size: 10vh;
   text-align: center;
   z-index: 1;
+  position: relative;
+  user-select: none;
 }
 @keyframes blink {50% { color: transparent }}
 .center-big-splash .dot{
@@ -251,6 +250,15 @@ nav+main.arc-log-display.arc-log-display-friend{
 }
 .center-big-splash .dot:nth-of-type(3) { 
   animation-delay: 500ms 
+}
+.center-big-splash-step-area{
+  isolation: isolate;
+  margin-top: 5vh;
+  font-size: 5vh;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+  user-select: none;
 }
 
 .friend-badges,.table td.friend-badges{
@@ -367,4 +375,14 @@ nav+main.arc-log-display.arc-log-display-friend{
 }
 .zoom-indicator:hover{
   opacity: 0;
+}
+
+.bg-video{
+  z-index: 0;
+  position: fixed;
+  top: 0;
+  left:0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
 }

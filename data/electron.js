@@ -10,7 +10,7 @@ const {
 } = electron;
 
 module.exports = async({
-  updaterDone, serverReady, electronApp
+  electronApp, initStatus
 }) => {
 
   async function initElectron() {
@@ -75,21 +75,28 @@ module.exports = async({
     win.on("resized", updateWindowConfig);
     win.on("move", updateWindowConfig);
 
-    win.loadURL(`file://${__dirname}/static/updating.html`);
-    await updaterDone;
-    win.loadURL(`file://${__dirname}/static/loading.html`);
+    await win.loadURL(`file://${__dirname}/static/updating.html`);
+    const setStatus = (status, step) => {
+      win.webContents.executeJavaScript(`{
+      const elem = document.querySelector('.center-big-splash-status');
+      if(elem){
+        elem.textContent = ${JSON.stringify(initStatus.stateLabel[status])};
+      }
+      const elem2 = document.querySelector('.center-big-splash-step');
+      if(elem2){
+        elem2.textContent = ${JSON.stringify(step || "")};
+      }
+    }`, true);
+    };
+    initStatus.onChange(setStatus);
+    await initStatus.waitFor(initStatus.state.Loaded);
     const {
-      appDomain, db, baseConfig,
+      appDomain, baseConfig,
       eventHub
-    } = await serverReady;
+    } = initStatus;
 
-    /*const accs = await db.accounts.find({});
-    if (accs.length < 1) {
-      win.loadURL(`${appDomain}/settings`);
-    } else {
-      win.loadURL(appDomain);
-    }*/
-    win.loadURL(`${appDomain}/logs`);
+    await win.loadURL(`${appDomain}/`);
+    initStatus.offChange(setStatus);
 
     baseConfig.zoom = 1;
     eventHub.emit("baseConfig", {baseConfig});

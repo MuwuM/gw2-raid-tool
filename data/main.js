@@ -1,5 +1,4 @@
 const electron = require("electron");
-const ChildProcess = require("child_process");
 const {dialog} = electron;
 const path = require("path");
 const fs = require("fs-extra");
@@ -17,92 +16,21 @@ const {version: appVersion} = require("./package.json");
 const eventHub = require("./event-hub");
 const wings = require("./info/wings");
 const pgk = require("./package.json");
-
-
-let markUpdaterDone;
-const updaterDone = new Promise((res) => markUpdaterDone = res);
-
-let markServerReady;
-const serverReady = new Promise((res) => markServerReady = res);
+const handleSquirrelEvent = require("./handle-squirrel-event");
+const initStatus = require("./init-status");
 
 
 const electronApp = electron.app;
 
-if (handleSquirrelEvent()) {
+if (handleSquirrelEvent(electronApp)) {
   // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  return;
+  process.exit(0);
 }
 
-function handleSquirrelEvent() {
-  if (process.argv.length === 1) {
-    return false;
-  }
-
-  const appFolder = path.resolve(process.execPath, "..");
-  const rootAtomFolder = path.resolve(appFolder, "..");
-  const updateDotExe = path.resolve(path.join(rootAtomFolder, "Update.exe"));
-  const exeName = path.basename(process.execPath);
-
-  const spawn = function(command, args) {
-    let spawnedProcess;
-    try {
-      spawnedProcess = ChildProcess.spawn(command, args, {detached: true});
-    } catch (error) {
-      console.error(error);
-    }
-
-    return spawnedProcess;
-  };
-
-  const spawnUpdate = function(args) {
-    return spawn(updateDotExe, args);
-  };
-
-  const squirrelEvent = process.argv[1];
-  switch (squirrelEvent) {
-  case "--squirrel-install":
-  case "--squirrel-updated":
-    // Optionally do things such as:
-    // - Add your .exe to the PATH
-    // - Write to the registry for things like file associations and
-    //   explorer context menus
-
-    // Install desktop and start menu shortcuts
-    spawnUpdate([
-      "--createShortcut",
-      exeName
-    ]);
-
-    setTimeout(electronApp.quit, 1000);
-    return true;
-
-  case "--squirrel-uninstall":
-    // Undo anything you did in the --squirrel-install and
-    // --squirrel-updated handlers
-
-    // Remove desktop and start menu shortcuts
-    spawnUpdate([
-      "--removeShortcut",
-      exeName
-    ]);
-
-    setTimeout(electronApp.quit, 1000);
-    return true;
-
-  case "--squirrel-obsolete":
-    // This is called on the outgoing version of your app before
-    // we update to the new version - it's the opposite of
-    // --squirrel-updated
-
-    electronApp.quit();
-    return true;
-  }
-}
 
 electronHandler({
-  updaterDone,
-  serverReady,
-  electronApp
+  electronApp,
+  initStatus
 });
 
 (async() => {
@@ -117,8 +45,12 @@ electronHandler({
     processDir,
     appVersion
   };
-  //await new Promise(() => {});
   const db = await dbConnect({baseConfig});
+
+  initStatus.db = db;
+  initStatus.baseConfig = baseConfig;
+  initStatus.eventHub = eventHub;
+
   let savedConfig = await db.settings.findOne({default: true});
   if (!savedConfig) {
     savedConfig = await db.settings.insert({default: true});
@@ -169,8 +101,12 @@ electronHandler({
     eventHub
   });
 
-  await updater({baseConfig});
-  markUpdaterDone();
+  initStatus.status = initStatus.state.Updating;
+  await updater({
+    baseConfig,
+    initStatus
+  });
+  initStatus.status = initStatus.state.Loading;
 
   baseConfig.logsPath = savedConfig.logsPath || path.join(electronApp.getPath("documents"), "Guild Wars 2/addons/arcdps/arcdps.cbtlogs");
   baseConfig.eiConfig = path.resolve(electronApp.getAppPath(), "config.conf");
@@ -194,6 +130,7 @@ electronHandler({
     baseConfig,
     eventHub
   });
+  initStatus.io = io;
 
   baseConfig.langs = i18n.langIds.map((id, index) => ({
     id,
@@ -217,13 +154,8 @@ electronHandler({
 
   await eventHub.registerIo(io);
   const appDomain = `http://127.0.0.1:${port}`;
-  markServerReady({
-    appDomain,
-    db,
-    io,
-    baseConfig,
-    eventHub
-  });
+  initStatus.appDomain = appDomain;
+  initStatus.status = initStatus.state.Loaded;
 })().catch((err) => {
   console.error(err);
   process.exit(1);
