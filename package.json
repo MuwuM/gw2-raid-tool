@@ -10,11 +10,11 @@
   "author": "",
   "license": "MPL-2.0",
   "devDependencies": {
-    "electron": "^17.1.1",
+    "electron": "^17.1.2",
     "electron-packager": "^15.4.0",
     "electron-rebuild": "^3.2.7",
     "electron-winstaller": "^5.0.0",
-    "eslint": "^8.10.0",
+    "eslint": "^8.11.0",
     "fast-glob": "^3.2.11",
     "semver": "^7.3.5",
     "ssh2-sftp-client": "^7.2.2"
