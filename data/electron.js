@@ -79,7 +79,8 @@ module.exports = async({
     await updaterDone;
     win.loadURL(`file://${__dirname}/static/loading.html`);
     const {
-      appDomain, db
+      appDomain, db, baseConfig,
+      eventHub
     } = await serverReady;
 
     /*const accs = await db.accounts.find({});
@@ -89,6 +90,10 @@ module.exports = async({
       win.loadURL(appDomain);
     }*/
     win.loadURL(`${appDomain}/logs`);
+
+    baseConfig.zoom = 1;
+    eventHub.emit("baseConfig", {baseConfig});
+
     win.webContents.on("will-navigate", (event, url) => {
       if (!url.startsWith(appDomain)) {
         event.preventDefault();
@@ -96,11 +101,26 @@ module.exports = async({
         return false;
       }
     });
-    win.webContents.on("new-window", (event, url) => {
-      if (!url.startsWith(appDomain)) {
+    win.webContents.setWindowOpenHandler((details) => {
+      if (!details.url.startsWith(appDomain)) {
+        shell.openExternal(details.url);
+        return {action: "deny"};
+      }
+      return {action: "allow"};
+    });
+    win.webContents.on("before-input-event", (event, input) => {
+      if (input.control && input.key === "+") {
+        baseConfig.zoom = Math.round(Math.min((baseConfig.zoom || 1) * 1.2, 1.728) * 1000) / 1000;
+        eventHub.emit("baseConfig", {baseConfig});
         event.preventDefault();
-        shell.openExternal(url);
-        return false;
+      } else if (input.control && input.key === "-") {
+        baseConfig.zoom = Math.round(Math.max((baseConfig.zoom || 1) / 1.2, 1 / 1.728) * 1000) / 1000;
+        eventHub.emit("baseConfig", {baseConfig});
+        event.preventDefault();
+      } else if (input.control && input.key === "0") {
+        baseConfig.zoom = 1;
+        eventHub.emit("baseConfig", {baseConfig});
+        event.preventDefault();
       }
     });
     win.webContents.on("context-menu", (event, {linkURL}) => {

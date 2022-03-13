@@ -96,6 +96,7 @@
     <div v-if="page === 'credits'"><%- await include('credits', {}); %></div>
     <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
     <div v-if="page === 'friend'"><%- await include('friend', {}); %></div>
+    <div class="zoom-indicator" v-if="baseConfig.zoom!==1">{{Math.round(baseConfig.zoom * 100)}}%</div>
   </div>
     <script src="/socket.io/socket.io.js?<%= socketversion %>"></script>
   <script src="/ext/vue/vue.global.js?<%= vueversion %>"></script>

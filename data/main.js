@@ -220,7 +220,9 @@ electronHandler({
   markServerReady({
     appDomain,
     db,
-    io
+    io,
+    baseConfig,
+    eventHub
   });
 })().catch((err) => {
   console.error(err);

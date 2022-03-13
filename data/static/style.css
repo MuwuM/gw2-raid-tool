@@ -353,3 +353,18 @@ nav+main.arc-log-display.arc-log-display-friend{
   text-align: left;
   margin-left: 3rem;
 }
+.zoom-indicator{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background: #777777;
+  border-top-right-radius: 0.6vmin;
+  padding: 0.3vmin;
+  font-size: 1.2vmin;
+  opacity: 1;
+  transition: opacity 0.5s;
+  cursor: default;
+}
+.zoom-indicator:hover{
+  opacity: 0;
+}
