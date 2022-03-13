@@ -445,8 +445,9 @@ socket.on("friends", (data) => {
 
 function handleClick(event) {
   const a = event.target.closest("a");
+  const relativeUrl = a && a.href && new URL(a.href, window.location.href);
   const baseUrl = new URL("/", window.location.href);
-  if (!event.defaultPrevented && a && a.href && a.href.startsWith(baseUrl.href)) {
+  if (!event.defaultPrevented && relativeUrl && relativeUrl.href.startsWith(baseUrl.href)) {
     const url = new URL(a.href, window.location.href);
 
     const path = url.pathname;
@@ -460,6 +461,12 @@ function handleClick(event) {
         action: pathParts[3]
       }, event);
     }
+    event.preventDefault();
+  } else if (!event.defaultPrevented && relativeUrl) {
+    console.log({relativeUrl: relativeUrl.href});
+    const url = new URL(relativeUrl.href, window.location.href);
+    window.open(url.href);
+    event.preventDefault();
   }
 }
 
