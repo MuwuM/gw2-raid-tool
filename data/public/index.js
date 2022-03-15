@@ -1,5 +1,6 @@
 /* globals io,Vue,window,document,luxon */
 const socket = io();
+const {webFrame} = require("electron");
 
 const colors = [
   "#77ff77",
@@ -369,7 +370,8 @@ const app = Vue.createApp({
   updated() {
     document.title = `Raid Tool${(this.accounts.length >= 1) ? ` - ${this.accounts.filter((a) => a.accountInfo && a.accountInfo.name).map((a) => a.accountInfo.name)
       .join(" / ")}` : ""}`;
-    document.body.parentElement.style.fontSize = `${this.baseConfig.zoom * 16}px`;
+    //document.body.parentElement.style.fontSize = `${this.baseConfig.zoom * 16}px`;
+    webFrame.setZoomFactor(this.baseConfig.zoom);
     onResize();
     checkIframeClicks();
   }
