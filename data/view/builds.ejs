@@ -6,7 +6,7 @@
     <tr>
       <th scope="col">{{i18n.buildClassHeaderName}}</th>
       <th scope="col">{{i18n.buildRoleHeaderName}}</th>
-      <th scope="col">{{i18n.buildNameHeaderName}}</th>
+      <th scope="col">{{i18n.buildNameHeaderName}}<span v-if="baseConfig.localBuilds"> (LOCAL)</span></th>
       <th scope="col">{{i18n.buildBenchmarkHeaderName}}</th>
       <th scope="col">{{i18n.buildLinksHeaderName}}</th>
     </tr>
