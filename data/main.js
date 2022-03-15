@@ -138,12 +138,14 @@ electronHandler({
   }));
   baseConfig.deps = Object.keys(pgk.dependencies);
 
+  let builds = (baseConfig.buildJsonPath && await fs.readJSON(baseConfig.buildJsonPath) || []);
   io.on("connection", async(socket) => {
     eventHub.sockets.push(socket);
     socket.emit("accounts", {accounts: await db.accounts.find({})});
     eventHub.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
     socket.emit("wings", {wings});
+    socket.emit("builds", {builds});
     for (const handler of eventHub.onHandler) {
       socket.on(...handler.args);
     }
@@ -151,6 +153,23 @@ electronHandler({
       eventHub.sockets = eventHub.sockets.filter((s) => s === socket);
     });
   });
+
+  if (baseConfig.localBuilds) {
+    const updateBuilds = async() => {
+      try {
+        const oldBuilds = JSON.stringify(builds);
+        builds = (baseConfig.buildJsonPath && await fs.readJSON(baseConfig.buildJsonPath) || []);
+        if (oldBuilds !== JSON.stringify(builds)) {
+          io.emit("builds", {builds});
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      setTimeout(updateBuilds, 500);
+    };
+    setTimeout(updateBuilds, 500);
+  }
+
 
   await eventHub.registerIo(io);
   const appDomain = `http://127.0.0.1:${port}`;

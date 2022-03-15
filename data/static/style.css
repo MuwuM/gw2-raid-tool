@@ -386,3 +386,19 @@ nav+main.arc-log-display.arc-log-display-friend{
   height: 100vh;
   object-fit: cover;
 }
+
+.build-row-profession{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.build-row-profession>.build-row-profession-icon{
+  margin-right: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+}
+.bench-old{
+  font-style: italic;
+  opacity: 0.4;
+}

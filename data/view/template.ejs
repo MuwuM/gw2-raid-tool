@@ -43,6 +43,12 @@
               tabindex="-1"
               @click="selectPage('friends',{},$event)"
             >{{i18n.navFriends}}</a></li>
+          <li class="nav-item active"><a
+              class="nav-link"
+              href="#"
+              tabindex="-1"
+              @click="selectPage('builds',{},$event)"
+            >{{i18n.navBuilds}}</a></li>
           </template>
             <li class="nav-item active">
               <a
@@ -96,6 +102,7 @@
     <div v-if="page === 'credits'"><%- await include('credits', {}); %></div>
     <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
     <div v-if="page === 'friend'"><%- await include('friend', {}); %></div>
+    <div v-if="page === 'builds'"><%- await include('builds', {}); %></div>
     <div class="zoom-indicator" v-if="baseConfig.zoom!==1">{{Math.round(baseConfig.zoom * 100)}}%</div>
   </div>
     <script src="/socket.io/socket.io.js?<%= socketversion %>"></script>

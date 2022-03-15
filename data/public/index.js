@@ -66,7 +66,8 @@ const app = Vue.createApp({
       },
       friends: [],
       token: "",
-      confirmReset: ""
+      confirmReset: "",
+      builds: []
     };
   },
   computed: {
@@ -74,7 +75,13 @@ const app = Vue.createApp({
       return this.accounts;
     },
     i18n() {
-      return window[`i18n/${this.lang}`];
+
+      return new Proxy(window[`i18n/${this.lang}`], {get(target, p) {
+        if (!target[p]) {
+          return `__${p}__`;
+        }
+        return target[p];
+      }});
     }
   },
   methods: {
@@ -371,7 +378,9 @@ const app = Vue.createApp({
     document.title = `Raid Tool${(this.accounts.length >= 1) ? ` - ${this.accounts.filter((a) => a.accountInfo && a.accountInfo.name).map((a) => a.accountInfo.name)
       .join(" / ")}` : ""}`;
     //document.body.parentElement.style.fontSize = `${this.baseConfig.zoom * 16}px`;
-    webFrame.setZoomFactor(this.baseConfig.zoom);
+    if (this.baseConfig && this.baseConfig.zoom) {
+      webFrame.setZoomFactor(this.baseConfig.zoom);
+    }
     onResize();
     checkIframeClicks();
   }
@@ -443,6 +452,10 @@ socket.on("logs", (data) => {
 socket.on("friends", (data) => {
   //console.log("friends", data);
   mnt.friends = data.friends;
+});
+socket.on("builds", (data) => {
+  //console.log("builds", data);
+  mnt.builds = data.builds;
 });
 
 function handleClick(event) {

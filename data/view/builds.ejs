@@ -1,0 +1,57 @@
+<main
+  id="builds"
+>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">{{i18n.buildClassHeaderName}}</th>
+      <th scope="col">{{i18n.buildRoleHeaderName}}</th>
+      <th scope="col">{{i18n.buildNameHeaderName}}</th>
+      <th scope="col">{{i18n.buildBenchmarkHeaderName}}</th>
+      <th scope="col">{{i18n.buildLinksHeaderName}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="build in builds">
+      <th scope="col">
+        <div class="build-row-profession">
+          <img
+            class="build-row-profession-icon"
+            :src="'/img/profession/'+build.spec+'.png'"
+          >
+          <div>
+            <div>{{build.class}}</div>
+            <span class="li-display-number-details">{{build.spec}}</span>
+          </div>
+        </div>
+      </th>
+      <th scope="col">
+        <div class="build-row-profession">
+          <img
+            class="build-row-profession-icon"
+            :src="'/img/roles/'+build.role+'.png'"
+          >
+          <div>
+            <div>{{build.role.split('-')[0]}}</div>
+            <span class="li-display-number-details">{{build.role.split('-')[1]}}</span>
+          </div>
+        </div>
+      </th>
+      <th scope="col">{{build.name}}</th>
+      <th scope="col">
+        <div :class="{'bench-old':build.benchOld}" v-if="typeof build.bench ==='number'"><img class="friend-icon" src="/img/Mini_Professor_Miau_Icon.png"> {{build.bench}}</div>
+        <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchWithAllies ==='number'" :title="i18n.buildBenchmarkWithAllies"><img class="friend-icon" src="/img/Mini_Professor_Miau_Icon.png"> {{build.benchWithAllies}} <img class="friend-icon" src="/img/Party.png"></div>
+        <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchLarge ==='number'"><img class="friend-icon" src="/img/Mini_Baron_von_Scrufflebutt.png"
+        > {{build.benchLarge}} <span :title="i18n.buildBenchmarkLargeHitbox">({{i18n.buildBenchmarkLargeHitboxShort}})</span></div>
+        <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchConfusion ==='number'"><img class="friend-icon" src="/img/Confusion.png"
+        > {{build.benchConfusion}} {{i18n.buildBenchmarkConfusion}}</div>
+      </th>
+      <th scope="col">
+        <a class="btn btn-link" v-if="build.gw2skills" :href="'http://en.gw2skills.net/editor/?'+build.gw2skills">Gw2Skills</a>
+        <a class="btn btn-link" v-if="build.snowcrows" :href="'https://snowcrows.com'+build.snowcrows">Snow Crows</a>
+        <a class="btn btn-link" v-if="build.luckynoobs" :href="'https://lucky-noobs.com'+build.luckynoobs">Lucky Noobs</a>
+      </th>
+    </tr>
+  </tbody></table>
+  
+</main>

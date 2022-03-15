@@ -54,6 +54,7 @@ module.exports = {
   navOverview: "Übersicht",
   navArcdps: "ArcDps Logs",
   navFriends: "Freunde",
+  navBuilds: "Builds",
   navSettings: "Einstellungen",
   navCredits: "Credits",
   navSearchForLogs: "Suche nach Logs:",
@@ -66,5 +67,14 @@ module.exports = {
   settingsEnableButton: "Aktivieren",
   settingsDisableButton: "Deaktivieren",
   settingsCheckUpdatesButton: "Nach Updates suchen",
-  nvidiaShareEnabled: "NVIDIA Share ist aktiv!"
+  nvidiaShareEnabled: "NVIDIA Share ist aktiv!",
+  buildClassHeaderName: "Klasse",
+  buildRoleHeaderName: "Rolle",
+  buildNameHeaderName: "Build",
+  buildBenchmarkHeaderName: "Benchmark",
+  buildLinksHeaderName: "Links",
+  buildBenchmarkLargeHitboxShort: "Groß",
+  buildBenchmarkLargeHitbox: "Große Hitbox",
+  buildBenchmarkConfusion: "Stapel Konfusion",
+  buildBenchmarkWithAllies: "mit Verbündeten"
 };
