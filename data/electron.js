@@ -89,6 +89,9 @@ module.exports = async({
     }`, true);
     };
     initStatus.onChange(setStatus);
+    win.webContents.once("dom-ready", () => {
+      setStatus(initStatus.status, initStatus.step);
+    });
     await initStatus.waitFor(initStatus.state.Loaded);
     const {
       appDomain, baseConfig,
