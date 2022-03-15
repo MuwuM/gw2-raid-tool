@@ -150,10 +150,9 @@ module.exports = async({
       }));
       menu.append(new MenuItem({
         label: "Force refresh",
-        click() {
-          win.webContents.session.clearCache(() => {
-            win.reload();
-          });
+        async click() {
+          await win.webContents.session.clearCache();
+          win.reload();
         }
       }));
       menu.append(new MenuItem({
