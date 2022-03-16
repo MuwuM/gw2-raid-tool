@@ -402,3 +402,7 @@ nav+main.arc-log-display.arc-log-display-friend{
   font-style: italic;
   opacity: 0.4;
 }
+.boon-icon {
+  width: 1rem;
+  height: 1rem;
+}

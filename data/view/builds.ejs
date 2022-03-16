@@ -33,7 +33,13 @@
           >
           <div>
             <div>{{build.role.split('-')[0]}}</div>
-            <span class="li-display-number-details">{{build.role.split('-')[1]}}</span>
+            <div>
+            <span class="li-display-number-details">{{build.role.split('-')[1]}}</span> 
+            <img v-if="build.boons && typeof build.boons.alac === 'number'" :title="'Alacrity ('+(build.boons.alac*100).toFixed(0)+'%)'" class="boon-icon" src="/img/Alacrity.png" :style="{opacity:0.2+(build.boons.alac*0.8)}"
+            ><img v-if="build.boons && typeof build.boons.quick === 'number'" :title="'Quickness ('+(build.boons.quick*100).toFixed(0)+'%)'" class="boon-icon" src="/img/Quickness.png" :style="{opacity:0.2+(build.boons.quick*0.8)}"
+            ><img v-if="build.boons && typeof build.boons.might === 'number'":title="'Might ('+(build.boons.might).toFixed(0)+' Stacks)'" class="boon-icon" src="/img/Might.png" :style="{opacity:0.2+((build.boons.might/25)*0.8)}"
+            ><img v-if="build.boons && typeof build.boons.fury === 'number'" :title="'Fury ('+(build.boons.fury*100).toFixed(0)+'%)'" class="boon-icon" src="/img/Fury.png" :style="{opacity:0.2+(build.boons.fury*0.8)}">
+          </div>
           </div>
         </div>
       </th>
