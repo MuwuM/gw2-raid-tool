@@ -49,12 +49,6 @@
               tabindex="-1"
               @click="selectPage('builds',{},$event)"
             >{{i18n.navBuilds}}</a></li>
-          <li class="nav-item active"><a
-              class="nav-link"
-              href="#"
-              tabindex="-1"
-              @click="selectPage('map',{},$event)"
-            >{{i18n.navMap}}</a></li>
           </template>
             <li class="nav-item active">
               <a
@@ -91,6 +85,14 @@
                   @click="startGame($event)"
                   tabindex="-1"
                 >{{i18n.startGame}}</a></li>
+                <li class="nav-item" v-if="mumbleLinkActive && mumbleLinkActive.identity"><a
+                  class="btn btn-dark"
+                  tabindex="-1"
+                >
+                <img class="boon-icon" style="width:1em;height:1em;" :src="'/img/profession/'+specs.find(s=>s.id===mumbleLinkActive.identity.spec).name+'.png'">
+                {{mumbleLinkActive.identity.name}}
+              </a>
+            </li>
             <li class="nav-item nav-item-space active">
               <a
                 class="nav-link"
@@ -109,6 +111,7 @@
     <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
     <div v-if="page === 'friend'"><%- await include('friend', {}); %></div>
     <div v-if="page === 'builds'"><%- await include('builds', {}); %></div>
+    <div v-if="page === 'map'"><%- await include('map', {}); %></div>
     <div class="zoom-indicator" v-if="baseConfig.zoom!==1">{{Math.round(baseConfig.zoom * 100)}}%</div>
   </div>
     <script src="/socket.io/socket.io.js?<%= socketversion %>"></script>

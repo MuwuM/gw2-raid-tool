@@ -16,6 +16,7 @@ const {version: appVersion} = require("./package.json");
 
 const eventHub = require("./event-hub");
 const wings = require("./info/wings");
+const specs = require("./info/specs");
 const pgk = require("./package.json");
 const handleSquirrelEvent = require("./handle-squirrel-event");
 const initStatus = require("./init-status");
@@ -127,7 +128,8 @@ electronHandler({
 
   updateMumbleLinkData({
     db,
-    baseConfig
+    baseConfig,
+    eventHub
   });
 
   const {
@@ -152,6 +154,7 @@ electronHandler({
     eventHub.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
     socket.emit("wings", {wings});
+    socket.emit("specs", {specs});
     socket.emit("builds", {builds});
     for (const handler of eventHub.onHandler) {
       socket.on(...handler.args);

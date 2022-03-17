@@ -73,6 +73,7 @@ module.exports = {
   nvidiaShareEnabled: "NVIDIA Share is enabled!",
   navMap: "Map",
   buildClassHeaderName: "Profession",
+  buildClassFromCurrentClass: "Automatically recognise profession from current character",
   buildRoleHeaderName: "Role",
   buildNameHeaderName: "Build",
   buildBenchmarkHeaderName: "Benchmark",

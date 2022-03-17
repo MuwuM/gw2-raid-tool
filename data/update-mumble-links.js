@@ -109,8 +109,9 @@ async function readStats(access) {
 const accesses = {};
 const processesMap = {};
 
-module.exports = async({baseConfig}) => {
-
+module.exports = async({
+  baseConfig, eventHub
+}) => {
   if (!baseConfig.mumbleLinkStats) {
     baseConfig.mumbleLinkStats = {};
   }
@@ -162,7 +163,7 @@ module.exports = async({baseConfig}) => {
           console.warn(`Could not find LaunchBuddy config at: ${launchBuddyAccsPath}`);
         }
       }
-      console.info({currentMumbleLinkIds});
+      //console.info({currentMumbleLinkIds});
       for (const file of currentMumbleLinkIds) {
         if (!accesses[file]) {
           const map = new NodeIPC.FileMapping();
@@ -252,6 +253,7 @@ module.exports = async({baseConfig}) => {
     if (active) {
       baseConfig.mumbleLinkActive = active;
     }
+    eventHub.emit("baseConfig", {baseConfig});
   }
 
   try {
@@ -259,5 +261,8 @@ module.exports = async({baseConfig}) => {
   } catch (error) {
     console.error(error);
   }
-  setTimeout(() => module.exports({baseConfig}), 1000);
+  setTimeout(() => module.exports({
+    baseConfig,
+    eventHub
+  }), 1000);
 };

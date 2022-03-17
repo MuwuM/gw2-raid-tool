@@ -21,7 +21,6 @@ const colors = [
   "#F68FD2"
 ];
 
-
 function handleScrollUpdate() {
   const navBar = document.querySelector("nav.navbar");
   const tableHeader = document.querySelector("table thead tr.sticky-top");
@@ -67,6 +66,7 @@ const app = Vue.createApp({
         nvidiaShare: []
       },
       wings: [],
+      specs: [],
       lang: "de",
       logs: [],
       logsPage: 0,
@@ -88,7 +88,8 @@ const app = Vue.createApp({
       buildRoles: [],
       activeBuildRole: false,
       buildSubRoles: {},
-      activeBuildSubRole: false
+      activeBuildSubRole: false,
+      mumbleLinkActive: false
     };
   },
   computed: {
@@ -139,16 +140,16 @@ const app = Vue.createApp({
       }
     },
     activeBuilds(builds, activeBuildClass, activeBuildSubClass, activeBuildRole, activeBuildSubRole) {
-      return (builds || []).filter((b) => (!activeBuildClass || b.class === activeBuildClass) &&
+      return (builds || []).filter((b) => (!activeBuildClass ||
+
+        (activeBuildClass === "active" && b.class === this.specs.find((s) => s.id === this.mumbleLinkActive.identity.spec).profession) ||
+        b.class === activeBuildClass) &&
       (!activeBuildSubClass || b.spec === activeBuildSubClass) &&
       (!activeBuildRole || b.role.split("-")[0] === activeBuildRole) &&
       (!activeBuildSubRole || b.role === activeBuildSubRole));
     },
     selectMode(accounts) {
       this.accounts = accounts;
-    },
-    renameRune(p) {
-      socket.emit("renameRune", p);
     },
     selectPage(page, info, event) {
       if (event && typeof event.preventDefault === "function") {
@@ -485,6 +486,7 @@ socket.on("baseConfig", (data) => {
   mnt.lang = data.baseConfig.lang;
   mnt.gw2Instances = data.baseConfig.gw2Instances;
   mnt.anyNvidiaShareInstanceRunning = data.baseConfig.gw2Instances.nvidiaShare && (data.baseConfig.gw2Instances.nvidiaShare.length > 0);
+  mnt.mumbleLinkActive = data.baseConfig.mumbleLinkActive;
 
 });
 socket.on("progressConfig", (data) => {
@@ -494,6 +496,10 @@ socket.on("progressConfig", (data) => {
 socket.on("wings", (data) => {
   //console.log("wings", data);
   mnt.wings = data.wings;
+});
+socket.on("specs", (data) => {
+  //console.log("wings", data);
+  mnt.specs = data.specs;
 });
 socket.on("logs", (data) => {
   //console.log("logs", data);

@@ -1,13 +1,16 @@
 <main id="map"> 
-  <%  if(mumbleLinkActive && mumbleLinkActive.identity){%>
-    <div style="display: flex;flex-direction: column;">
-  <div style="flex: 0 0 auto;"><h1><%= mumbleLinkActive.identity.name %></h1></div>
-  <pre>
-    <%= JSON.stringify(uiStates,null,2) %>
-    </pre><!---->
-    <!--<% if(activeHelp){%>
-    <iframe src="https://raid-static.de/<%=lang%>/#<%=activeHelp['name_'+lang] %>" frameborder="0" style="width: 100%;height: 80vh; flex: 1 1 auto;"></iframe>
-    <%} %>-->
+  <div v-if="mumbleLinkActive && mumbleLinkActive.identity" style="display: flex;flex-direction: column;">
+    <div style="flex: 0 0 auto;">
+      <h1>
+        <img class="boon-icon" style="width:1em;height:1em;" :src="'/img/profession/'+specs.find(s=>s.id===mumbleLinkActive.identity.spec).name+'.png'">
+        {{mumbleLinkActive.identity.name}}
+      </h1>
+    </div>
+    <pre>
+      {{JSON.stringify(mumbleLinkActive,null,2)}}
+    </pre>
+    <!--
+      <iframe src="https://raid-static.de/{{lang}}/#{{activeHelp['name_'+lang]}}" frameborder="0" style="width: 100%;height: 80vh; flex: 1 1 auto;"></iframe>
+    -->
   </div>
-    <%} %>
 </main>
