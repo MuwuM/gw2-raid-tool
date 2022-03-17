@@ -28,10 +28,10 @@
       <div class="arc-list-img-box arc-list-img-box-collapse">{{log.displayCollapse}}</div>
       <div class="arc-list-img-bossname">
         <div>
-          <span :class="{'arc-list-img-result':true, 'badge':true,'badge-success':log.success, 'badge-danger':!log.success}" :data-rel-time="log.timeEndMs">{{log.timeEndDiff}}</span>
+          <span :class="{'arc-list-img-result':true, 'badge':true,'bg-success':log.success, 'bg-danger':!log.success}" :data-rel-time="log.timeEndMs">{{log.timeEndDiff}}</span>
         </div>
       </div>
-        <span v-if="log.displayNameCollapse" class="arc-list-img-logby badge badge-primary badge-pill">{{log.recordedBy}}</span>
+        <span v-if="log.displayNameCollapse" class="arc-list-img-logby badge bg-primary badge-pill">{{log.recordedBy}}</span>
         <span v-if="log.isUploading">⬆️</span>
       </template>
       <template v-if="!log.displayCollapse">
@@ -47,10 +47,10 @@
         <div class="arc-list-img-bossname">
           <div>{{log.fightName}}</div>
           <div>
-            <span :class="{'arc-list-img-result':true, 'badge':true,'badge-success':log.success, 'badge-danger':!log.success}" :data-rel-time="log.timeEndMs">{{log.timeEndDiff}}</span>
+            <span :class="{'arc-list-img-result':true, 'badge':true,'bg-success':log.success, 'bg-danger':!log.success}" :data-rel-time="log.timeEndMs">{{log.timeEndDiff}}</span>
           </div>
         </div>
-        <span class="arc-list-img-logby badge badge-primary badge-pill">{{log.recordedBy}}</span>
+        <span class="arc-list-img-logby badge bg-primary badge-pill">{{log.recordedBy}}</span>
         <span v-if="log.isUploading">⬆️</span>
       </template>
   </a>

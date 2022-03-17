@@ -46,7 +46,7 @@ module.exports = function(log, fileContent, ctx) {
   file = file.replace(/<script>[\s\S]+?function\s+initTheme\(\)\s+\{[\s\S]+?<\/script>/g, "<script>function initTheme() {}\nfunction storeTheme() {}</script>");
   file = file.replace(/<link id="theme" rel="stylesheet" href="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/bootswatch\/4\.1\.1\/slate\/bootstrap\.min\.css"\s+crossorigin="anonymous">/g, `<link
   rel="stylesheet"
-  href="/static/bootstrap.min.css?${ctx._global.bootstrapcss}"
+  href="/ext/bootswatch/bootstrap.min.css?${ctx._global.bootstrapcss}"
 >
 <link
 rel="stylesheet"

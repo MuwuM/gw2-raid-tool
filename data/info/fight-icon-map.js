@@ -45,5 +45,6 @@ module.exports = {
   24033: "/img/MaiTrin.png",
   23957: "/img/Ankka.png",
   24485: "/img/MinisterLi.png",
-  1378: "/img/DragonVoid.png"
+  1378: "/img/DragonVoid.png",
+  43488: "/img/DragonVoid.png"
 };

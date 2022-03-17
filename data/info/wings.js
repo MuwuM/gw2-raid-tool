@@ -410,7 +410,7 @@ module.exports = [
         name_en: "Harvest Temple",
         name_de: "Harvest Temple",
         name_fr: "Harvest Temple",
-        triggerID: 1378, /*24375, /*43488*/
+        triggerID: 43488, /*1378, /*24375, /*43488*/
         img: "DragonVoid.png",
         hasCM: true
       }

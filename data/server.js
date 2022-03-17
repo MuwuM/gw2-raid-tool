@@ -40,6 +40,11 @@ module.exports = async({
     hash.update(await fs.readFile(require.resolve(pack)));
     return hash.digest("hex").substring(0, 25);
   }
+  async function hashNodeModuleHard(pack) {
+    const hash = crypto.createHash("md5");
+    hash.update(await fs.readFile(path.join(__dirname, `node_modules/${pack}/package.json`)));
+    return hash.digest("hex").substring(0, 25);
+  }
   async function hashStr(str) {
     const hash = crypto.createHash("md5");
     hash.update(str);
@@ -63,7 +68,7 @@ module.exports = async({
     if (!_global) {
       _global = {
         stylecss: await hashStaticFile("style.css"),
-        bootstrapcss: await hashStaticFile("bootstrap.min.css"),
+        bootstrapcss: await hashNodeModuleHard("bootswatch"),
         luxonversion: await hashNodeModule("luxon"),
         socketversion: await hashNodeModule("socket.io"),
         vueversion: await hashNodeModule("vue"),
@@ -117,6 +122,11 @@ module.exports = async({
   const vueDir = path.join(path.dirname(require.resolve("vue")), "dist");
   //console.log({vueDir});
   koaApp.use(mount("/ext/vue", serve(vueDir, {
+    maxAge: 31556952000,
+    immutable: true
+  })));
+  const bootswatchDir = path.join(__dirname, "node_modules/bootswatch/dist/darkly");
+  koaApp.use(mount("/ext/bootswatch", serve(bootswatchDir, {
     maxAge: 31556952000,
     immutable: true
   })));

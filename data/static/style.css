@@ -213,7 +213,7 @@ nav+main.arc-log-display.arc-log-display-friend{
   position: absolute;
   top:3rem;
   left:0;
-  background-color: var(--dark);
+  background-color: var(--bs-dark);
   z-index: 100;
   padding: 0.5rem;
   box-shadow: 1px 1px 3px #000;
