@@ -1,7 +1,7 @@
 {
   "name": "gw2-raid-tool",
   "productName": "GW2 Raid Tool",
-  "version": "3.0.0-dev",
+  "version": "2.3.2-dev",
   "description": "Das ultimative Programm fürs Raiden",
   "main": "main.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "chokidar": "^3.5.3",
     "ejs": "^3.1.6",
     "fast-glob": "^3.2.11",
-    "fast-xml-parser": "^4.0.0-beta.6",
+    "fast-xml-parser": "^4.0.6",
     "fs-extra": "^10.0.1",
     "get-port-please": "^2.4.3",
     "gw2": "0.0.1",
