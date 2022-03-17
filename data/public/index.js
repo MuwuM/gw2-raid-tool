@@ -21,6 +21,16 @@ const colors = [
   "#F68FD2"
 ];
 
+
+function handleScrollUpdate() {
+  const navBar = document.querySelector("nav.navbar");
+  const tableHeader = document.querySelector("table thead tr.sticky-top");
+  if (navBar && tableHeader) {
+    const rect = navBar.getBoundingClientRect();
+    tableHeader.style.top = `${Math.floor(rect.bottom)}px`;
+  }
+}
+
 function onResize() {
   const logDisplays = document.querySelectorAll(".arc-log-display");
   for (const logDisplay of logDisplays) {
@@ -34,7 +44,10 @@ function onResize() {
     const rect = prev.getBoundingClientRect();
     logDisplay.style.height = `${window.innerHeight - rect.bottom - 34}px`;
   }
+  handleScrollUpdate();
 }
+
+window.addEventListener("scroll", handleScrollUpdate);
 window.addEventListener("resize", onResize);
 onResize();
 
@@ -67,7 +80,15 @@ const app = Vue.createApp({
       friends: [],
       token: "",
       confirmReset: "",
-      builds: []
+      builds: [],
+      buildClasses: [],
+      activeBuildClass: false,
+      buildSubClasses: [],
+      activeBuildSubClass: false,
+      buildRoles: [],
+      activeBuildRole: false,
+      buildSubRoles: {},
+      activeBuildSubRole: false
     };
   },
   computed: {
@@ -85,6 +106,44 @@ const app = Vue.createApp({
     }
   },
   methods: {
+    toggleBuildClass(c) {
+      if (this.activeBuildClass === c) {
+        this.activeBuildClass = false;
+        this.activeBuildSubClass = false;
+      } else {
+        this.activeBuildClass = c;
+        this.activeBuildSubClass = false;
+      }
+    },
+    toggleBuildSubClass(c) {
+      if (this.activeBuildSubClass === c) {
+        this.activeBuildSubClass = false;
+      } else {
+        this.activeBuildSubClass = c;
+      }
+    },
+    toggleBuildRole(c) {
+      if (this.activeBuildRole === c) {
+        this.activeBuildRole = false;
+        this.activeBuildSubRole = false;
+      } else {
+        this.activeBuildRole = c;
+        this.activeBuildSubRole = false;
+      }
+    },
+    toggleBuildSubRole(c) {
+      if (this.activeBuildSubRole === c) {
+        this.activeBuildSubRole = false;
+      } else {
+        this.activeBuildSubRole = c;
+      }
+    },
+    activeBuilds(builds, activeBuildClass, activeBuildSubClass, activeBuildRole, activeBuildSubRole) {
+      return (builds || []).filter((b) => (!activeBuildClass || b.class === activeBuildClass) &&
+      (!activeBuildSubClass || b.spec === activeBuildSubClass) &&
+      (!activeBuildRole || b.role.split("-")[0] === activeBuildRole) &&
+      (!activeBuildSubRole || b.role === activeBuildSubRole));
+    },
     selectMode(accounts) {
       this.accounts = accounts;
     },
@@ -456,6 +515,43 @@ socket.on("friends", (data) => {
 socket.on("builds", (data) => {
   //console.log("builds", data);
   mnt.builds = data.builds;
+  const classMap = {};
+  const roleMap = {};
+  const subRoleMap = {};
+  const subClassMap = {};
+  for (const build of data.builds) {
+    classMap[build.class] = true;
+    if (!subClassMap[build.class]) {
+      subClassMap[build.class] = {};
+    }
+    subClassMap[build.class][build.spec] = true;
+    const role = build.role.split("-")[0];
+    if (role) {
+      roleMap[role] = true;
+      if (!subRoleMap[role]) {
+        subRoleMap[role] = {};
+      }
+      subRoleMap[role][build.role] = true;
+    }
+  }
+  const subRoles = {};
+  for (const [
+    role,
+    subs
+  ] of Object.entries(subRoleMap)) {
+    subRoles[role] = Object.keys(subs);
+  }
+  const subClasses = {};
+  for (const [
+    role,
+    subs
+  ] of Object.entries(subClassMap)) {
+    subClasses[role] = Object.keys(subs);
+  }
+  mnt.buildClasses = Object.keys(classMap);
+  mnt.buildSubClasses = subClasses;
+  mnt.buildRoles = Object.keys(roleMap);
+  mnt.buildSubRoles = subRoles;
 });
 
 function handleClick(event) {
@@ -513,3 +609,4 @@ setInterval(() => {
     el.textContent = luxon.DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"), 10)).toRelative({locale: mnt.lang});
   }
 }, 500);
+
