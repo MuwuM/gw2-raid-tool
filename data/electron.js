@@ -10,7 +10,7 @@ const {
 } = electron;
 
 module.exports = async({
-  updaterDone, serverReady, electronApp
+  electronApp, initStatus
 }) => {
 
   async function initElectron() {
@@ -75,19 +75,35 @@ module.exports = async({
     win.on("resized", updateWindowConfig);
     win.on("move", updateWindowConfig);
 
-    win.loadURL(`file://${__dirname}/static/updating.html`);
-    await updaterDone;
-    win.loadURL(`file://${__dirname}/static/loading.html`);
+    await win.loadURL(`file://${__dirname}/static/updating.html`);
+    const setStatus = (status, step) => {
+      win.webContents.executeJavaScript(`{
+      const elem = document.querySelector('.center-big-splash-status');
+      if(elem){
+        elem.textContent = ${JSON.stringify(initStatus.stateLabel[status])};
+      }
+      const elem2 = document.querySelector('.center-big-splash-step');
+      if(elem2){
+        elem2.textContent = ${JSON.stringify(step || "")};
+      }
+    }`, true);
+    };
+    initStatus.onChange(setStatus);
+    win.webContents.once("dom-ready", () => {
+      setStatus(initStatus.status, initStatus.step);
+    });
+    await initStatus.waitFor(initStatus.state.Loaded);
     const {
-      appDomain, db
-    } = await serverReady;
+      appDomain, baseConfig,
+      eventHub
+    } = initStatus;
 
-    const accs = await db.accounts.find({});
-    if (accs.length < 1) {
-      win.loadURL(`${appDomain}/settings`);
-    } else {
-      win.loadURL(appDomain);
-    }
+    await win.loadURL(`${appDomain}/`);
+    initStatus.offChange(setStatus);
+
+    baseConfig.zoom = 1;
+    eventHub.emit("baseConfig", {baseConfig});
+
     win.webContents.on("will-navigate", (event, url) => {
       if (!url.startsWith(appDomain)) {
         event.preventDefault();
@@ -95,11 +111,26 @@ module.exports = async({
         return false;
       }
     });
-    win.webContents.on("new-window", (event, url) => {
-      if (!url.startsWith(appDomain)) {
+    win.webContents.setWindowOpenHandler((details) => {
+      if (!details.url.startsWith(appDomain)) {
+        shell.openExternal(details.url);
+        return {action: "deny"};
+      }
+      return {action: "allow"};
+    });
+    win.webContents.on("before-input-event", (event, input) => {
+      if (input.control && input.key === "+") {
+        baseConfig.zoom = Math.round(Math.min((baseConfig.zoom || 1) * 1.2, 1.728) * 1000) / 1000;
+        eventHub.emit("baseConfig", {baseConfig});
         event.preventDefault();
-        shell.openExternal(url);
-        return false;
+      } else if (input.control && input.key === "-") {
+        baseConfig.zoom = Math.round(Math.max((baseConfig.zoom || 1) / 1.2, 1 / 1.728) * 1000) / 1000;
+        eventHub.emit("baseConfig", {baseConfig});
+        event.preventDefault();
+      } else if (input.control && input.key === "0") {
+        baseConfig.zoom = 1;
+        eventHub.emit("baseConfig", {baseConfig});
+        event.preventDefault();
       }
     });
     win.webContents.on("context-menu", (event, {linkURL}) => {
@@ -122,10 +153,9 @@ module.exports = async({
       }));
       menu.append(new MenuItem({
         label: "Force refresh",
-        click() {
-          win.webContents.session.clearCache(() => {
-            win.reload();
-          });
+        async click() {
+          await win.webContents.session.clearCache();
+          win.reload();
         }
       }));
       menu.append(new MenuItem({
@@ -138,7 +168,7 @@ module.exports = async({
       menu.popup({window: win});
       return false;
     });
-    console.log("loaded");
+    //console.log("loaded");
   }
 
   electronApp.on("window-all-closed", () => {

@@ -11,8 +11,11 @@ module.exports = {
   creditsEiPart1: "Die Logs werden mit Hilfe von",
   creditsEiPart2: "geparsed.",
   licenseMit: "Lizenz: MIT License",
+  licenseCCBY: "Lizenz: CC-BY",
   creditsElectronPart1: "Für die Anzeige des Raid Tools wird",
   creditsElectronPart2: "verwendet.",
+  creditsGameIconsPart1: "Für die Anzeige des Raid Tools werden Icons von",
+  creditsGameIconsPart2: "verwendet.",
   licenseLabel: "Lizenz",
   creditsMorePackages: "Weitere verwendete Software-Pakete",
   sharedLogsLabel: "Gemeinsame Kills:",
@@ -21,6 +24,8 @@ module.exports = {
   friendsHeaderKills: "Kills",
   friendsHeaderSharedKills: "Gemeinsame Boss-Kills",
   noKP: "Keine KPS",
+  dailyResetInfo: "Täglich",
+  weeklyResetInfo: "Wöchentlich",
   labelLi: "Legendäre Einsicht",
   showLiLd(li) {
     return `${li} LI/LD`;
@@ -52,6 +57,7 @@ module.exports = {
   navOverview: "Übersicht",
   navArcdps: "ArcDps Logs",
   navFriends: "Freunde",
+  navBuilds: "Builds",
   navSettings: "Einstellungen",
   navCredits: "Credits",
   navSearchForLogs: "Suche nach Logs:",
@@ -65,5 +71,14 @@ module.exports = {
   settingsDisableButton: "Deaktivieren",
   settingsCheckUpdatesButton: "Nach Updates suchen",
   nvidiaShareEnabled: "NVIDIA Share ist aktiv!",
-  navMap: "Karte"
+  navMap: "Karte",
+  buildClassHeaderName: "Klasse",
+  buildRoleHeaderName: "Rolle",
+  buildNameHeaderName: "Build",
+  buildBenchmarkHeaderName: "Benchmark",
+  buildLinksHeaderName: "Links",
+  buildBenchmarkLargeHitboxShort: "Groß",
+  buildBenchmarkLargeHitbox: "Große Hitbox",
+  buildBenchmarkConfusion: "Stapel Konfusion",
+  buildBenchmarkWithAllies: "mit Verbündeten"
 };

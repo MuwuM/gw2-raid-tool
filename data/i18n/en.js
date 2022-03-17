@@ -11,8 +11,11 @@ module.exports = {
   creditsEiPart1: "The logs are parsed with the help of",
   creditsEiPart2: ".",
   licenseMit: "Licence: MIT License",
+  licenseCCBY: "Licence: CC-BY",
   creditsElectronPart1: "For the display of the Raid Tool,",
   creditsElectronPart2: "is used.",
+  creditsGameIconsPart1: "Icons from",
+  creditsGameIconsPart2: "are used to display the Raid Tool.",
   licenseLabel: "Licence",
   creditsMorePackages: "Other software packages used",
   sharedLogsLabel: "Shared Kills:",
@@ -21,6 +24,8 @@ module.exports = {
   friendsHeaderKills: "Kills",
   friendsHeaderSharedKills: "Shared Boss Kills",
   noKP: "No KPS",
+  dailyResetInfo: "Daily",
+  weeklyResetInfo: "Weekly",
   labelLi: "Legendary Insight",
   showLiLd(li) {
     return `${li} LI/LD`;
@@ -52,6 +57,7 @@ module.exports = {
   navOverview: "Overview",
   navArcdps: "ArcDps Logs",
   navFriends: "Friends",
+  navBuilds: "Builds",
   navSettings: "Settings",
   navCredits: "Credits",
   navSearchForLogs: "Search for logs:",
@@ -65,5 +71,14 @@ module.exports = {
   settingsDisableButton: "Disable",
   settingsCheckUpdatesButton: "Check for updates",
   nvidiaShareEnabled: "NVIDIA Share is enabled!",
-  navMap: "Map"
+  navMap: "Map",
+  buildClassHeaderName: "Profession",
+  buildRoleHeaderName: "Role",
+  buildNameHeaderName: "Build",
+  buildBenchmarkHeaderName: "Benchmark",
+  buildLinksHeaderName: "Links",
+  buildBenchmarkLargeHitboxShort: "Large",
+  buildBenchmarkLargeHitbox: "Large Hitbox",
+  buildBenchmarkConfusion: "stacks of confusion",
+  buildBenchmarkWithAllies: "with Allies"
 };

@@ -1,11 +1,35 @@
+const {DateTime} = require("luxon");
 const itemIds = require("./info/item-ids");
+const wings = require("./info/wings");
+
+
+const strikeWings = wings.filter((w) => w.isStrike);
+
+const strikeIds = [];
+const strikeIdsWeekly = [];
+for (const w of strikeWings) {
+  for (const step of w.steps) {
+    if (step.triggerID) {
+      if (w.isStrikeWeekly) {
+        strikeIdsWeekly.push(step.triggerID);
+      } else {
+        strikeIds.push(step.triggerID);
+      }
+    }
+  }
+}
 
 module.exports = async({
-  db, client, account
+  db, client, account, eventHub
 }) => {
-
+  if (!account) {
+    return;
+  }
 
   async function liOfAccount() {
+    if (!account) {
+      return;
+    }
     const sharedInventary = await client.get("account/inventory", {token: account.token});
     const bank = await client.get("account/bank", {token: account.token});
     const materials = await client.get("account/materials", {token: account.token});
@@ -17,22 +41,26 @@ module.exports = async({
       if (!character.bags) {
         character.bags = await client.get(`characters/${character.name}/inventory`, {token: account.token});
       }
-      for (const bag of character.bags) {
-        if (!bag) {
-          continue;
+      if (Array.isArray(character.bags)) {
+        for (const bag of character.bags) {
+          if (!bag) {
+            continue;
+          }
+          inventary = inventary.concat(bag.inventory.filter((i) => i).map((i) => ({
+            ...i,
+            "@char": character.name
+          })));
         }
-        inventary = inventary.concat(bag.inventory.filter((i) => i).map((i) => {
-          i["@char"] = character.name;
-          return i;
-        }));
       }
       if (!character.equipment) {
         character.equipment = await client.get(`characters/${character.name}/equipment`, {token: account.token});
       }
-      inventary = inventary.concat(character.equipment.filter((i) => i).map((i) => {
-        i["@char"] = character.name;
-        return i;
-      }));
+      if (Array.isArray(character.equipment)) {
+        inventary = inventary.concat(character.equipment.filter((i) => i).map((i) => ({
+          ...i,
+          "@char": character.name
+        })));
+      }
     }
     let li = 0;
     let fractal = 0;
@@ -143,7 +171,7 @@ module.exports = async({
         91225,
         91234 /*Coalescence */
       ].includes(item.id)) {
-        console.log(`Gift of Compassion: ${item.id}`);
+        //console.log(`Gift of Compassion: ${item.id}`);
         li += (item.count || 0) * 150;
       } else if ([43319].includes(item.id)) {
         zhaitaffy += (item.count || 0);
@@ -169,13 +197,18 @@ module.exports = async({
     };
     if (!account.kps || JSON.stringify(kps) !== JSON.stringify(account.kps)) {
       await db.accounts.update({_id: account._id}, {$set: {kps}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
   }
 
   async function updateCompletedSteps() {
+    if (!account) {
+      return;
+    }
     const completedSteps = await client.get("account/raids", {token: account.token});
     if (!account.completedSteps || JSON.stringify(completedSteps) !== JSON.stringify(account.completedSteps)) {
       await db.accounts.update({_id: account._id}, {$set: {completedSteps}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
   }
 
@@ -188,5 +221,92 @@ module.exports = async({
     await updateCompletedSteps();
   } catch (error) {
     console.error(error);
+  }
+};
+
+module.exports.localUpdates = async({
+  db, account, eventHub
+}) => {
+
+  if (!account) {
+    return;
+  }
+
+  if (account.accountInfo && account.accountInfo.name) {
+
+    const completedCMs = {};
+    const startOfRaidReset = DateTime.utc().startOf("week")
+      .plus({
+        hours: 7,
+        minutes: 30
+      });
+    const endOfRaidReset = startOfRaidReset.plus({days: 7});
+    const cms = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfRaidReset.toMillis(),
+        $lte: endOfRaidReset.toMillis()
+      },
+      isCM: true,
+      success: true,
+      players: {$elemMatch: account.accountInfo.name}
+    });
+    for (const cm of cms) {
+      completedCMs[cm.triggerID] = true;
+    }
+
+    if (!account.completedCMs || JSON.stringify(completedCMs) !== JSON.stringify(account.completedCMs)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedCMs}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    }
+  }
+  if (account.accountInfo && account.accountInfo.name) {
+
+    const completedStrikesDaily = {};
+    const startOfStrikeDailyReset = DateTime.utc().startOf("day");
+    const endOfStrikeDailyReset = startOfStrikeDailyReset.plus({days: 1});
+
+    const strikes = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfStrikeDailyReset.toMillis(),
+        $lte: endOfStrikeDailyReset.toMillis()
+      },
+      triggerID: {$in: strikeIds},
+      players: {$elemMatch: account.accountInfo.name},
+      success: true
+    });
+    for (const strike of strikes) {
+      completedStrikesDaily[strike.triggerID] = true;
+    }
+
+    if (!account.completedStrikesDaily || JSON.stringify(completedStrikesDaily) !== JSON.stringify(account.completedStrikesDaily)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedStrikesDaily}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    }
+  }
+  if (account.accountInfo && account.accountInfo.name) {
+
+    const completedStrikesWeekly = {};
+    const startOfStrikeWeeklyReset = DateTime.utc().startOf("week")
+      .plus({
+        hours: 7,
+        minutes: 30
+      });
+    const endOfStrikeWeeklyReset = startOfStrikeWeeklyReset.plus({days: 7});
+    const strikes = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfStrikeWeeklyReset.toMillis(),
+        $lte: endOfStrikeWeeklyReset.toMillis()
+      },
+      triggerID: {$in: strikeIdsWeekly},
+      players: {$elemMatch: account.accountInfo.name},
+      success: true
+    });
+    for (const strike of strikes) {
+      completedStrikesWeekly[strike.triggerID] = true;
+    }
+    if (!account.completedStrikesWeekly || JSON.stringify(completedStrikesWeekly) !== JSON.stringify(account.completedStrikesWeekly)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedStrikesWeekly}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    }
   }
 };

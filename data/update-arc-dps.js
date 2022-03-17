@@ -80,7 +80,7 @@ module.exports = async({
 
   if (latestVersion && latestVersion !== installedVersion) {
     baseConfig.arcdpsVersionHasUpdates = true;
-    console.log(`updating arcdps from version: ${installedVersion} to latest: ${latestVersion}`);
+    console.info(`updating arcdps from version: ${installedVersion} to latest: ${latestVersion}`);
     if (baseConfig.gw2Instances.running.length > 1) {
       if (dialogs) {
         await dialog.showMessageBox({

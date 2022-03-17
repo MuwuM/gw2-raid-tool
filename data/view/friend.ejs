@@ -2,85 +2,37 @@
   id="friend"
   class="arc-log-display-wrapper"
 >
-<div class="container">
-  <div class="jumbotron">
-<h2><%= friend.account %></h2>
-<div class="friend-badges"><% for(const n of (friend.chars||[])){ %>
-    <span class="friend-badge"><img class="friend-icon" src="/img/profession/<%=n.profession[0].name%>.png"> <span class="friend-name"><%= n.name %></span></span>
-  <% } %></div>
-<hr>
-<div><%= i18n.sharedLogsLabel %> <%= friend.sharedLogs %></div>
-<div>
-  <span><%= i18n.killsLabel %> <%= stats.kills %> <%= i18n.cmOfKills(stats.cmKills) %></span>
-  <span><%= i18n.failsLabel %> <%= stats.fails %></span>
-</div>
+  <div class="container">
+    <div class="jumbotron" v-if="stats">
+      <h2 v-if="stats.friend">{{stats.friend.account}}</h2>
+      <div v-if="stats.friend" class="friend-badges">
+        <span
+          v-for="n in (stats.friend.chars||[])"
+          class="friend-badge"
+        ><img
+            class="friend-icon"
+            :src="'/img/profession/'+n.profession[0].name+'.png'"
+          > <span class="friend-name">{{n.name}}</span></span>
+      </div>
+      <hr>
+      <div v-if="stats.friend">{{i18n.sharedLogsLabel}} {{stats.friend.sharedLogs}}</div>
+      <div v-if="stats">
+        <span>{{i18n.killsLabel}} {{stats.kills}} {{i18n.cmOfKills(stats.cmKills)}}</span>
+        <span>{{i18n.failsLabel}} {{stats.fails}}</span>
+      </div>
 
-</div>
-</div>
-<div
-  class="arc-log-display arc-log-display-friend"
->
-  <div class="arc-list">
-    <nav>
-      <ul class="pagination justify-content-center">
-        <li class="page-item <%=(page <= 0)?'disabled':'' %>"><a class="page-link" href="?p=0">«</a></li>
-        <li class="page-item <%=(page <= 0)?'disabled':'' %>"><a class="page-link" href="?p=<%= Math.max(page-1,0) %>">‹</a></li>
-        <li class="page-item disabled w-50 text-center"><a class="page-link"><%= (page+1) %>/<%= (maxPages) %></a></li>
-        <li class="page-item <%=(page >= maxPages-1)?'disabled':'' %>"><a class="page-link" href="?p=<%= Math.min(maxPages-1,page+1) %>">›</a></li>
-        <li class="page-item <%=(page >= maxPages-1)?'disabled':'' %>"><a class="page-link" href="?p=<%= (maxPages-1) %>">»</a></li>
-      </ul>
-    </nav>
-    <div class="list-group">
-      <% for(const log of logs){ %>
-      <a
-        href="/log/<%=log.hash%>"
-        target="arc-log-display-iframe"
-        rel="noreferrer noopener"
-        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center <%= (log===logs[0])?'bg-info':'' %>"
-        onclick="Array.from(document.querySelectorAll('.arc-list .list-group .list-group-item')).map(i=>i.classList.remove('bg-info'));this.classList.add('bg-info');this.blur()"
-      >
-      <% if(log.displayCollapse){ %>
-        <div class="arc-list-img-box arc-list-img-box-collapse"><%= log.displayCollapse %></div>
-        <div><div><span class="badge <%=(log.success)?'badge-success':'badge-danger'%>" data-rel-time="<%= log.timeEndMs %>"><%= log.timeEndDiff %></span></div></div>
-        <span class="badge badge-primary badge-pill"><%= log.recordedBy %></span>
-      <% } else { %>
-        <div class="arc-list-img-box">
-          <%if(log.fightIcon){%>
-          <img
-            class="arc-list-preview-icon"
-            src="<%= log.fightIcon %>"
-            alt=""
-            rel="noreferrer noopener"
-          >
-          <%}%>
-        </div>
-        <div>
-          <div><%= log.fightName %></div>
-        <div><span class="badge <%=(log.success)?'badge-success':'badge-danger'%>" data-rel-time="<%= log.timeEndMs %>"><%= log.timeEndDiff %></span></div>
     </div>
-    <span class="badge badge-primary badge-pill"><%= log.recordedBy %></span>
-    <%} %>
-    </a>
-    <% } %>
   </div>
-  <nav>
-    <ul class="pagination justify-content-center">
-      <li class="page-item <%=(page <= 0)?'disabled':'' %>"><a class="page-link" href="?p=0">«</a></li>
-      <li class="page-item <%=(page <= 0)?'disabled':'' %>"><a class="page-link" href="?p=<%= Math.max(page-1,0) %>">‹</a></li>
-      <li class="page-item disabled w-50 text-center"><a class="page-link"><%= (page+1) %>/<%= (maxPages) %></a></li>
-      <li class="page-item <%=(page >= maxPages-1)?'disabled':'' %>"><a class="page-link" href="?p=<%= Math.min(maxPages-1,page+1) %>">›</a></li>
-      <li class="page-item <%=(page >= maxPages-1)?'disabled':'' %>"><a class="page-link" href="?p=<%= (maxPages-1) %>">»</a></li>
-    </ul>
-  </nav>
+  <div class="emptyspacer"></div>
+  <div class="arc-log-display arc-log-display-friend">
+    <%- await include('loglist'); %>
+      <iframe
+        v-if="activeLog"
+        name="arc-log-display-iframe"
+        class="arc-log-display-iframe"
+        :src="logPath(activeLog, logs)"
+        frameborder="0"
+        sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
+      ></iframe>
   </div>
-  <% if(logs[0]){ %>
-  <iframe
-    name="arc-log-display-iframe"
-    class="arc-log-display-iframe"
-    src="/log/<%=logs[0].hash%>"
-    frameborder="0"
-    sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
-  ></iframe><%}%>
-</div>
-</div>
 </main>

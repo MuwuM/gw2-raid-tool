@@ -7,10 +7,10 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
-  <title>Raid Tool<% if(accounts.length >= 1){ %> - <%= accounts.filter(a=>a.accountInfo&&a.accountInfo.name).map(a=>a.accountInfo.name).join(" / ")%><% } %></title>
+  <title>Raid Tool</title>
   <link
     rel="stylesheet"
-    href="/static/bootstrap.min.css?<%= bootstrapcss %>"
+    href="/ext/bootswatch/bootstrap.min.css?<%= bootstrapcss %>"
   >
   <link
     rel="stylesheet"
@@ -19,166 +19,103 @@
 </head>
 
 <body>
-  <% if(typeof noNav === 'undefined' || !noNav){ %>
-  <nav class="navbar navbar-expand navbar-dark bg-primary">
-    <!-- navbar-expand-lg<div class="collapse navbar-collapse">-->
-      <ul class="navbar-nav mr-auto">
-        <% if(accounts.length >= 1){ %>
-        <li class="nav-item active">
-          <a
-            class="nav-link"
-            href="/"
-            tabindex="-1"
-          ><%= i18n.navOverview %></a>
-        </li>
-        <li class="nav-item active"><a
-            class="nav-link"
-            href="/logs"
-            tabindex="-1"
-          ><%= i18n.navArcdps %></a></li>
-        <li class="nav-item active"><a
-            class="nav-link"
-            href="/friends"
-            tabindex="-1"
-          ><%= i18n.navFriends %></a></li>
-          <% } %>
+  <div id="app">
+    <nav class="navbar navbar-expand navbar-dark bg-primary sticky-top">
+        <ul class="navbar-nav mr-auto">
+            <template v-if="accounts.length >= 1">
           <li class="nav-item active">
             <a
               class="nav-link"
-              href="/settings"
+              href="#"
               tabindex="-1"
-            ><%= i18n.navSettings %></a>
+              @click="selectPage('overview',{},$event)"
+            >{{i18n.navOverview}}</a>
           </li>
-          <li class="nav-item active">
-            <a
+          <li class="nav-item active"><a
               class="nav-link"
-              href="/map"
+              href="#"
               tabindex="-1"
-            ><%= i18n.navMap %></a>
-          </li>
-          <% if(anyNvidiaShareInstanceRunning){ %>
-            <li class="nav-item active"><a
-              class="btn btn-danger"
-              href="https://nvidia.custhelp.com/app/answers/detail/a_id/4228/~/disabling-the-geforce-experience-share-in-game-overlay"
-              tabindex="-1"
-            ><%= i18n.nvidiaShareEnabled %></a></li>
-          <% } %> 
-          <li class="nav-item-spacer">
-            <div class="progress progress-parsingLogs">
-              <div class="progress-bar bg-info" role="progressbar" style="overflow:hidden;"></div>
-              <div class="progress-bar-label"></div>
-            </div>
-          </li>
-          <% 
-          if(launchBuddyDir){ 
-            if(gw2Instances.lauchbuddy.length < 1){
-            %>
-            <li class="nav-item active"><a
-                class="btn btn-success"
-                href="/start-game?rel=<%= encodeURIComponent(pageUrl) %>"
-                tabindex="-1"
-              ><%= i18n.startLaunchBuddy %></a></li>
-            <% }
-          } else if(gw2Dir && gw2Instances.running.length < 1){ %>
-            <li class="nav-item active"><a
-                class="btn btn-success"
-                href="/start-game?rel=<%= encodeURIComponent(pageUrl) %>"
-                tabindex="-1"
-              ><%= i18n.startGame %></a></li>
-          <% } %>
-          <li class="nav-item nav-item-space active">
-            <a
+              @click="selectPage('logs',{},$event)"
+            >{{i18n.navArcdps}}</a></li>
+          <li class="nav-item active"><a
               class="nav-link"
-              href="/credits"
+              href="#"
               tabindex="-1"
-            ><%= i18n.navCredits %></a>
-          </li>
-      </ul>
-    <!--</div>-->
-  </nav>
-  <% } %>
-  <%-
-    body
-    %>
-    <% if(typeof noNav === 'undefined' || !noNav){ %>
-    <script>
-      const logsHash = "<%=logsHash%>";
-      async function checkNewLog() {
-        try {
-          let params = new URLSearchParams(window.location.search);
-          params.append("check",logsHash)
-          const response = await fetch("?"+params.toString());
-          const json = await response.json();
-          if (json.refresh) {
-            location.reload();
-          }
-        } catch (error) {
-          console.warn(error);
-        }
-        setTimeout(checkNewLog, 600);
-      }
-      checkNewLog();
-    </script>
-    <script>
-      async function checkProgress() {
-        const elem = document.querySelector(".progress-parsingLogs");
-        if(!elem){
-          setTimeout(checkProgress, 600);
-          return;
-        }
-        const child = elem.querySelector(".progress-bar");
-        const label = elem.querySelector(".progress-bar-label");
-        try {
-          const response = await fetch("/settings/progress");
-          const json = await response.json();
-          if (json.parsingLogs > 0) {
-            elem.style.display ="flex";
-            child.style.width = ((json.parsedLogs/(json.parsingLogs||1))*100)+"%";
-            child.style.maxWidth = ((json.parsedLogs/(json.parsingLogs||1))*100)+"%";
-            label.textContent = "<%= i18n.navSearchForLogs %> "+(json.parsingLogs-json.parsedLogs) + " <%= i18n.navSearchForLogsLeft %>";
-          }else{
-            elem.style.display ="none";
-            child.style.width="0";
-            child.style.maxWidth="0";
-            label.textContent ="";
-          }
-        } catch (error) {
-          console.warn(error);
-        }
-        setTimeout(checkProgress, 600);
-      }
-      checkProgress();
-    </script>
-  <% } %>
+              @click="selectPage('friends',{},$event)"
+            >{{i18n.navFriends}}</a></li>
+          <li class="nav-item active"><a
+              class="nav-link"
+              href="#"
+              tabindex="-1"
+              @click="selectPage('builds',{},$event)"
+            >{{i18n.navBuilds}}</a></li>
+          <li class="nav-item active"><a
+              class="nav-link"
+              href="#"
+              tabindex="-1"
+              @click="selectPage('map',{},$event)"
+            >{{i18n.navMap}}</a></li>
+          </template>
+            <li class="nav-item active">
+              <a
+                class="nav-link"
+                href="#"
+                tabindex="-1"
+                @click="selectPage('settings',{},$event)"
+              >{{i18n.navSettings}}</a>
+            </li>
+              <li class="nav-item active" v-if="anyNvidiaShareInstanceRunning"><a
+                class="btn btn-danger"
+                href="https://nvidia.custhelp.com/app/answers/detail/a_id/4228/~/disabling-the-geforce-experience-share-in-game-overlay"
+                tabindex="-1"
+              >{{i18n.nvidiaShareEnabled}}</a></li>
+            <li class="nav-item-spacer">
+              <div v-if="progressConfig.parsingLogs > 0" class="progress progress-parsingLogs" style="display: flex;">
+                <div class="progress-bar bg-info" role="progressbar" :style="{
+                  overflow:'hidden',
+                  width:`${(progressConfig.parsedLogs / (progressConfig.parsingLogs || 1)) * 100}%`,
+                  maxWidth: `${(progressConfig.parsedLogs / (progressConfig.parsingLogs || 1)) * 100}%`
+                }"></div>
+                <div class="progress-bar-label">{{i18n.navSearchForLogs}} {{progressConfig.parsingLogs - progressConfig.parsedLogs}} {{i18n.navSearchForLogsLeft}}</div>
+              </div>
+            </li>
+            <li class="nav-item active" v-if="baseConfig.launchBuddyDir && gw2Instances.lauchbuddy && gw2Instances.lauchbuddy.length < 1"><a
+                  class="btn btn-success"
+                  href="#"
+                  @click="startGame($event)"
+                  tabindex="-1"
+                >{{i18n.startLaunchBuddy}}</a></li>
+            <li class="nav-item active" v-if="!baseConfig.launchBuddyDir && (baseConfig.gw2Dir && gw2Instances.running&& gw2Instances.running.length < 1)"><a
+                  class="btn btn-success"
+                  href="#"
+                  @click="startGame($event)"
+                  tabindex="-1"
+                >{{i18n.startGame}}</a></li>
+            <li class="nav-item nav-item-space active">
+              <a
+                class="nav-link"
+                href="#"
+                tabindex="-1"
+                @click="selectPage('credits',{},$event)"
+              >{{i18n.navCredits}}</a>
+            </li>
+        </ul>
+    </nav>
+    <div v-if="page === 'overview'"><%- await include('overview', {}); %></div>
+    <div v-if="page === 'logs'"><%- await include('logs', {}); %></div>
+    <div v-if="page === 'friends'"><%- await include('friends', {}); %></div>
+    <div v-if="page === 'settings'"><%- await include('settings', {}); %></div>
+    <div v-if="page === 'credits'"><%- await include('credits', {}); %></div>
+    <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
+    <div v-if="page === 'friend'"><%- await include('friend', {}); %></div>
+    <div v-if="page === 'builds'"><%- await include('builds', {}); %></div>
+    <div class="zoom-indicator" v-if="baseConfig.zoom!==1">{{Math.round(baseConfig.zoom * 100)}}%</div>
+  </div>
+    <script src="/socket.io/socket.io.js?<%= socketversion %>"></script>
+  <script src="/ext/vue/vue.global.js?<%= vueversion %>"></script>
+  <script src="/i18n.js?<%= i18nversion %>"></script>
+  <script src="/index.js?<%= indexjsversion %>"></script>
   <script src="/ext/luxon/luxon.min.js?<%= luxonversion %>"></script>
-<script>
-      function onResize(){
-        const logDisplays = document.querySelectorAll(".arc-log-display");
-        for (const logDisplay of logDisplays) {
-          const prev = logDisplay.previousElementSibling;
-          if(!prev){
-            const parent = logDisplay.parentElement;
-            if(!parent){
-              continue;
-            }
-            
-          const rect = parent.getBoundingClientRect();
-            logDisplay.style.height = (window.innerHeight - rect.bottom -34)+"px";
-            continue;
-          }
-          const rect = prev.getBoundingClientRect();
-          logDisplay.style.height = (window.innerHeight - rect.bottom-34)+"px";
-        }
-      } 
-      window.addEventListener("resize",onResize)
-      onResize();
-      setInterval(()=>{
-        const els = document.querySelectorAll("[data-rel-time]");
-        for (const el of els) {
-          el.textContent = luxon.DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"),10)).toRelative({locale: "<%= lang %>"});
-        }
-      },500);
-    </script>
 </body>
 
 </html>

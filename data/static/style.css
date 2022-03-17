@@ -6,8 +6,12 @@ body{
   width: 100%;
   /*max-width:60rem;*/
   margin: 0 auto;
-  background:#333333;
+  background:transparent;
   color:#cecece;
+}
+html.bg-img{
+  min-height: 100vh;
+  min-width: 100vw;
 }
 
 ::-webkit-scrollbar {
@@ -44,6 +48,9 @@ body{
 .wings .wing{
   flex: 0 0 3rem;
   margin: 0 0.5rem;
+}
+.wings .wing h3{
+  text-align: center;
 }
 .wing-boss-icon{
   width: 3rem;
@@ -206,7 +213,7 @@ nav+main.arc-log-display.arc-log-display-friend{
   position: absolute;
   top:3rem;
   left:0;
-  background-color: var(--dark);
+  background-color: var(--bs-dark);
   z-index: 100;
   padding: 0.5rem;
   box-shadow: 1px 1px 3px #000;
@@ -218,10 +225,21 @@ nav+main.arc-log-display.arc-log-display-friend{
   display: inline-block;
   width: 1.5rem;
 }
+.wing-step-tooltip-mark-cm{
+  display: inline-block;
+  width: 2.5rem;
+}
+.wing-step-tooltip-mark-open{
+  opacity: 0.2;
+}
 .center-big-splash{
+  isolation: isolate;
   margin-top: 45vh;
   font-size: 10vh;
   text-align: center;
+  z-index: 1;
+  position: relative;
+  user-select: none;
 }
 @keyframes blink {50% { color: transparent }}
 .center-big-splash .dot{
@@ -232,6 +250,15 @@ nav+main.arc-log-display.arc-log-display-friend{
 }
 .center-big-splash .dot:nth-of-type(3) { 
   animation-delay: 500ms 
+}
+.center-big-splash-step-area{
+  isolation: isolate;
+  margin-top: 5vh;
+  font-size: 5vh;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+  user-select: none;
 }
 
 .friend-badges,.table td.friend-badges{
@@ -316,4 +343,66 @@ nav+main.arc-log-display.arc-log-display-friend{
   text-align:center;
   line-height: 1rem;
   text-shadow: 1px 1px 2px #000;
+}
+.arc-list-row{
+  flex-wrap: wrap;
+}
+.arc-list-row .arc-list-img-box{
+  flex: 0 0 2.5rem;
+  text-align: center;
+}
+.arc-list-row .arc-list-img-bossname{
+  padding: 0 0.5rem;
+  flex: 1 1 50%;
+  text-align: left;
+}
+.arc-list-row .arc-list-img-logby{
+  flex: 0 0 auto;
+  text-align: left;
+  margin-left: 3rem;
+}
+.zoom-indicator{
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background: #777777;
+  border-top-right-radius: 0.6vmin;
+  padding: 0.3vmin;
+  font-size: 1.2vmin;
+  opacity: 1;
+  transition: opacity 0.5s;
+  cursor: default;
+}
+.zoom-indicator:hover{
+  opacity: 0;
+}
+
+.bg-video{
+  z-index: 0;
+  position: fixed;
+  top: 0;
+  left:0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+.build-row-profession{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.build-row-profession>.build-row-profession-icon{
+  margin-right: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+}
+.bench-old{
+  font-style: italic;
+  opacity: 0.4;
+}
+.boon-icon {
+  width: 1rem;
+  height: 1rem;
 }
