@@ -32,7 +32,6 @@
     "node-processlist": "^1.0.2",
     "node-windows": "^1.0.0-beta.6",
     "semver": "^7.3.5",
-    "share-memory-win": "^1.2.1",
     "socket.io": "^4.4.1",
     "urllib": "^2.38.0",
     "vue": "^3.2.31"
