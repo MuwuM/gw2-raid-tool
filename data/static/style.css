@@ -228,6 +228,7 @@ nav+main.arc-log-display.arc-log-display-friend{
 .wing-step-tooltip-mark-cm{
   display: inline-block;
   width: 2.5rem;
+  margin-right: 0.25rem;
 }
 .wing-step-tooltip-mark-open{
   opacity: 0.2;
