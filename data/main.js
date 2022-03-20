@@ -12,7 +12,6 @@ const updater = require("./updater");
 const updateGw2Instances = require("./update-gw2-instances");
 const updateMumbleLinkData = require("./update-mumble-links");
 const i18n = require("./i18n");
-const {version: appVersion} = require("./package.json");
 
 const eventHub = require("./event-hub");
 const wings = require("./info/wings");
@@ -45,7 +44,7 @@ electronHandler({
   const baseConfig = {
     dbBaseDir: processDir,
     processDir,
-    appVersion
+    appVersion: pgk.version
   };
   const db = await dbConnect({baseConfig});
 
