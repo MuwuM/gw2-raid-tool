@@ -493,12 +493,9 @@ socket.on("progressConfig", (data) => {
   //console.log("baseConfig", data);
   mnt.progressConfig = data.progressConfig;
 });
-socket.on("wings", (data) => {
+socket.on("init", (data) => {
   //console.log("wings", data);
   mnt.wings = data.wings;
-});
-socket.on("specs", (data) => {
-  //console.log("wings", data);
   mnt.specs = data.specs;
 });
 socket.on("logs", (data) => {

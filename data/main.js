@@ -152,8 +152,10 @@ electronHandler({
     socket.emit("accounts", {accounts: await db.accounts.find({})});
     eventHub.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
-    socket.emit("wings", {wings});
-    socket.emit("specs", {specs});
+    socket.emit("init", {
+      wings,
+      specs
+    });
     socket.emit("builds", {builds});
     for (const handler of eventHub.onHandler) {
       socket.on(...handler.args);
