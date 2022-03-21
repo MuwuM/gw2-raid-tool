@@ -407,3 +407,9 @@ nav+main.arc-log-display.arc-log-display-friend{
   width: 1rem;
   height: 1rem;
 }
+.page-item{
+  cursor: pointer;
+}
+.page-item.disabled{
+  cursor: default;
+}

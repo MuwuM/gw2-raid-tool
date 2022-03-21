@@ -21,6 +21,12 @@ const colors = [
   "#F68FD2"
 ];
 
+function preventDefault(event) {
+  if (event && typeof event.preventDefault === "function") {
+    event.preventDefault();
+  }
+}
+
 function handleScrollUpdate() {
   const navBar = document.querySelector("nav.navbar");
   const tableHeader = document.querySelector("table thead tr.sticky-top");
@@ -92,20 +98,14 @@ const app = Vue.createApp({
       mumbleLinkActive: false
     };
   },
-  computed: {
-    getMode() {
-      return this.accounts;
-    },
-    i18n() {
-
-      return new Proxy(window[`i18n/${this.lang}`], {get(target, p) {
-        if (!target[p]) {
-          return `__${p}__`;
-        }
-        return target[p];
-      }});
-    }
-  },
+  computed: {i18n() {
+    return new Proxy(window[`i18n/${this.lang}`], {get(target, p) {
+      if (!target[p]) {
+        return `__${p}__`;
+      }
+      return target[p];
+    }});
+  }},
   methods: {
     toggleBuildClass(c) {
       if (this.activeBuildClass === c) {
@@ -141,20 +141,14 @@ const app = Vue.createApp({
     },
     activeBuilds(builds, activeBuildClass, activeBuildSubClass, activeBuildRole, activeBuildSubRole) {
       return (builds || []).filter((b) => (!activeBuildClass ||
-
         (activeBuildClass === "active" && b.class === this.specs.find((s) => s.id === this.mumbleLinkActive.identity.spec).profession) ||
         b.class === activeBuildClass) &&
       (!activeBuildSubClass || b.spec === activeBuildSubClass) &&
       (!activeBuildRole || b.role.split("-")[0] === activeBuildRole) &&
       (!activeBuildSubRole || b.role === activeBuildSubRole));
     },
-    selectMode(accounts) {
-      this.accounts = accounts;
-    },
     selectPage(page, info, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       if (page === "log" && info && info.id && info.action === "upload") {
         this.uploadLog(info.id);
         return;
@@ -309,9 +303,7 @@ const app = Vue.createApp({
       return parts;
     },
     selectLog(log, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       if (log) {
         this.activeLog = log.hash;
       } else {
@@ -319,9 +311,7 @@ const app = Vue.createApp({
       }
     },
     showLogPage(page, filters, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       this.logFilters.p = page;
       if (typeof filters === "object" && filters) {
         this.logFilters.config = filters;
@@ -331,9 +321,7 @@ const app = Vue.createApp({
       socket.emit("logFilter", logFilter);
     },
     showFriendsPage(page, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       const friendsFilter = {};
       socket.emit("friendsFilter", friendsFilter);
     },
@@ -341,89 +329,61 @@ const app = Vue.createApp({
       socket.emit("uploadLog", {hash: logHash});
     },
     addAccount(token, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("addAccount", {token});
       this.token = "";
     },
     removeAccount(token, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("removeAccount", {token});
     },
     changeLang(lang, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("changeLang", {lang});
     },
     selectLogsPath(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("selectLogsPath", {});
     },
     selectGw2Dir(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("selectGw2Dir", {});
     },
     selectLaunchBuddyDir(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("selectLaunchBuddyDir", {});
     },
     removeLaunchBuddyDir(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("removeLaunchBuddyDir", {});
     },
     updateArcDps(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("updateArcDps", {});
     },
     updateArcDps11(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("updateArcDps11", {});
     },
     checkArcUpdates(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("checkArcUpdates", {});
     },
     disableArcUpdates(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("disableArcUpdates", {});
     },
     enableArcUpdates(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("enableArcUpdates", {});
     },
     resetAllLogs(confirmReset, event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("resetAllLogs", {confirmReset});
       this.confirmReset = "";
     },
     startGame(event) {
-      if (event && typeof event.preventDefault === "function") {
-        event.preventDefault();
-      }
+      preventDefault(event);
       socket.emit("startGame", {});
     },
     logPath(activeLog, logs) {
@@ -575,12 +535,12 @@ function handleClick(event) {
         action: pathParts[3]
       }, event);
     }
-    event.preventDefault();
+    preventDefault(event);
   } else if (!event.defaultPrevented && relativeUrl) {
     console.log({relativeUrl: relativeUrl.href});
     const url = new URL(relativeUrl.href, window.location.href);
     window.open(url.href);
-    event.preventDefault();
+    preventDefault(event);
   }
 }
 
@@ -599,10 +559,7 @@ function checkIframeClicks() {
       iframe.contentWindow.document._raidToolClickHandler = true;
     }
   }
-
 }
-
-//setInterval(checkIframeClicks, 100);
 
 document.addEventListener("click", handleClick);
 
