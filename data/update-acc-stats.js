@@ -232,14 +232,19 @@ module.exports.localUpdates = async({
     return;
   }
 
+  let startOfWeek = DateTime.utc().startOf("week")
+    .plus({
+      hours: 7,
+      minutes: 30
+    });
+  if (DateTime.utc() < startOfWeek) {
+    startOfWeek = startOfWeek.minus({weeks: 1});
+  }
+
   if (account.accountInfo && account.accountInfo.name) {
 
     const completedCMs = {};
-    const startOfRaidReset = DateTime.utc().startOf("week")
-      .plus({
-        hours: 7,
-        minutes: 30
-      });
+    const startOfRaidReset = startOfWeek;
     const endOfRaidReset = startOfRaidReset.plus({days: 7});
     const cms = await db.logs.find({
       timeEndMs: {
@@ -286,11 +291,7 @@ module.exports.localUpdates = async({
   if (account.accountInfo && account.accountInfo.name) {
 
     const completedStrikesWeekly = {};
-    const startOfStrikeWeeklyReset = DateTime.utc().startOf("week")
-      .plus({
-        hours: 7,
-        minutes: 30
-      });
+    const startOfStrikeWeeklyReset = startOfWeek;
     const endOfStrikeWeeklyReset = startOfStrikeWeeklyReset.plus({days: 7});
     const strikes = await db.logs.find({
       timeEndMs: {
