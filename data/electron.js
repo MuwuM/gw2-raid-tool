@@ -30,8 +30,7 @@ module.exports = async({
       icon: path.resolve(__dirname, "icon.ico"),
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false,
-        nativeWindowOpen: true
+        contextIsolation: false
       }
     });
     win.setMenu(null);
