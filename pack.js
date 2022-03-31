@@ -1,4 +1,5 @@
 const packager = require("electron-packager");
+const setLanguages = require("electron-packager-languages");
 const rebuild = require("electron-rebuild");
 const electronInstaller = require("electron-winstaller");
 const path = require("path");
@@ -28,7 +29,6 @@ const uploadConfig = require("./upload-config.json");
     buildDir = path.resolve(__dirname, "build-dist-dev");
     installerDir = path.resolve(__dirname, "installer-dist-dev");
   }
-  //const distConfigDir = path.resolve(__dirname, "dist-config");
 
   const appIcon = path.resolve(__dirname, "data", "icon.ico");
   const installerIcon = path.resolve(__dirname, "data", "installer.ico");
@@ -46,6 +46,11 @@ const uploadConfig = require("./upload-config.json");
     appVersion: pgk.version,
     electronVersion,
     afterCopy: [
+      setLanguages([
+        "en",
+        "de",
+        "fr"
+      ]),
       async(buildPath, electronVersion, platform, arch, callback) => {
         try {
           console.info(`rebuilding: ${buildPath}`);
@@ -66,14 +71,7 @@ const uploadConfig = require("./upload-config.json");
   const targetDir = appPaths[0];
   console.info(targetDir);
 
-  //const configFiles = await fg(["**/*"], {
-  //  dot: true,
-  //  cwd: distConfigDir
-  //});
-  //for (const configFile of configFiles) {
-  //  await fs.copy(path.join(distConfigDir, configFile), path.join(targetDir, configFile));
-  //}
-  //console.log("copied config files");
+  //return
 
   const exeName = pgk.name.replace(/-/g, "_");
   await electronInstaller.createWindowsInstaller({
