@@ -30,7 +30,8 @@ module.exports = async({
       icon: path.resolve(__dirname, "icon.ico"),
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false
+        contextIsolation: false,
+        nativeWindowOpen: true
       }
     });
     win.setMenu(null);
@@ -115,7 +116,17 @@ module.exports = async({
         shell.openExternal(details.url);
         return {action: "deny"};
       }
-      return {action: "allow"};
+      const url = new URL(details.url);
+
+      const path = url.pathname;
+      const pathParts = path.split("/");
+      //console.log(pathParts);
+      if (!pathParts[1]) {
+        win.webContents.executeJavaScript("{mnt.selectPage(\"overview\", {});}");
+      } else {
+        win.webContents.executeJavaScript(`{mnt.selectPage(${JSON.stringify(pathParts[1])},{id:${JSON.stringify(pathParts[2])},action:${JSON.stringify(pathParts[3])}});}`);
+      }
+      return {action: "deny"};
     });
     win.webContents.on("before-input-event", (event, input) => {
       if (input.control && input.key === "+") {

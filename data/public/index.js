@@ -152,6 +152,12 @@ const app = Vue.createApp({
       if (page === "log" && info && info.id && info.action === "upload") {
         this.uploadLog(info.id);
         return;
+      } else if (page === "log") {
+        const log = info && this.logs.find((l) => l.hash === info.id);
+        if (log) {
+          this.selectLog(log, event);
+        }
+        return;
       }
       this.page = page;
       this.pageConfig = info;
