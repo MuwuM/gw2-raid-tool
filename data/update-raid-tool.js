@@ -7,7 +7,7 @@ const semver = require("semver");
 const updateUrlProd = "https://tool.raid-static.de/";
 const updateUrlDev = "https://tool.raid-static.de/dev/";
 
-module.exports = () => new Promise((res, rej) => {
+module.exports = () => new Promise((res) => {
   const version = electronApp.getVersion();
   const parsedVersion = semver.parse(version);
   const isDevBuild = parsedVersion.prerelease.includes("dev");
@@ -26,7 +26,8 @@ module.exports = () => new Promise((res, rej) => {
     autoUpdater.quitAndInstall();
   });
   autoUpdater.on("error", (error) => {
-    rej(error);
+    console.warn(error);
+    res();
   });
   autoUpdater.setFeedURL({url: updateUrl});
   autoUpdater.checkForUpdates();
