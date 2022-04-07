@@ -85,6 +85,8 @@
         <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchWithAllies ==='number'" :title="i18n.buildBenchmarkWithAllies"><img class="friend-icon" src="/img/Mini_Professor_Miau_Icon.png"> {{build.benchWithAllies}} <img class="friend-icon" src="/img/Party.png"></div>
         <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchLarge ==='number'"><img class="friend-icon" src="/img/Mini_Baron_von_Scrufflebutt.png"
         > {{build.benchLarge}} <span :title="i18n.buildBenchmarkLargeHitbox">({{i18n.buildBenchmarkLargeHitboxShort}})</span></div>
+        <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchWithAlliesLarge ==='number'"><img class="friend-icon" src="/img/Mini_Baron_von_Scrufflebutt.png"
+        > {{build.benchWithAlliesLarge}} <span :title="i18n.buildBenchmarkLargeHitbox">({{i18n.buildBenchmarkLargeHitboxShort}})</span> <img class="friend-icon" src="/img/Party.png"></div>
         <div :class="{'bench-old':build.benchOld}" v-if="typeof build.benchConfusion ==='number'"><img class="friend-icon" src="/img/Confusion.png"
         > {{build.benchConfusion}} {{i18n.buildBenchmarkConfusion}}</div>
       </td>
