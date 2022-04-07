@@ -30,14 +30,14 @@
         <div class="btn-group">
           <a v-for="c in buildRoles" v-on:click="toggleBuildRole(c)" 
           :class="{'btn':true, 'btn-outline-primary':true, 'active':c===activeBuildRole}" :title="c">
-            <img class="boon-icon" :src="'/img/roles/'+c+'.png'">
+            <img class="boon-icon" :src="'/img/roles/'+c+'.png?v=1'">
           </a>
         </div>
         <div class="mt-2" v-if="activeBuildRole && buildSubRoles[activeBuildRole]">
           <div class="btn-group">
             <a v-for="c in buildSubRoles[activeBuildRole]" v-on:click="toggleBuildSubRole(c)" 
             :class="{'btn':true, 'btn-outline-primary':true, 'active':c===activeBuildSubRole}" :title="c">
-              <img class="boon-icon" :src="'/img/roles/'+c+'.png'">
+              <img class="boon-icon" :src="'/img/roles/'+c+'.png?v=1'">
             </a>
           </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="build-row-profession">
           <img
             class="build-row-profession-icon"
-            :src="'/img/roles/'+build.role+'.png'"
+            :src="'/img/roles/'+build.role+'.png?v=1'"
           >
           <div>
             <div>{{build.role.split('-')[0]}}</div>
@@ -94,6 +94,7 @@
         <a class="btn btn-link" v-if="build.gw2skills" :href="'http://en.gw2skills.net/editor/?'+build.gw2skills">Gw2Skills</a>
         <a class="btn btn-link" v-if="build.snowcrows" :href="'https://snowcrows.com'+build.snowcrows">Snow Crows</a>
         <a class="btn btn-link" v-if="build.luckynoobs" :href="'https://lucky-noobs.com'+build.luckynoobs">Lucky Noobs</a>
+        <a class="btn btn-link" v-if="build.hardstuck" :href="'https://beta.hardstuck.gg'+build.hardstuck">Hardstuck</a>
         <a class="btn btn-link" v-if="build.youtube" :href="'https://youtu.be/'+build.youtube">YouTube</a>
       </td>
     </tr>
