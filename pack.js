@@ -57,7 +57,8 @@ const uploadConfig = require("./upload-config.json");
           await rebuild.rebuild({
             buildPath,
             electronVersion,
-            arch
+            arch,
+            msvsVersion: 2022
           });
           callback();
         } catch (error) {
