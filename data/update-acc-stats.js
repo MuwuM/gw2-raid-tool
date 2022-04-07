@@ -12,9 +12,8 @@ for (const w of strikeWings) {
     if (step.triggerID) {
       if (w.isStrikeWeekly) {
         strikeIdsWeekly.push(step.triggerID);
-      } else {
-        strikeIds.push(step.triggerID);
       }
+      strikeIds.push(step.triggerID);
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "gw2-raid-tool",
   "productName": "GW2 Raid Tool",
-  "version": "2.3.7",
+  "version": "2.4.0",
   "description": "Das ultimative Programm fürs Raiden",
   "main": "main.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "fs-extra": "^10.0.1",
     "get-port-please": "^2.4.3",
     "gw2": "0.0.1",
-    "jszip": "^3.9.0",
+    "jszip": "^3.9.1",
     "koa": "^2.13.4",
     "koa-better-router": "^2.1.1",
     "koa-body": "^4.2.0",
@@ -31,7 +31,7 @@
     "nedb-promises": "^6.0.3",
     "node-processlist": "^1.0.2",
     "node-windows": "^1.0.0-beta.7",
-    "semver": "^7.3.5",
+    "semver": "^7.3.6",
     "socket.io": "^4.4.1",
     "urllib": "^2.38.0",
     "vue": "^3.2.31"

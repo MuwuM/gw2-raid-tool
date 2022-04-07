@@ -1,6 +1,7 @@
-/* globals io,Vue,window,document,luxon */
+/* globals io,Vue,window,document */
 const socket = io();
 const {webFrame} = require("electron");
+const {DateTime} = require("luxon");
 
 const colors = [
   "#77ff77",
@@ -95,7 +96,8 @@ const app = Vue.createApp({
       activeBuildRole: false,
       buildSubRoles: {},
       activeBuildSubRole: false,
-      mumbleLinkActive: false
+      mumbleLinkActive: false,
+      dayOfYear: DateTime.utc().ordinal
     };
   },
   computed: {i18n() {
@@ -138,6 +140,9 @@ const app = Vue.createApp({
       } else {
         this.activeBuildSubRole = c;
       }
+    },
+    isDailyToday(wing, step, dayOfYear) {
+      return typeof wing.hasDailies === "number" && wing.hasDailies > 0 && (step.dailyIndex === dayOfYear % wing.hasDailies);
     },
     activeBuilds(builds, activeBuildClass, activeBuildSubClass, activeBuildRole, activeBuildSubRole) {
       return (builds || []).filter((b) => (!activeBuildClass ||
@@ -570,9 +575,10 @@ function checkIframeClicks() {
 document.addEventListener("click", handleClick);
 
 setInterval(() => {
+  mnt.dayOfYear = DateTime.utc().ordinal;
   const els = document.querySelectorAll("[data-rel-time]");
   for (const el of els) {
-    el.textContent = luxon.DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"), 10)).toRelative({locale: mnt.lang});
+    el.textContent = DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"), 10)).toRelative({locale: mnt.lang});
   }
 }, 500);
 

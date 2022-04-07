@@ -20,6 +20,7 @@
           :src="'/img/'+step.img"
           :alt="step['name_'+lang]"
           >
+          <img src="/img/Daily_Strike_Mission.png" class="wing-boss-is-daily-today" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
           <svg class="wing-boss-border" viewBox="0 0 300 300">
             <path v-for="p in svgBossBorder(accounts, step, wing)" :d="p.d" :style="{fill:p.fill,opacity:p.opacity}" />
           </svg>
@@ -28,6 +29,9 @@
             <div class="wing-step-tooltip-title">{{step['name_'+lang]}}:</div>
             <template v-if="!step.kpName && totalKps.raidBossKp && totalKps.raidBossKp[step.id] > 0">
 <div v-for="acc in accounts">
+  <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])}">
+    <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
+  </span>
   <span v-if="!wing.isStrike &&(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
   <span v-if="!wing.isStrike &&!(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
   <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
@@ -41,6 +45,9 @@
             </template>
             <template v-if="step.kpName && totalKps[step.kpName] && totalKps[step.kpName] > 0">
 <div v-for="acc in accounts">
+  <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])}">
+    <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
+  </span>
   <span v-if="!wing.isStrike &&(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
   <span v-if="!wing.isStrike &&!(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
   <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
@@ -55,6 +62,9 @@
             <template v-if="!(!step.kpName && totalKps.raidBossKp && totalKps.raidBossKp[step.id] > 0) && !(step.kpName && totalKps[step.kpName] && totalKps[step.kpName] > 0)">
 <span class="li-display-number-details">{{i18n.noKP}}</span>
 <div v-for="acc in accounts">
+  <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])}">
+    <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
+  </span>
   <span v-if="!wing.isStrike &&(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
   <span v-if="!wing.isStrike &&!(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
   <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
@@ -68,6 +78,10 @@
             </template>
             <span v-if="wing.isStrike && !wing.isStrikeWeekly" class="li-display-number-details">{{i18n.dailyResetInfo}}</span>
             <span v-if="!wing.isStrike || wing.isStrikeWeekly" class="li-display-number-details">{{i18n.weeklyResetInfo}}</span>
+            <span v-if="isDailyToday(wing,step,dayOfYear)" class="li-display-number-details">
+              <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" :title="i18n.isDailyToday" />
+              {{i18n.isDailyToday}}
+            </span>
         </div>
           </a>
     </div>

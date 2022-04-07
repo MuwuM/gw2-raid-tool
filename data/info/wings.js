@@ -317,6 +317,7 @@ module.exports = [
     name_de: "Angriffsmission: Eisbrut-Saga",
     name_fr: "Mission d'attaque: L'Épopée du givre",
     id: "strikes_icebrood_saga",
+    hasDailies: 6,
     steps: [
       {
         id: "shiverpeaks",
@@ -326,7 +327,8 @@ module.exports = [
         name_fr: "Col des Cimefroides",
         triggerID: 22154,
         img: "Icebrood_Construct.png",
-        hasCM: false
+        hasCM: false,
+        dailyIndex: 2
       },
       {
         id: "voice_and_claw",
@@ -336,7 +338,8 @@ module.exports = [
         name_fr: "Voix et Griffe légendaires des déchus",
         triggerID: 22343,
         img: "KodanVoiceAndClaw.png",
-        hasCM: false
+        hasCM: false,
+        dailyIndex: 3
       },
       {
         id: "fraenir",
@@ -346,7 +349,8 @@ module.exports = [
         name_fr: "Fraenir de Jormag",
         triggerID: 22492,
         img: "Fraenir_of_Jormag.png",
-        hasCM: false
+        hasCM: false,
+        dailyIndex: 1
       },
       {
         id: "boneskinner",
@@ -357,7 +361,8 @@ module.exports = [
         triggerID: 22521,
         img: "Boneskinner.png",
         hasCM: false,
-        kpName: "boneSkinner"
+        kpName: "boneSkinner",
+        dailyIndex: 5
       },
       {
         id: "whisper_of_jormag",
@@ -367,7 +372,8 @@ module.exports = [
         name_fr: "Murmure de Jormag",
         triggerID: 22711,
         img: "Whisper_of_Jormag.png",
-        hasCM: false
+        hasCM: false,
+        dailyIndex: 4
       }
     ]
   },
@@ -380,6 +386,7 @@ module.exports = [
     name_de: "Angriffsmission: End of Dragons",
     name_fr: "Mission d'attaque: End of Dragons",
     id: "strikes_end_of_dragons",
+    hasDailies: 4,
     steps: [
       {
         id: "aetherblade_hideout",
@@ -389,7 +396,8 @@ module.exports = [
         name_fr: "Aetherblade Hideout",
         triggerID: 24033,
         img: "MaiTrin.png",
-        hasCM: true
+        hasCM: true,
+        dailyIndex: 0
       },
       {
         id: "xunlai_jade_junkyard",
@@ -399,7 +407,8 @@ module.exports = [
         name_fr: "Xunlai Jade Junkyard",
         triggerID: 23957,
         img: "Ankka.png",
-        hasCM: true
+        hasCM: true,
+        dailyIndex: 1
       },
       {
         id: "kaineng_overlook",
@@ -409,7 +418,8 @@ module.exports = [
         name_fr: "Kaineng Overlook",
         triggerID: 24485,
         img: "MinisterLi.png",
-        hasCM: true
+        hasCM: true,
+        dailyIndex: 2
       },
       {
         id: "harvest_temple",
@@ -419,7 +429,8 @@ module.exports = [
         name_fr: "Harvest Temple",
         triggerID: 43488, /*1378, /*24375, /*43488*/
         img: "DragonVoid.png",
-        hasCM: true
+        hasCM: true,
+        dailyIndex: 3
       }
     ]
   }

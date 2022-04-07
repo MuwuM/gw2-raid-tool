@@ -81,5 +81,6 @@ module.exports = {
   buildBenchmarkLargeHitboxShort: "Large",
   buildBenchmarkLargeHitbox: "Large Hitbox",
   buildBenchmarkConfusion: "stacks of confusion",
-  buildBenchmarkWithAllies: "with Allies"
+  buildBenchmarkWithAllies: "with Allies",
+  isDailyToday: "Daily Strike Mission"
 };

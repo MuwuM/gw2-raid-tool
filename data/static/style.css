@@ -71,6 +71,18 @@ html.bg-img{
   color: #cecece;
   text-decoration:none;
 }
+
+.wing-boss-is-daily-today{
+  position: absolute;
+  bottom:-0.125rem;
+  right: -0.125rem;
+  width: 2rem;
+  height: 2rem;
+  opacity: 0.8;
+}
+.wing-step:hover .wing-boss-is-daily-today{
+  opacity: 1;
+}
 .wing-boss-border{
   width: 3.25rem;
   height: 3.25rem;
@@ -413,4 +425,9 @@ nav+main.arc-log-display.arc-log-display-friend{
 }
 .page-item.disabled{
   cursor: default;
+}
+.daily-strike-icon {
+  margin: -0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
