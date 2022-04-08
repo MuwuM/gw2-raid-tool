@@ -439,7 +439,9 @@ socket.on("accounts", (data) => {
       } else if (Array.isArray(value) && (!totalKps[key] || Array.isArray(totalKps[key]))) {
         totalKps[key] = (totalKps[key] || []).concat(value);
       } else if (typeof value === "object" && (!totalKps[key] || typeof totalKps[key] === "object")) {
-        totalKps[key] = {};
+        if (!totalKps[key]) {
+          totalKps[key] = {};
+        }
         for (const [
           sub,
           v
