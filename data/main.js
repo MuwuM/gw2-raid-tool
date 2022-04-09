@@ -114,7 +114,6 @@ electronHandler({
 
 
   const arcConfigFilePath = path.join(baseConfig.gw2Dir, "addons/arcdps/arcdps.ini");
-  console.log(arcConfigFilePath);
   try {
     const arcConfigFile = await fs.readFile(arcConfigFilePath);
     const arcConfig = ini.parse(`${arcConfigFile}`);
@@ -153,9 +152,6 @@ electronHandler({
         console.warn("Could not update arc config");
       }
     }
-    const outFile = path.join(process.cwd(), "test.json");
-    await fs.outputJSON(outFile, arcConfig, {spaces: 2});
-    console.log(outFile);
   } catch (error) {
     console.warn("Arc config file not found", error);
   }
