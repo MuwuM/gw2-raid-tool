@@ -20,7 +20,6 @@
           :src="'/img/'+step.img"
           :alt="step['name_'+lang]"
           >
-          <img src="/img/Daily_Strike_Mission.png" class="wing-boss-is-daily-today" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
           <svg class="wing-boss-border" viewBox="0 0 300 300">
             <path v-for="p in svgBossBorder(accounts, step, wing)" :d="p.d" :style="{fill:p.fill,opacity:p.opacity}" />
           </svg>
@@ -83,6 +82,8 @@
               {{i18n.isDailyToday}}
             </span>
         </div>
+        <img src="/img/Daily_Strike_Mission.png" class="wing-boss-is-daily-today" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
+          
           </a>
     </div>
   </div>

@@ -116,9 +116,6 @@ html.bg-img{
   height: 3rem;
   pointer-events: none;
 }
-.wing-step:not(.wing-step-completed):not(.wing-step-alt-completed){
-  opacity: 0.4;
-}
 .arc-log-display{
   display: flex;
   flex-direction: row;
@@ -213,7 +210,10 @@ nav+main.arc-log-display.arc-log-display-friend{
   display: none;
   pointer-events: none;
 }
-.wing-step:not(.wing-step-completed):not(.wing-step-alt-completed):hover{
+.wing-step:not(.wing-step-completed):not(.wing-step-alt-completed) .wing-boss-icon{
+  opacity: 0.4;
+}
+.wing-step:not(.wing-step-completed):not(.wing-step-alt-completed):hover .wing-boss-icon{
   opacity: 1;
 }
 .wing-step:hover{
