@@ -141,6 +141,7 @@ module.exports = async({
   if (installedVersion) {
 
     const arcStats = await fs.stat(arcFile);
-    baseConfig.arcdps11VersionDate = DateTime.fromMillis(arcStats.mtimeMs).toFormat("dd.MM.y-HH:mm") ;
+    baseConfig.arcdps11VersionDate = DateTime.fromMillis(arcStats.mtimeMs).toUTC()
+      .toFormat("dd.MM.y-HH:mm");
   }
 };
