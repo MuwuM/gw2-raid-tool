@@ -50,6 +50,7 @@ module.exports = {
   settingsChangeButton: "Ändern",
   settingsDeleteButton: "Löschen",
   settingsRequiresRestart: "(das Tool wird danach neugestartet)",
+  fromArcConfig: "(wird aus arcdps config erkannt)",
   settingsResetPlaceholder: "Hier 'reset' reinschreiben",
   settingsResetButton: "Logs neu einlesen",
   settingsResetTakesLong: "(kann lange dauern)",

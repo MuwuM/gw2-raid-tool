@@ -6,7 +6,8 @@ module.exports = async({
   baseConfig.gw2Instances = {
     running: [],
     launchBuddy: [],
-    nvidiaShare: []
+    nvidiaShare: [],
+    ready: false
   };
   async function updateInstances() {
     const oldInstances = JSON.stringify(baseConfig.gw2Instances);
@@ -35,6 +36,7 @@ module.exports = async({
         console.error(error);
       }
     }
+    baseConfig.gw2Instances.ready = true;
     const newInstances = JSON.stringify(baseConfig.gw2Instances);
     if (oldInstances !== newInstances) {
       eventHub.emit("baseConfig", {baseConfig});

@@ -20,6 +20,7 @@
     "fs-extra": "^10.0.1",
     "get-port-please": "^2.4.3",
     "gw2": "0.0.1",
+    "ini": "^3.0.0",
     "jszip": "^3.9.1",
     "koa": "^2.13.4",
     "koa-better-router": "^2.1.1",

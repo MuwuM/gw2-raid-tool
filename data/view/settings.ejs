@@ -39,16 +39,17 @@
   </div>
   </div>
 
-  <div class="form-group mt-5" action="/settings/logsPath" method="post">
-    <div>{{i18n.settingsArcdpsLogDir}}</div>
-    <div>{{baseConfig.logsPath}}</div>
-    <input class="btn btn-primary" type="submit" :value="i18n.settingsChangeButton" @click="selectLogsPath($event)"> {{i18n.settingsRequiresRestart}}
-  </div>
-
   <div class="form-group mt-5" action="/settings/gw2Dir" method="post">
     <div>{{i18n.settingsGw2Dir}}</div>
     <div>{{baseConfig.gw2Dir}}\Gw2-64.exe</div>
     <input class="btn btn-primary" type="submit" :value="i18n.settingsChangeButton" @click="selectGw2Dir($event)"> {{i18n.settingsRequiresRestart}}
+  </div>
+
+  <div class="form-group mt-5" action="/settings/logsPath" method="post">
+    <div>{{i18n.settingsArcdpsLogDir}}</div>
+    <div>{{baseConfig.logsPath}}</div>
+    <div class="font-italic">{{i18n.fromArcConfig}}</div>
+    <!--<input class="btn btn-primary" type="submit" :value="i18n.settingsChangeButton" @click="selectLogsPath($event)"> {{i18n.settingsRequiresRestart}}-->
   </div>
 
   <div class="form-group mt-5" action="/settings/launchBuddyDir" method="post">
