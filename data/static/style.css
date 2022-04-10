@@ -431,3 +431,17 @@ nav+main.arc-log-display.arc-log-display-friend{
   width: 1.5rem;
   height: 1.5rem;
 }
+
+.build-name-label{
+  display: flex;
+  flex-direction: row;
+}
+.build-name-label .build-low-intensity-marker{
+  margin-right: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+}
+.build-name-label .build-name{
+  flex: 1 1 100%;
+}
