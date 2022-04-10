@@ -241,12 +241,17 @@ module.exports = async({
       clearTimeout(nextTick);
       lastLog = await hashLog(JSON.stringify({}));
       nextTick = setTimeout(updateLogs, 1);
+      let evtcPath = path.join(baseConfig.logsPath, log.entry);
+      const evtcDonePath = path.join(baseConfig.logsPath, ".raid-tool", log.entry);
+      if (await fs.pathExists(evtcDonePath)) {
+        evtcPath = evtcDonePath;
+      }
       try {
         const res = await urllib.request("https://dps.report/uploadContent?json=1&generator=ei", {
           timeout: 240000,
           dataType: "json",
           method: "POST",
-          files: {file: fs.createReadStream(path.join(baseConfig.logsPath, log.entry))}
+          files: {file: fs.createReadStream(evtcPath)}
         });
         if (res.data && res.data.permalink) {
           log.permalink = res.data.permalink;

@@ -4,6 +4,8 @@ const {
 const gw2 = require("gw2");
 const path = require("path");
 const util = require("util");
+const fs = require("fs-extra");
+const fg = require("fast-glob");
 const wincmd = require("node-windows");
 const elevate = util.promisify(wincmd.elevate);
 
@@ -137,6 +139,16 @@ module.exports = async({
   eventHub.on("resetAllLogs", async({confirmReset}) => {
     //console.log("resetAllLogs", {confirmReset});
     if (confirmReset === "reset") {
+      await dialog.showMessageBox({message: "Bitte warten..."});
+      const raidDir = path.resolve(baseConfig.logsPath, ".raid-tool");
+      const filesToReset = await fg(["**/*"], {
+        dot: true,
+        cwd: raidDir
+      });
+      for (const entry of filesToReset) {
+        await fs.move(path.resolve(raidDir, entry), path.resolve(baseConfig.logsPath, entry));
+      }
+
       await db.logs.remove({}, {multi: true});
       await db.known_friends.remove({}, {multi: true});
       await db.friends.remove({}, {multi: true});

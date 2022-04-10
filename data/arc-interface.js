@@ -365,6 +365,7 @@ const progressConfig = new Proxy({}, {
       const known = await db.logs.findOne({entry});
 
       if (known && (knownFriendCache && knownFriendCache.status !== "failed")) {
+        await fs.move(path.resolve(logsPath, entry), path.resolve(logsPath, ".raid-tool", entry));
         //console.log(`already known: ${entry}`);
         delete lockedEntry[entry];
         return;
@@ -499,6 +500,7 @@ const progressConfig = new Proxy({}, {
           throw new Error(err.stack || err);
         });
       }
+      await fs.move(path.resolve(logsPath, entry), path.resolve(logsPath, ".raid-tool", entry));
       delete lockedEntry[entry];
     } catch (error) {
       console.error(new Error(error.stack || error));
@@ -559,6 +561,7 @@ const progressConfig = new Proxy({}, {
     setImmediate(handleLogEntry);
   }
 
+  const start = Date.now();
   const watcher = chokidar.watch([
     "**/*.?(z)evtc",
     "**/*.json",
@@ -569,7 +572,8 @@ const progressConfig = new Proxy({}, {
   ], {
     cwd: logsPath,
     ignoreInitial: false,
-    awaitWriteFinish: true
+    awaitWriteFinish: true,
+    ignored: [".raid-tool/**"]
   });
   watcher.on("add", async(chokPath) => {
     const entry = chokPath.replace(/\\/g, "/");
@@ -598,7 +602,8 @@ const progressConfig = new Proxy({}, {
     }
     progressConfig.$parsingLogs = i;
     progressConfig.$parsedLogs = j;
-    console.info("All events added.");
+    const end = Date.now();
+    console.info(`All events added. in ${(end - start) / 1000} sec`);
     setImmediate(handleLogEntry);
   });
 
