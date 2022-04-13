@@ -18,7 +18,7 @@
     "fast-glob": "^3.2.11",
     "fast-xml-parser": "^4.0.7",
     "fs-extra": "^10.0.1",
-    "get-port-please": "^2.4.3",
+    "get-port-please": "^2.5.0",
     "gw2": "0.0.1",
     "ini": "^3.0.0",
     "jszip": "^3.9.1",
@@ -32,9 +32,9 @@
     "nedb-promises": "^6.0.3",
     "node-processlist": "^1.0.2",
     "node-windows": "^1.0.0-beta.7",
-    "semver": "^7.3.6",
+    "semver": "^7.3.7",
     "socket.io": "^4.4.1",
     "urllib": "^2.38.0",
-    "vue": "^3.2.31"
+    "vue": "^3.2.32"
   }
 }
