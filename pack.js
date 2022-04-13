@@ -46,11 +46,6 @@ const uploadConfig = require("./upload-config.json");
     appVersion: pgk.version,
     electronVersion,
     afterCopy: [
-      setLanguages([
-        "en",
-        "de",
-        "fr"
-      ]),
       async(buildPath, electronVersion, platform, arch, callback) => {
         try {
           console.info(`rebuilding: ${buildPath}`);
