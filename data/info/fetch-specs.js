@@ -1,7 +1,7 @@
 const fs = require("fs-extra");
 const path = require("path");
-const gw2 = require("gw2");
-const client = new gw2.Client();
+const gw2apiClient = require("gw2api-client");
+const apiClient = gw2apiClient();
 
 (async() => {
   const target = path.join(__dirname, "specs.json");
@@ -9,9 +9,13 @@ const client = new gw2.Client();
   const specs = [];
 
   for (let index = 1; index <= 72; index++) {
-    const apiEn = await client.get(`specializations/${index}`, {lang: "en"});
-    const apiDe = await client.get(`specializations/${index}`, {lang: "de"});
-    const apiFr = await client.get(`specializations/${index}`, {lang: "fr"});
+    const apiEn = await apiClient.language("en").specializations()
+      .get(index);
+    //client.get(`specializations/${index}`, {lang: "en"});
+    const apiDe = await apiClient.language("de").specializations(index)
+      .get(index);
+    const apiFr = await apiClient.language("fr").specializations(index)
+      .get(index);
     if (apiEn.elite) {
 
 

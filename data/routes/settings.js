@@ -1,7 +1,7 @@
 const {
   dialog, app
 } = require("electron");
-const gw2 = require("gw2");
+const gw2apiClient = require("gw2api-client");
 const path = require("path");
 const util = require("util");
 const fs = require("fs-extra");
@@ -29,14 +29,15 @@ module.exports = async({
     if (token) {
       const acc = await db.accounts.insert({token});
       eventHub.emit("accounts", {accounts: await db.accounts.find({})});
-      const client = new gw2.Client();
-      const accountInfo = await client.get("account", {token: acc.token});
+      const apiClient = gw2apiClient();
+      apiClient.authenticate(acc.token);
+      const accountInfo = await apiClient.account().get();
       await db.accounts.update({_id: acc._id}, {$set: {accountInfo}});
       eventHub.emit("accounts", {accounts: await db.accounts.find({})});
       const account = await db.accounts.findOne({_id: acc._id});
       await updateAccStats({
         db,
-        client,
+        apiClient,
         account,
         eventHub
       });

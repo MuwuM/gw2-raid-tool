@@ -19,7 +19,7 @@
     "fast-xml-parser": "^4.0.7",
     "fs-extra": "^10.1.0",
     "get-port-please": "^2.5.0",
-    "gw2": "0.0.1",
+    "gw2api-client": "^7.5.1",
     "ini": "^3.0.0",
     "jszip": "^3.9.1",
     "koa": "^2.13.4",
