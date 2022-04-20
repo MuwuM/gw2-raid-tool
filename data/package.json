@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "MuwuM",
-  "license": "MPL-2.0",
+  "license": "MIT",
   "dependencies": {
     "@fynnix/node-easy-ipc": "^1.0.9",
     "@octokit/rest": "^18.12.0",
