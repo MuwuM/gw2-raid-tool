@@ -1,9 +1,11 @@
 
+const Gift_of_Prowess = 78989;
+const Envoy_Insignia = 80516;
+
 const legendaryArmor = {
-  precursors: [/* Gift of Prowess */
-    78989,
-    /* Envoy_Insignia */
-    80516
+  precursors: [
+    Gift_of_Prowess,
+    Envoy_Insignia
   ],
   heavy: [
     80384,
@@ -54,31 +56,6 @@ const legendaryArmor = {
     80583
   ]
 };
-const liBoxes = [
-  91200,
-  91241,
-  91157,
-  91211,
-  91220,
-  91260,
-  91237,
-  91244,
-  91138,
-  91166,
-  91186,
-  91233,
-  91215,
-  91187,
-  91252,
-  91262,
-  91191,
-  91147,
-  91267,
-  91160,
-  91203,
-  91182,
-  91184
-];
 
 const raidBossKpItems = {
   77705: "vale_guardian",
@@ -135,9 +112,38 @@ const raidBossCofferItems = {
   91260: "qadim_the_peerless",
   91184: "bandit_trio"
 };
+const legendaryInsight = 77302;
+const legendaryDivination = 88485;
+const boneSkinnerSkins = [
+  93869,
+  93872,
+  93804
+];
+
+const fractalUCE = 81743;
+const fractalUFE = 94020;
+const boneskinnerKp = 93781;
+
+const coalescenceLdItems = [
+  91225, /* Gift of Compassion */
+  91234 /*Coalescence */
+];
+
+const zhaitaffy = 43319;
+const zhaitaffyJorbreaker = 43320;
+
+
 module.exports = {
   legendaryArmor,
-  liBoxes,
   raidBossKpItems,
-  raidBossCofferItems
+  raidBossCofferItems,
+  legendaryInsight,
+  legendaryDivination,
+  boneSkinnerSkins,
+  fractalUCE,
+  fractalUFE,
+  boneskinnerKp,
+  coalescenceLdItems,
+  zhaitaffy,
+  zhaitaffyJorbreaker
 };
