@@ -49,11 +49,11 @@ module.exports = async({
       if (acc) {
 
         const res = await dialog.showMessageBox({
-          message: "Wirklich löschen",
+          message: i18n[baseConfig.lang].removeAccountQuestion,
           type: "warning",
           buttons: [
-            "Löschen",
-            "Abbrechen"
+            i18n[baseConfig.lang].removeAccountQuestionConfirm,
+            i18n[baseConfig.lang].removeAccountQuestionCancel
           ],
           defaultId: 1,
           cancelId: 1
@@ -78,9 +78,9 @@ module.exports = async({
   eventHub.on("selectLogsPath", async() => {
     //console.log("selectLogsPath", {});
     const res = await dialog.showOpenDialog({
-      title: "arcdps Logs Ordner",
+      title: i18n[baseConfig.lang].settingsArcdpsLogDir,
       properties: ["openDirectory"],
-      buttonLabel: "Übernehmen und neustarten",
+      buttonLabel: i18n[baseConfig.lang].settingsApplyAndRestart,
       defaultPath: baseConfig.logsPath
     });
     await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {logsPath: res.filePaths[0]}});
@@ -90,7 +90,7 @@ module.exports = async({
   eventHub.on("selectGw2Dir", async() => {
     //console.log("selectGw2Dir", {});
     const res = await dialog.showOpenDialog({
-      title: "Wähle deine Guild Wars 2 Installation aus:",
+      title: i18n[baseConfig.lang].msgSelectInstall,
       filters: [
         {
           name: "Gw2-64.exe",
@@ -98,7 +98,7 @@ module.exports = async({
         }
       ],
       properties: ["openFile"],
-      buttonLabel: "Übernehmen und neustarten",
+      buttonLabel: i18n[baseConfig.lang].settingsApplyAndRestart,
       defaultPath: baseConfig.gw2Dir
     });
     if (!res.canceled && res.filePaths.length > 0) {
@@ -113,7 +113,7 @@ module.exports = async({
   eventHub.on("selectLaunchBuddyDir", async() => {
     //console.log("selectLaunchBuddyDir", {});
     const res = await dialog.showOpenDialog({
-      title: "Wähle deine GW2 LaunchBuddy Installation aus:",
+      title: i18n[baseConfig.lang].msgSelectLaunchBuddyInstall,
       filters: [
         {
           name: "Gw2.Launchbuddy.exe",
@@ -121,7 +121,7 @@ module.exports = async({
         }
       ],
       properties: ["openFile"],
-      buttonLabel: "Übernehmen und neustarten",
+      buttonLabel: i18n[baseConfig.lang].settingsApplyAndRestart,
       defaultPath: baseConfig.launchBuddyDir || ""
     });
     if (!res.canceled && res.filePaths.length > 0) {
@@ -139,7 +139,6 @@ module.exports = async({
   eventHub.on("resetAllLogs", async({confirmReset}) => {
     //console.log("resetAllLogs", {confirmReset});
     if (confirmReset === "reset") {
-      await dialog.showMessageBox({message: "Bitte warten..."});
       const raidDir = path.resolve(baseConfig.logsPath, ".raid-tool");
       const filesToReset = await fg(["**/*"], {
         dot: true,
@@ -152,11 +151,11 @@ module.exports = async({
       await db.logs.remove({}, {multi: true});
       await db.known_friends.remove({}, {multi: true});
       await db.friends.remove({}, {multi: true});
-      await dialog.showMessageBox({message: "Erfolgreich zurück gesetzt"});
+      await dialog.showMessageBox({message: i18n[baseConfig.lang].resetSuccess});
       app.relaunch();
       app.exit(0);
     } else {
-      await dialog.showMessageBox({message: "Bitte trage 'reset' ein um zu bestätigen, dass du wirklich alle Logs neu einlesen willst willst."});
+      await dialog.showMessageBox({message: i18n[baseConfig.lang].settingsResetInfoMessage});
     }
   });
 

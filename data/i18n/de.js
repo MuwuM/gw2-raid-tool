@@ -1,5 +1,6 @@
 module.exports = {
   msgSelectInstall: "Wähle deine Guild Wars 2 Installation aus:",
+  msgSelectLaunchBuddyInstall: "Wähle deine GW2 LaunchBuddy Installation aus:",
   msgArcUpdateNotPossible: "Update nicht möglich",
   msgArcUpdateNotPossibleInfo: "Update von arcdps ist nicht möglich, solange das Spiel an ist.",
   msgArcUpdateNotPossibleInfo2: "Update von arcdps ist nicht möglich, solange arcdps verwendet wird.",
@@ -50,10 +51,12 @@ module.exports = {
   settingsChangeButton: "Ändern",
   settingsDeleteButton: "Löschen",
   settingsRequiresRestart: "(das Tool wird danach neugestartet)",
+  settingsApplyAndRestart: "Übernehmen und neustarten",
   fromArcConfig: "(wird aus arcdps config erkannt)",
   settingsResetPlaceholder: "Hier 'reset' reinschreiben",
   settingsResetButton: "Logs neu einlesen",
   settingsResetTakesLong: "(kann lange dauern)",
+  settingsResetInfoMessage: "Bitte trage 'reset' ein um zu bestätigen, dass du wirklich alle Logs neu einlesen willst willst.",
   settingsLanguage: "Sprache",
   navOverview: "Übersicht",
   navArcdps: "ArcDps Logs",
@@ -84,5 +87,9 @@ module.exports = {
   buildBenchmarkConfusion: "Stapel Konfusion",
   buildBenchmarkWithAllies: "mit Verbündeten",
   isDailyToday: "Daily Strike Mission",
-  lowIntensity: "Low Intensity"
+  lowIntensity: "Low Intensity",
+  removeAccountQuestion: "Wirklich löschen?",
+  removeAccountQuestionConfirm: "Löschen",
+  removeAccountQuestionCancel: "Abbrechen",
+  resetSuccess: "Erfolgreich zurück gesetzt"
 };
