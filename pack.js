@@ -1,5 +1,4 @@
 const packager = require("electron-packager");
-const setLanguages = require("electron-packager-languages");
 const rebuild = require("electron-rebuild");
 const electronInstaller = require("electron-winstaller");
 const path = require("path");
