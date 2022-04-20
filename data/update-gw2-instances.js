@@ -18,23 +18,21 @@ module.exports = async({
       console.error(error);
     }
     if (list) {
-      try {
-        baseConfig.gw2Instances.running = list.filter((p) => p.name === "Gw2-64.exe");
-      } catch (error) {
-        console.error(error);
+      const running = [];
+      const lauchbuddy = [];
+      const nvidiaShare = [];
+      for (const prog of list) {
+        if (prog.name === "Gw2-64.exe") {
+          running.push(prog);
+        } else if (prog.name === "Gw2.Launchbuddy.exe") {
+          lauchbuddy.push(prog);
+        } else if (prog.name === "NVIDIA Share.exe") {
+          nvidiaShare.push(prog);
+        }
       }
-
-      try {
-        baseConfig.gw2Instances.lauchbuddy = list.filter((p) => p.name === "Gw2.Launchbuddy.exe");
-      } catch (error) {
-        console.error(error);
-      }
-
-      try {
-        baseConfig.gw2Instances.nvidiaShare = list.filter((p) => p.name === "NVIDIA Share.exe");
-      } catch (error) {
-        console.error(error);
-      }
+      baseConfig.gw2Instances.running = running;
+      baseConfig.gw2Instances.lauchbuddy = lauchbuddy;
+      baseConfig.gw2Instances.nvidiaShare = nvidiaShare;
     }
     baseConfig.gw2Instances.ready = true;
     const newInstances = JSON.stringify(baseConfig.gw2Instances);
