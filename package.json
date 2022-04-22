@@ -10,8 +10,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^18.0.4",
-    "electron-packager": "^15.5.0",
+    "electron": "^18.1.0",
+    "electron-packager": "^15.5.1",
     "electron-rebuild": "^3.2.7",
     "electron-winstaller": "^5.0.0",
     "eslint": "^8.13.0",

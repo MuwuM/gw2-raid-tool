@@ -19,7 +19,7 @@
       </tr>
     </tbody></table>
     
-  <div class="form-group mt-5" action="/settings" method="post">
+  <div class="form-group mt-5">
     <div>{{i18n.settingsApiKeyInfo}}<a href="https://account.arena.net/applications">https://account.arena.net/applications</a>{{i18n.settingsApiKeyInfo2}}</div>
     <div class="input-group mb-3">
       <input class="form-control" type="text" name="token" :placeholder="i18n.settingsAddTokenTokenPlaceholder" v-model="token">
@@ -27,7 +27,7 @@
     </div>
   </div>
   
-  <div class="form-group mt-5" action="/settings/lang" method="post">
+  <div class="form-group mt-5">
     <div>{{i18n.settingsLanguage}}</div>
     <div class="input-group mb-3">
     <select class="form-control" name="lang" v-model="lang" @change="changeLang(lang)">
@@ -39,20 +39,20 @@
   </div>
   </div>
 
-  <div class="form-group mt-5" action="/settings/gw2Dir" method="post">
+  <div class="form-group mt-5">
     <div>{{i18n.settingsGw2Dir}}</div>
     <div>{{baseConfig.gw2Dir}}\Gw2-64.exe</div>
     <input class="btn btn-primary" type="submit" :value="i18n.settingsChangeButton" @click="selectGw2Dir($event)"> {{i18n.settingsRequiresRestart}}
   </div>
 
-  <div class="form-group mt-5" action="/settings/logsPath" method="post">
+  <div class="form-group mt-5">
     <div>{{i18n.settingsArcdpsLogDir}}</div>
     <div>{{baseConfig.logsPath}}</div>
     <div class="font-italic">{{i18n.fromArcConfig}}</div>
     <!--<input class="btn btn-primary" type="submit" :value="i18n.settingsChangeButton" @click="selectLogsPath($event)"> {{i18n.settingsRequiresRestart}}-->
   </div>
 
-  <div class="form-group mt-5" action="/settings/launchBuddyDir" method="post">
+  <div class="form-group mt-5">
     <div>{{i18n.settingsLaunchBuddyDir}}</div>
 
     <div v-if="baseConfig.launchBuddyDir">{{baseConfig.launchBuddyDir}}\Gw2.Launchbuddy.exe</div>

@@ -5,7 +5,6 @@ const path = require("path");
 const Router = require("koa-better-router");
 const serve = require("koa-static");
 const mount = require("koa-mount");
-const koaBody = require("koa-body");
 const fs = require("fs-extra");
 const http = require("http");
 const SocketIo = require("socket.io");
@@ -83,8 +82,6 @@ module.exports = async({
     });
     await next();
   });
-
-  koaApp.use(koaBody({multipart: true}));
 
   router.get("/i18n.js", (ctx) => {
     ctx.body = i18nContent.join("\n");
