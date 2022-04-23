@@ -229,124 +229,134 @@ module.exports = async({
     };
 
     const updateBlockedKeys = async() => {
+      try {
 
-      const filters = [{active: true}];
 
-      //baseConfig.mumbleLinkActive.identity.name;
+        const filters = [{active: true}];
 
-      if (baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec) {
-        filters.push({$or: [
-          {spec: ""},
-          {spec: specs.find((sp) => sp.id === baseConfig.mumbleLinkActive.identity.spec).name}
-        ]});
-      }
+        //baseConfig.mumbleLinkActive.identity.name;
 
-      let keysToBlock = [];
-      let blockingRules = [];
-      if (
-        baseConfig.mumbleLinkActive &&
+        if (baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec) {
+          filters.push({$or: [
+            {spec: ""},
+            {spec: specs.find((sp) => sp.id === baseConfig.mumbleLinkActive.identity.spec).name}
+          ]});
+        }
+
+        let keysToBlock = [];
+        let blockingRules = [];
+        if (
+          baseConfig.mumbleLinkActive &&
       !baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus &&
       baseConfig.mumbleLinkActive.uiStates.GameHasFocus
-      ) {
-        blockingRules = await db.blocked_key_rules.find({$and: filters});
-        keysToBlock = [];
-        for (const rule of blockingRules) {
-          const keys = (rule.keys || "").split(" ");
-          for (const key of keys) {
-            if (!key || !key.match(validAhkKeys)) {
-              continue;
+        ) {
+          blockingRules = await db.blocked_key_rules.find({$and: filters});
+          keysToBlock = [];
+          for (const rule of blockingRules) {
+            const keys = (rule.keys || "").split(" ");
+            for (const key of keys) {
+              if (!key || !key.match(validAhkKeys)) {
+                continue;
+              }
+              keysToBlock.push(key);
             }
-            keysToBlock.push(key);
+            if (blockingWindows[rule.slot] && (blockingWindows[rule.slot].getOpacity() !== keyBlockedOpacity)) {
+              console.log(`show ${rule.slot} overlay`);
+              blockingWindows[rule.slot].setOpacity(keyBlockedOpacity);
+            }
           }
-          if (blockingWindows[rule.slot] && (blockingWindows[rule.slot].getOpacity() !== keyBlockedOpacity)) {
-            console.log(`show ${rule.slot} overlay`);
-            blockingWindows[rule.slot].setOpacity(keyBlockedOpacity);
+          blockingRules.sort();
+        } else {
+          blockingRules = [];
+          keysToBlock = [];
+        }
+        if (JSON.stringify(blocked_keys) === JSON.stringify(blockingRules)) {
+          console.log("Blocked keys unchanged");
+          return;
+        }
+        await freeAllKeys();
+        for (const [
+          key,
+          win
+        ] of Object.entries(blockingWindows)) {
+          if (!blockingRules.find((r) => r.slot === key)) {
+            win.setOpacity(keyUnblockedOpacity);
           }
         }
-        blockingRules.sort();
-      } else {
-        blockingRules = [];
-        keysToBlock = [];
-      }
-      if (JSON.stringify(blocked_keys) === JSON.stringify(blockingRules)) {
-        console.log("Blocked keys unchanged");
-        return;
-      }
-      await freeAllKeys();
-      for (const [
-        key,
-        win
-      ] of Object.entries(blockingWindows)) {
-        if (!blockingRules.find((r) => r.slot === key)) {
-          win.setOpacity(keyUnblockedOpacity);
+        if (keysToBlock.length > 0) {
+          console.log(keysToBlock);
+          ahkInstance = await ahkApi(ahkPath, keysToBlock.map((k) => ({
+            key: k,
+            noInterrupt: false
+          })), {tmpDir});
+          for (const blockedKey of keysToBlock) {
+            ahkInstance.setHotkey(blockedKey, () => {
+              console.log(`triggered: ${blockedKey}`);
+            }, true);
+          }
+          console.log(baseConfig.mumbleLinkActive);
+          console.log(`Blocking keys: ${JSON.stringify(keysToBlock)}`);
+        } else {
+          console.log("Unblocked all keys");
         }
-      }
-      if (keysToBlock.length > 0) {
-        console.log(keysToBlock);
-        ahkInstance = await ahkApi(ahkPath, keysToBlock.map((k) => ({
-          key: k,
-          noInterrupt: false
-        })), {tmpDir});
-        for (const blockedKey of keysToBlock) {
-          ahkInstance.setHotkey(blockedKey, () => {
-            console.log(`triggered: ${blockedKey}`);
-          }, true);
-        }
-        console.log(baseConfig.mumbleLinkActive);
-        console.log(`Blocking keys: ${JSON.stringify(keysToBlock)}`);
-      } else {
-        console.log("Unblocked all keys");
-      }
 
 
-      blocked_keys = blockingRules;
+        blocked_keys = blockingRules;
+
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     let lastMumbleLinkActive = null;
     eventHub.onLocal("baseConfig", () => {
-      const newMumbleLinkActive = JSON.stringify({
-        spec: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec,
-        TextboxHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus,
-        GameHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.GameHasFocus
-      });
-      if (newMumbleLinkActive !== lastMumbleLinkActive) {
-        lastMumbleLinkActive = newMumbleLinkActive;
-        updateBlockedKeys();
-      }
-      if (
-        typeof baseConfig.mainWindowId === "number" &&
-      baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && !baseConfig.mumbleLinkActive.uiStates.GameHasFocus
-      ) {
-        for (const possible of possibleSlots) {
-          const blockedSlot = possible.slot;
-          if (blockingWindows[blockedSlot]) {
-            continue;
-          }
-          const parent = BrowserWindow.fromId(baseConfig.mainWindowId);
-          blockingWindows[blockedSlot] = new BrowserWindow({
-            width: possible.rect.width,
-            height: possible.rect.height,
-            x: possible.rect.x,
-            y: possible.rect.y,
-            title: `Block Slot: ${blockedSlot}`,
-            //parent,
-            resizable: false,
-            alwaysOnTop: true,
-            fullscreenable: false,
-            focusable: false,
-            frame: false,
-            hasShadow: false,
-            opacity: keyUnblockedOpacity
-          //transparent: true
-          });
-          blockingWindows[blockedSlot].loadURL(`file://${path.join(__dirname, "../static/locked-skill.html")}`);
-          blockingWindows[blockedSlot].showInactive();
-          parent.on("close", () => {
-            blockingWindows[blockedSlot].close();
-          });
+      try {
+        const newMumbleLinkActive = JSON.stringify({
+          spec: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec,
+          TextboxHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus,
+          GameHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.GameHasFocus
+        });
+        if (newMumbleLinkActive !== lastMumbleLinkActive) {
+          lastMumbleLinkActive = newMumbleLinkActive;
+          updateBlockedKeys();
         }
-      }
+        if (
+          typeof baseConfig.mainWindowId === "number" &&
+      baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && !baseConfig.mumbleLinkActive.uiStates.GameHasFocus
+        ) {
+          for (const possible of possibleSlots) {
+            const blockedSlot = possible.slot;
+            if (blockingWindows[blockedSlot]) {
+              continue;
+            }
+            const parent = BrowserWindow.fromId(baseConfig.mainWindowId);
+            blockingWindows[blockedSlot] = new BrowserWindow({
+              width: possible.rect.width,
+              height: possible.rect.height,
+              x: possible.rect.x,
+              y: possible.rect.y,
+              title: `Block Slot: ${blockedSlot}`,
+              //parent,
+              resizable: false,
+              alwaysOnTop: true,
+              fullscreenable: false,
+              focusable: false,
+              frame: false,
+              hasShadow: false,
+              opacity: keyUnblockedOpacity
+              //transparent: true
+            });
+            blockingWindows[blockedSlot].loadURL(`file://${path.join(__dirname, "../static/locked-skill.html")}`);
+            blockingWindows[blockedSlot].showInactive();
+            parent.on("close", () => {
+              blockingWindows[blockedSlot].close();
+            });
+          }
+        }
 
+      } catch (error) {
+        console.error(error);
+      }
     });
   }
 };
