@@ -346,6 +346,8 @@ module.exports = async({
               opacity: keyUnblockedOpacity
               //transparent: true
             });
+            blockingWindows[blockedSlot].setAlwaysOnTop(true, "screen-saver");
+            blockingWindows[blockedSlot].setVisibleOnAllWorkspaces(true);
             blockingWindows[blockedSlot].loadURL(`file://${path.join(__dirname, "../static/locked-skill.html")}`);
             blockingWindows[blockedSlot].showInactive();
             parent.on("close", () => {
