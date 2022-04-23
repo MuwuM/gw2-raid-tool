@@ -381,6 +381,10 @@ module.exports = async({
             const blockedSlot = possible.slot;
             if (blockingWindows[blockedSlot]) {
               const win = blockingWindows[blockedSlot];
+              if (win.isDestroyed()) {
+                delete blockingWindows[blockedSlot];
+                continue;
+              }
               const bounds = win.getBounds();
               if (
                 bounds.width !== possible.rect.width ||
