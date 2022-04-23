@@ -95,6 +95,10 @@ module.exports = async({
       if (typeof uiSize !== "number") {
         uiSize = 1;
       }
+      /*let spec = baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec;
+      if (typeof uiSize !== "number") {
+        spec = "";
+      }*/
       const uiSizes = [
         {
           boxSize: 50,
@@ -136,6 +140,35 @@ module.exports = async({
         offBottom
       } = uiSizes[uiSize] || uiSizes[1];
       const scaleBox = boxSize + boxOffset;
+
+      /*let F5 = {
+        slot: "F5",
+        rect: {
+          width: 39,
+          height: 39,
+          x: -59 + offsetX,
+          y: offsetY - 122
+        }
+      };
+
+      if (spec) {
+        const specInfo = specs.find((s) => s.id === spec);
+        if (specInfo && [
+          "Soulbeast",
+          "Druid"
+        ].includes(specInfo.name)) {
+          F5 = {
+            slot: "F5",
+            rect: {
+              width: 39,
+              height: 39,
+              x: 0 + offsetX,
+              y: offsetY - 222
+            }
+          };
+        }
+
+      }*/
 
       return [
         {
@@ -227,14 +260,14 @@ module.exports = async({
             x: offsetX + (5 * scaleBox + offCenterR),
             y: offsetY - offBottom
           }
-        },
+        }/*,
         {
           slot: "F1",
           rect: {
             width: 39,
             height: 39,
-            x: 666 + offsetX,
-            y: 958 + offsetY
+            x: -294 + offsetX,
+            y: offsetY - 122
           }
         },
         {
@@ -242,8 +275,8 @@ module.exports = async({
           rect: {
             width: 39,
             height: 39,
-            x: 711 + offsetX,
-            y: 958 + offsetY
+            x: -249 + offsetX,
+            y: offsetY - 122
           }
         },
         {
@@ -251,8 +284,8 @@ module.exports = async({
           rect: {
             width: 39,
             height: 39,
-            x: 756 + offsetX,
-            y: 958 + offsetY
+            x: -204 + offsetX,
+            y: offsetY - 122
           }
         },
         {
@@ -260,10 +293,11 @@ module.exports = async({
           rect: {
             width: 39,
             height: 39,
-            x: 801 + offsetX,
-            y: 958 + offsetY
+            x: -159 + offsetX,
+            y: offsetY - 122
           }
-        }
+        },
+        F5*/
       ];
     };
 

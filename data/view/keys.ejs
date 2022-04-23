@@ -48,8 +48,10 @@
         </div>
       </td>
       <td>
-        <input class="form-check-input position-static" type="checkbox" :checked="keyRule.active" @change="updateKeyRuleActive(keyRule,$event)">
-        <button v-if="!keyRule.active" class="btn btn-outline-danger" @click="deleteKeyRule(keyRule,$event)">{{i18n.keyRuleDelete}}</button>
+        <div class="build-row-profession">
+          <input class="form-check-input position-static" type="checkbox" :checked="keyRule.active" @change="updateKeyRuleActive(keyRule,$event)">
+          <button v-if="!keyRule.active" class="btn btn-outline-danger ms-3" @click="deleteKeyRule(keyRule,$event)">{{i18n.keyRuleDelete}}</button>
+        </div>
       </td>
     </tr>
   </tbody></table>

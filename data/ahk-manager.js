@@ -221,7 +221,6 @@ write(x) {
   process.on("SIGINT", stop);
   process.on("exit", stop);
   hotkeys.stdout.on("data", (data) => {
-    console.info(data.toString());
     data = data.toString();
     if (ahk.hotkeys[data].instant) {
       ahk.hotkeys[data]();
