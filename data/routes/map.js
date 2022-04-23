@@ -35,7 +35,7 @@ module.exports = async({
 
 
     eventHub.on("addKeyRule", async() => {
-      console.log("addKeyRule");
+      //console.log("addKeyRule");
       let spec = "";
       if (baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec) {
         spec = specs.find((sp) => sp.id === baseConfig.mumbleLinkActive.identity.spec).name;
@@ -52,7 +52,7 @@ module.exports = async({
       eventHub.emit("keyRules", {keyRules});
     });
     eventHub.on("updateKeyRule", async({keyRule}) => {
-      console.log("updateKeyRule", keyRule);
+      //console.log("updateKeyRule", keyRule);
       await db.blocked_key_rules.update({_id: keyRule._id}, {$set: keyRule});
       keyRules = await db.blocked_key_rules.find({}).sort({
         spec: 1,
@@ -63,7 +63,7 @@ module.exports = async({
       updateBlockedKeys();
     });
     eventHub.on("deleteKeyRule", async({keyRule}) => {
-      console.log("deleteKeyRule", keyRule);
+      //console.log("deleteKeyRule", keyRule);
       await db.blocked_key_rules.remove({_id: keyRule._id});
       keyRules = await db.blocked_key_rules.find({}).sort({
         spec: 1,
@@ -80,10 +80,10 @@ module.exports = async({
 
     const tmpDir = app.getPath("temp");
 
-    console.log({
+    /*console.log({
       ahkPath,
       tmpDir
-    });
+    });*/
 
     let blocked_keys = [];
     let ahkInstance = null;
@@ -312,7 +312,7 @@ module.exports = async({
               keysToBlock.push(key);
             }
             if (blockingWindows[rule.slot] && (blockingWindows[rule.slot].getOpacity() !== keyBlockedOpacity)) {
-              console.log(`show ${rule.slot} overlay`);
+              //console.log(`show ${rule.slot} overlay`);
               blockingWindows[rule.slot].setOpacity(keyBlockedOpacity);
             }
           }
@@ -322,7 +322,7 @@ module.exports = async({
           keysToBlock = [];
         }
         if (JSON.stringify(blocked_keys) === JSON.stringify(blockingRules)) {
-          console.log("Blocked keys unchanged");
+          //console.log("Blocked keys unchanged");
           return;
         }
         await freeAllKeys();
@@ -335,20 +335,20 @@ module.exports = async({
           }
         }
         if (keysToBlock.length > 0) {
-          console.log(keysToBlock);
+          //console.log(keysToBlock);
           ahkInstance = await ahkApi(ahkPath, keysToBlock.map((k) => ({
             key: k,
             noInterrupt: false
           })), {tmpDir});
           for (const blockedKey of keysToBlock) {
             ahkInstance.setHotkey(blockedKey, () => {
-              console.log(`triggered: ${blockedKey}`);
+              //console.log(`triggered: ${blockedKey}`);
             }, true);
           }
-          console.log(baseConfig.mumbleLinkActive);
-          console.log(`Blocking keys: ${JSON.stringify(keysToBlock)}`);
+          //console.log(baseConfig.mumbleLinkActive);
+          console.info(`Blocking keys: ${JSON.stringify(keysToBlock)}`);
         } else {
-          console.log("Unblocked all keys");
+          console.info("Unblocked all keys");
         }
 
 

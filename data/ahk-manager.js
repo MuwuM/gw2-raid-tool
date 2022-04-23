@@ -199,7 +199,7 @@ write(x) {
 
   let stopping = false;
   function childProcessesEnding(code) {
-    console.log({"Exiting: ": code});
+    //console.log({"Exiting: ": code});
     if (!stopping) {
       process.exit(code);
     }

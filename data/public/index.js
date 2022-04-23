@@ -586,7 +586,7 @@ function handleClick(event) {
     }
     preventDefault(event);
   } else if (!event.defaultPrevented && relativeUrl) {
-    console.log({relativeUrl: relativeUrl.href});
+    //console.log({relativeUrl: relativeUrl.href});
     const url = new URL(relativeUrl.href, window.location.href);
     window.open(url.href);
     preventDefault(event);

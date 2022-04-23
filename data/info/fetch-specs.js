@@ -38,7 +38,7 @@ const apiClient = gw2apiClient();
       });
     }
 
-    console.log(`${apiEn.id}: ${apiEn.profession}`);
+    console.info(`${apiEn.id}: ${apiEn.profession}`);
 
   }
 
