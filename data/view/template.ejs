@@ -49,6 +49,14 @@
               tabindex="-1"
               @click="selectPage('builds',{},$event)"
             >{{i18n.navBuilds}}</a></li>
+          <li class="nav-item active"><a
+              :class="{'nav-link':true, 'text-muted':!baseConfig.isAdmin}"
+              href="#"
+              tabindex="-1"
+              @click="selectPage('keys',{},$event)"
+            >
+            {{i18n.navKeyBlocking}}
+          </a></li>
           </template>
             <li class="nav-item active">
               <a
@@ -111,6 +119,7 @@
     <div v-if="page === 'boss'"><%- await include('boss', {}); %></div>
     <div v-if="page === 'friend'"><%- await include('friend', {}); %></div>
     <div v-if="page === 'builds'"><%- await include('builds', {}); %></div>
+    <div v-if="page === 'keys'"><%- await include('keys', {}); %></div>
     <div v-if="page === 'map'"><%- await include('map', {}); %></div>
     <div class="zoom-indicator" v-if="baseConfig.zoom!==1">{{Math.round(baseConfig.zoom * 100)}}%</div>
   </div>

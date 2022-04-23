@@ -91,5 +91,14 @@ module.exports = {
   removeAccountQuestion: "Do you really want to delete?",
   removeAccountQuestionConfirm: "Delete",
   removeAccountQuestionCancel: "Cancel",
-  resetSuccess: "Successfully reset"
+  resetSuccess: "Successfully reset",
+  navKeyBlocking: "Lock keys",
+  keySlotHeaderName: "Lock skill slot",
+  keyKeysHeaderName: "Lock keys",
+  keyActiveHeaderName: "Enabled",
+  keyRuleAllSpecs: "All",
+  keyRuleNoSlot: "lock no slot",
+  keyRuleDelete: "Delete",
+  addKeyRule: "Add rule",
+  keyRuleRequireAdmin: "The raid tool must be started as admin to be able to lock keys."
 };

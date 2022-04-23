@@ -3,6 +3,7 @@ const socket = io();
 const {webFrame} = require("electron");
 const {DateTime} = require("luxon");
 
+const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
 const colors = [
   "#77ff77",
   "#ffe66d",
@@ -97,7 +98,9 @@ const app = Vue.createApp({
       buildSubRoles: {},
       activeBuildSubRole: false,
       mumbleLinkActive: false,
-      dayOfYear: DateTime.utc().ordinal
+      keyRules: [],
+      dayOfYear: DateTime.utc().ordinal,
+      validAhkKeys
     };
   },
   computed: {i18n() {
@@ -364,6 +367,34 @@ const app = Vue.createApp({
       preventDefault(event);
       socket.emit("selectLaunchBuddyDir", {});
     },
+    addKeyRule(event) {
+      preventDefault(event);
+      socket.emit("addKeyRule", {});
+    },
+    deleteKeyRule(keyRule, event) {
+      preventDefault(event);
+      socket.emit("deleteKeyRule", {keyRule});
+    },
+    updateKeyRuleActive(keyRule, event) {
+      preventDefault(event);
+      keyRule.active = event.target.checked;
+      socket.emit("updateKeyRule", {keyRule});
+    },
+    updateKeyRuleSlot(keyRule, event) {
+      preventDefault(event);
+      keyRule.slot = event.target.value || "";
+      socket.emit("updateKeyRule", {keyRule});
+    },
+    updateKeyRuleSpec(keyRule, event) {
+      preventDefault(event);
+      keyRule.spec = event.target.value || "";
+      socket.emit("updateKeyRule", {keyRule});
+    },
+    updateKeyRuleKeys(keyRule, event) {
+      preventDefault(event);
+      keyRule.keys = event.target.value || "";
+      socket.emit("updateKeyRule", {keyRule});
+    },
     removeLaunchBuddyDir(event) {
       preventDefault(event);
       socket.emit("removeLaunchBuddyDir", {});
@@ -466,10 +497,15 @@ socket.on("progressConfig", (data) => {
   //console.log("baseConfig", data);
   mnt.progressConfig = data.progressConfig;
 });
+socket.on("keyRules", (data) => {
+  //console.log("keyRules", data);
+  mnt.keyRules = data.keyRules;
+});
 socket.on("init", (data) => {
   //console.log("wings", data);
   mnt.wings = data.wings;
   mnt.specs = data.specs;
+  socket.emit("getKeyRules", {});
 });
 socket.on("logs", (data) => {
   //console.log("logs", data);

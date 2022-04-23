@@ -13,6 +13,9 @@ const updater = require("./updater");
 const updateGw2Instances = require("./update-gw2-instances");
 const updateMumbleLinkData = require("./update-mumble-links");
 const i18n = require("./i18n");
+const util = require("util");
+const execSync = require("child_process").exec;
+const execAsync = util.promisify(execSync);
 
 const eventHub = require("./event-hub");
 const wings = require("./info/wings");
@@ -20,6 +23,11 @@ const specs = require("./info/specs");
 const pgk = require("./package.json");
 const handleSquirrelEvent = require("./handle-squirrel-event");
 const initStatus = require("./init-status");
+const isAdmin = (async() => {
+  const {stdout} = await execAsync("whoami /groups");
+  const isAdmin = (stdout.indexOf("12288") > -1);
+  return isAdmin;
+});
 
 
 const electronApp = electron.app;
@@ -45,7 +53,8 @@ electronHandler({
   const baseConfig = {
     dbBaseDir: processDir,
     processDir,
-    appVersion: pgk.version
+    appVersion: pgk.version,
+    isAdmin: await isAdmin()
   };
   const db = await dbConnect({baseConfig});
 

@@ -91,5 +91,14 @@ module.exports = {
   removeAccountQuestion: "Wirklich löschen?",
   removeAccountQuestionConfirm: "Löschen",
   removeAccountQuestionCancel: "Abbrechen",
-  resetSuccess: "Erfolgreich zurück gesetzt"
+  resetSuccess: "Erfolgreich zurück gesetzt",
+  navKeyBlocking: "Tasten sperren",
+  keySlotHeaderName: "Fähigkeits-Slot sperren",
+  keyKeysHeaderName: "Tasten sperren",
+  keyActiveHeaderName: "Aktiviert",
+  keyRuleAllSpecs: "Alle",
+  keyRuleNoSlot: "kein Slot sperren",
+  keyRuleDelete: "Löschen",
+  addKeyRule: "Regel hinzufügen",
+  keyRuleRequireAdmin: "Das Raid-Tool muss als Adminitrator gestartet werden, um Tasten sperren zu können."
 };

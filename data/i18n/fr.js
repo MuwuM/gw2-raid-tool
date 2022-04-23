@@ -91,5 +91,14 @@ module.exports = {
   removeAccountQuestion: "Voulez-vous vraiment supprimer?",
   removeAccountQuestionConfirm: "Supprimer",
   removeAccountQuestionCancel: "Annuler",
-  resetSuccess: "Réimporté avec succès"
+  resetSuccess: "Réimporté avec succès",
+  navKeyBlocking: "Bloquer les clés",
+  keySlotHeaderName: "Bloquer le slot de skills",
+  keyKeysHeaderName: "Bloquer les clés",
+  keyActiveHeaderName: "Activé",
+  keyRuleAllSpecs: "Tous",
+  keyRuleNoSlot: "bloquer sans slot",
+  keyRuleDelete: "Supprimer",
+  addKeyRule: "Ajouter une règle",
+  keyRuleRequireAdmin: "L'outil de raid doit être lancé en tant qu'administrateur pour pouvoir bloquer les clés."
 };
