@@ -1,7 +1,7 @@
 const ahkApi = require("../ahk-manager");
 const {path: ahkPath} = require("ahk.exe");
 const {
-  BrowserWindow, app
+  BrowserWindow, app, screen
 } = require("electron");
 
 const path = require("path");
@@ -89,136 +89,185 @@ module.exports = async({
     let ahkInstance = null;
     const blockingWindows = {};
 
-    const possibleSlots = [
-      {
-        slot: "1",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 637,
-          y: 1005
-        }
-      },
-      {
-        slot: "2",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 693,
-          y: 1005
-        }
-      },
-      {
-        slot: "3",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 747,
-          y: 1005
-        }
-      },
-      {
-        slot: "4",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 802,
-          y: 1005
-        }
-      },
-      {
-        slot: "5",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 859,
-          y: 1005
-        }
-      },
-      {
-        slot: "6",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 1012,
-          y: 1005
-        }
-      },
-      {
-        slot: "7",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 1067,
-          y: 1005
-        }
-      },
-      {
-        slot: "8",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 1121,
-          y: 1005
-        }
-      },
-      {
-        slot: "9",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 1176,
-          y: 1005
-        }
-      },
-      {
-        slot: "0",
-        rect: {
-          width: 52,
-          height: 52,
-          x: 1231,
-          y: 1005
-        }
-      },
-      {
-        slot: "F1",
-        rect: {
-          width: 39,
-          height: 39,
-          x: 666,
-          y: 958
-        }
-      },
-      {
-        slot: "F2",
-        rect: {
-          width: 39,
-          height: 39,
-          x: 711,
-          y: 958
-        }
-      },
-      {
-        slot: "F3",
-        rect: {
-          width: 39,
-          height: 39,
-          x: 756,
-          y: 958
-        }
-      },
-      {
-        slot: "F4",
-        rect: {
-          width: 39,
-          height: 39,
-          x: 801,
-          y: 958
-        }
-      }
-    ];
 
-    baseConfig.possibleSlots = possibleSlots;
+    const possibleSlots = () => {
+      let uiSize = baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.uisz;
+      if (typeof uiSize !== "number") {
+        uiSize = 1;
+      }
+      const uiSizes = [
+        {
+          boxSize: 50,
+          boxOffset: 0,
+          offCenterL: 43,
+          offCenterR: -6,
+          offBottom: 67
+        },
+        {
+          boxSize: 52,
+          boxOffset: 3,
+          offCenterL: 48,
+          offCenterR: -4,
+          offBottom: 75
+        },
+        {
+          boxSize: 60,
+          boxOffset: 1,
+          offCenterL: 53,
+          offCenterR: -4,
+          offBottom: 83
+        },
+        {
+          boxSize: 67,
+          boxOffset: 0,
+          offCenterL: 60,
+          offCenterR: -6,
+          offBottom: 93
+        }
+      ];
+      const {bounds} = screen.getPrimaryDisplay();
+      const offsetX = bounds.x + (bounds.width / 2);
+      const offsetY = bounds.y + bounds.height;
+      const {
+        boxSize,
+        boxOffset,
+        offCenterL,
+        offCenterR,
+        offBottom
+      } = uiSizes[uiSize] || uiSizes[1];
+      const scaleBox = boxSize + boxOffset;
+
+      return [
+        {
+          slot: "1",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX - (5 * scaleBox + offCenterL),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "2",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX - (4 * scaleBox + offCenterL),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "3",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX - (3 * scaleBox + offCenterL),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "4",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX - (2 * scaleBox + offCenterL),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "5",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX - (1 * scaleBox + offCenterL),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "6",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX + (1 * scaleBox + offCenterR),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "7",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX + (2 * scaleBox + offCenterR),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "8",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX + (3 * scaleBox + offCenterR),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "9",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX + (4 * scaleBox + offCenterR),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "0",
+          rect: {
+            width: boxSize,
+            height: boxSize,
+            x: offsetX + (5 * scaleBox + offCenterR),
+            y: offsetY - offBottom
+          }
+        },
+        {
+          slot: "F1",
+          rect: {
+            width: 39,
+            height: 39,
+            x: 666 + offsetX,
+            y: 958 + offsetY
+          }
+        },
+        {
+          slot: "F2",
+          rect: {
+            width: 39,
+            height: 39,
+            x: 711 + offsetX,
+            y: 958 + offsetY
+          }
+        },
+        {
+          slot: "F3",
+          rect: {
+            width: 39,
+            height: 39,
+            x: 756 + offsetX,
+            y: 958 + offsetY
+          }
+        },
+        {
+          slot: "F4",
+          rect: {
+            width: 39,
+            height: 39,
+            x: 801 + offsetX,
+            y: 958 + offsetY
+          }
+        }
+      ];
+    };
+
+    baseConfig.possibleSlots = possibleSlots().map((s) => ({slot: s.slot}));
 
 
     const freeAllKeys = async() => {
@@ -248,7 +297,9 @@ module.exports = async({
         if (
           baseConfig.mumbleLinkActive &&
       !baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus &&
-      baseConfig.mumbleLinkActive.uiStates.GameHasFocus
+      !baseConfig.mumbleLinkActive.uiStates.IsMapOpen &&
+      baseConfig.mumbleLinkActive.uiStates.GameHasFocus &&
+      baseConfig.mumbleLinkActive.context.mountIndex === 0
         ) {
           blockingRules = await db.blocked_key_rules.find({$and: filters});
           keysToBlock = [];
@@ -314,19 +365,31 @@ module.exports = async({
         const newMumbleLinkActive = JSON.stringify({
           spec: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec,
           TextboxHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus,
-          GameHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.GameHasFocus
+          GameHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.GameHasFocus,
+          IsMapOpen: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.IsMapOpen,
+          mountIndex: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.context && baseConfig.mumbleLinkActive.context.mountIndex
         });
         if (newMumbleLinkActive !== lastMumbleLinkActive) {
           lastMumbleLinkActive = newMumbleLinkActive;
           updateBlockedKeys();
         }
         if (
-          typeof baseConfig.mainWindowId === "number" &&
-      baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && !baseConfig.mumbleLinkActive.uiStates.GameHasFocus
+          typeof baseConfig.mainWindowId === "number"
         ) {
-          for (const possible of possibleSlots) {
+
+          for (const possible of possibleSlots()) {
             const blockedSlot = possible.slot;
             if (blockingWindows[blockedSlot]) {
+              const win = blockingWindows[blockedSlot];
+              const bounds = win.getBounds();
+              if (
+                bounds.width !== possible.rect.width ||
+                bounds.height !== possible.rect.height ||
+                bounds.x !== possible.rect.x ||
+                bounds.y !== possible.rect.y
+              ) {
+                win.setBounds(possible.rect);
+              }
               continue;
             }
             const parent = BrowserWindow.fromId(baseConfig.mainWindowId);
