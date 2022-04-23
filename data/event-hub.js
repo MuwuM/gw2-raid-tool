@@ -13,6 +13,7 @@ module.exports = {
     queue = [];
   },
   onHandler: [],
+  onLocalHandler: [],
   sockets: [],
   on(evt, handler) {
     module.exports.onHandler.push({
@@ -26,7 +27,25 @@ module.exports = {
       socket.on(evt, handler);
     }
   },
+  onLocal(evt, handler) {
+    module.exports.onLocalHandler.push({
+      fn: "on",
+      args: [
+        evt,
+        handler
+      ]
+    });
+  },
   emit(evt, data) {
+    for (const localHandler of module.exports.onLocalHandler) {
+      if (localHandler.args[0] === evt && typeof localHandler.args[1] === "function") {
+        try {
+          localHandler.args[1]();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
     if (!io) {
       queue.push({
         fn: "emit",

@@ -34,6 +34,7 @@ module.exports = async({
         nativeWindowOpen: true
       }
     });
+
     win.setMenu(null);
 
     //console.log(config.bounds);
@@ -97,6 +98,8 @@ module.exports = async({
       appDomain, baseConfig,
       eventHub
     } = initStatus;
+
+    baseConfig.mainWindowId = win.id;
 
     await win.loadURL(`${appDomain}/`);
     initStatus.offChange(setStatus);

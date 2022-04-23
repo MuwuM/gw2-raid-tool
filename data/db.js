@@ -8,7 +8,8 @@ module.exports = async({baseConfig}) => {
     "friends",
     "known_friends",
     "settings",
-    "accounts"
+    "accounts",
+    "blocked_key_rules"
   ];
 
   const db = {};
