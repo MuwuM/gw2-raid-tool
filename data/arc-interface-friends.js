@@ -1,10 +1,12 @@
+const readJson = require("./arc-interface/read-json");
+
 module.exports = async function updateKnownFriends({
-  knownFriendCache, htmlFile, entry, db, baseConfig, readJSON
+  knownFriendCache, htmlFile, entry, db, baseConfig
 }) {
   const knownFriendCacheBefore = knownFriendCache;
   let json = null;
   try {
-    json = await readJSON(htmlFile.replace(/\.html$/, ".json"));
+    json = await readJson(htmlFile.replace(/\.html$/, ".json"));
   } catch (error) {
     if (!knownFriendCache) {
       await db.known_friends.insert({

@@ -48,7 +48,8 @@ electronHandler({
   const processDir = electronApp.getPath("userData");
   const progressConfig = {
     parsingLogs: 0,
-    parsedLogs: 0
+    parsedLogs: 0,
+    currentLog: false
   };
   const baseConfig = {
     dbBaseDir: processDir,
@@ -207,6 +208,7 @@ electronHandler({
     socket.emit("accounts", {accounts: await db.accounts.find({})});
     eventHub.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
+    socket.emit("progressConfig", {progressConfig});
     socket.emit("init", {
       wings,
       specs

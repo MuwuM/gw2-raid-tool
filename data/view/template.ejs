@@ -72,7 +72,7 @@
                 tabindex="-1"
               >{{i18n.nvidiaShareEnabled}}</a></li>
             <li class="nav-item-spacer">
-              <div v-if="progressConfig.parsingLogs > 0" class="progress progress-parsingLogs" style="display: flex;">
+              <div v-if="progressConfig.parsingLogs > 0" :title="progressConfig.currentLog" class="progress progress-parsingLogs" style="display: flex;">
                 <div class="progress-bar bg-info" role="progressbar" :style="{
                   overflow:'hidden',
                   width:`${(progressConfig.parsedLogs / (progressConfig.parsingLogs || 1)) * 100}%`,
