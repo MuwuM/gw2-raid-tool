@@ -70,7 +70,7 @@ module.exports = {
     get() {},
     set(t, prop, value) {
       if (prop.startsWith("$")) {
-        console.log(`${prop}: ${value}`);
+        //console.log(`${prop}: ${value}`);
         const realProp = prop.substring(1);
         if (delayProgressConfig[realProp]) {
           clearTimeout(delayProgressConfig[realProp]);

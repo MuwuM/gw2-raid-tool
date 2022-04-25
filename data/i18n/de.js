@@ -65,6 +65,7 @@ module.exports = {
   navSettings: "Einstellungen",
   navCredits: "Credits",
   navSearchForLogs: "Suche nach Logs:",
+  navCompressingLogs: "Komprimiere Logs:",
   navSearchForLogsLeft: "verbleibend",
   startGame: "Spiel starten",
   startLaunchBuddy: "Launchbuddy starten",

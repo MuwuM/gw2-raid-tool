@@ -80,6 +80,14 @@
                 }"></div>
                 <div class="progress-bar-label">{{i18n.navSearchForLogs}} {{progressConfig.parsingLogs - progressConfig.parsedLogs}} {{i18n.navSearchForLogsLeft}}</div>
               </div>
+              <div v-if="progressConfig.compressingLogs > 0" :title="progressConfig.currentLog" class="progress progress-parsingLogs" style="display: flex;">
+                <div v-if="progressConfig.compressingLogs > 0" class="progress-bar bg-success" role="progressbar" :style="{
+                  overflow:'hidden',
+                  width:`${(progressConfig.compressedLogs / (progressConfig.compressingLogs || 1)) * 100}%`,
+                  maxWidth: `${(progressConfig.compressedLogs / (progressConfig.compressingLogs || 1)) * 100}%`
+                }"></div>
+                <div class="progress-bar-label">{{i18n.navCompressingLogs}} {{progressConfig.compressingLogs - progressConfig.compressedLogs}} {{i18n.navSearchForLogsLeft}}</div>
+              </div>
             </li>
             <li class="nav-item active" v-if="baseConfig.launchBuddyDir && gw2Instances.lauchbuddy && gw2Instances.lauchbuddy.length < 1"><a
                   class="btn btn-success"

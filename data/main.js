@@ -3,7 +3,7 @@ const {dialog} = electron;
 const path = require("path");
 const fs = require("fs-extra");
 const ini = require("ini");
-const arcInterface = require("./arc-interface-wrapper");
+const arcInterfaceWrapper = require("./arc-interface-wrapper");
 
 const dbConnect = require("./db");
 const electronHandler = require("./electron");
@@ -49,6 +49,8 @@ electronHandler({
   const progressConfig = {
     parsingLogs: 0,
     parsedLogs: 0,
+    compressingLogs: 0,
+    compressedLogs: 0,
     currentLog: false
   };
   const baseConfig = {
@@ -174,7 +176,7 @@ electronHandler({
     db,
     eventHub
   });
-  await arcInterface({
+  await arcInterfaceWrapper(path.join(__dirname, "./arc-interface.js"), {
     db,
     baseConfig,
     progressConfig,

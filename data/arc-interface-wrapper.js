@@ -1,16 +1,15 @@
 const {fork} = require("child_process");
-const path = require("path");
 const os = require("os");
 
-module.exports = async({
+module.exports = async(childProcessFile, {
   db, baseConfig, progressConfig, eventHub
 }) => {
 
-  const pctMem = Math.floor(os.freemem() / 10485760 / 100);
+  const pctMem = Math.max(256, Math.floor(os.freemem() / 10485760 / 2));
   console.info(`Using ${pctMem}MB for parsing:`);
-  const child = fork(path.join(__dirname, "./arc-interface.js"), {
+  const child = fork(childProcessFile, {
     stdio: "inherit",
-    execArgv: [`--max-old-space-size=${512/*Math.max(Math.floor(1024 / 100), pctMem)*/}`]
+    execArgv: [`--max-old-space-size=${pctMem/*Math.max(Math.floor(1024 / 100), pctMem)*/}`]
   });
 
   let isExiting = false;
@@ -26,13 +25,13 @@ module.exports = async({
     console.warn({"child.exitCode": child.exitCode});
     if (child.exitCode === 134) {
       setTimeout(() => {
-        module.exports({
+        module.exports(childProcessFile, {
           db,
           baseConfig,
           progressConfig,
           eventHub
-        }, 5000);
-      });
+        });
+      }, 1000);
     }
   });
 
