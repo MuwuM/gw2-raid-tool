@@ -1,15 +1,16 @@
 const {fork} = require("child_process");
 const os = require("os");
+const path = require("path");
 
 module.exports = async(childProcessFile, {
   db, baseConfig, progressConfig, eventHub
-}) => {
+}, memoryModificator) => {
 
-  const pctMem = Math.max(256, Math.floor(os.freemem() / 10485760 / 2));
-  console.info(`Using ${pctMem}MB for parsing:`);
+  const pctMem = Math.max(256, Math.floor(os.freemem() / 10485760 * (Math.max(1, memoryModificator) / 100)));
+  console.info(`Using up to ${pctMem}MB for ${path.basename(childProcessFile)}`);
   const child = fork(childProcessFile, {
     stdio: "inherit",
-    execArgv: [`--max-old-space-size=${pctMem/*Math.max(Math.floor(1024 / 100), pctMem)*/}`]
+    execArgv: [`--max-old-space-size=${pctMem}`]
   });
 
   let isExiting = false;
@@ -76,6 +77,8 @@ module.exports = async(childProcessFile, {
       } else if (msg === "setProgressConfig") {
         progressConfig[prop] = value;
         eventHub.emit("progressConfig", {progressConfig});
+      } else if (msg === "emitEventHub") {
+        eventHub.emit(prop, value);
       }
     } catch (error) {
       console.error(error);

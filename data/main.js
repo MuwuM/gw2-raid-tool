@@ -3,11 +3,10 @@ const {dialog} = electron;
 const path = require("path");
 const fs = require("fs-extra");
 const ini = require("ini");
-const arcInterfaceWrapper = require("./arc-interface-wrapper");
+const detachedInterfaceWrapper = require("./detached-interface-wrapper");
 
 const dbConnect = require("./db");
 const electronHandler = require("./electron");
-const gw2Interface = require("./gw2-interface");
 const server = require("./server");
 const updater = require("./updater");
 const updateGw2Instances = require("./update-gw2-instances");
@@ -172,16 +171,18 @@ electronHandler({
   baseConfig.eiConfig = path.resolve(electronApp.getAppPath(), "config.conf");
 
   //console.log({eiConfig: baseConfig.eiConfig});
-  await gw2Interface({
-    db,
-    eventHub
-  });
-  await arcInterfaceWrapper(path.join(__dirname, "./arc-interface.js"), {
+  await detachedInterfaceWrapper(path.join(__dirname, "./gw2-interface.js"), {
     db,
     baseConfig,
     progressConfig,
     eventHub
-  });
+  }, 10);
+  await detachedInterfaceWrapper(path.join(__dirname, "./arc-interface.js"), {
+    db,
+    baseConfig,
+    progressConfig,
+    eventHub
+  }, 50);
 
   updateMumbleLinkData({
     db,
@@ -208,7 +209,7 @@ electronHandler({
   io.on("connection", async(socket) => {
     eventHub.sockets.push(socket);
     socket.emit("accounts", {accounts: await db.accounts.find({})});
-    eventHub.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
+    socket.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
     socket.emit("progressConfig", {progressConfig});
     socket.emit("init", {

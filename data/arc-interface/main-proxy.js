@@ -101,5 +101,15 @@ module.exports = {
         }, 1);
       }
     }
-  })
+  }),
+  eventHub: {emit(prop, value) {
+    reqIdCount++;
+    const reqId = reqIdCount;
+    process.send({
+      msg: "emitEventHub",
+      reqId,
+      prop,
+      value
+    });
+  }}
 };

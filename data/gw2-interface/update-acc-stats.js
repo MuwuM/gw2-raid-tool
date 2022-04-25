@@ -1,6 +1,6 @@
 const {DateTime} = require("luxon");
-const itemIds = require("./info/item-ids");
-const wings = require("./info/wings");
+const itemIds = require("../info/item-ids");
+const wings = require("../info/wings");
 
 
 const strikeWings = wings.filter((w) => w.isStrike);

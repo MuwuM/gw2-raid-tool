@@ -91,4 +91,6 @@ const arcFileHandlerInit = require("./arc-interface/arc-file-handler");
     console.info(`restore: ${brokenFile}`);
     await fs.move(path.join(logsPath, brokenFile), path.join(logsPath, brokenFile.replace(/-broken$/, "")));
   }
-})();
+})().catch((err) => {
+  console.error(err);
+});

@@ -1,12 +1,13 @@
-const updateAccStats = require("./update-acc-stats");
+const updateAccStats = require("./gw2-interface/update-acc-stats");
 const gw2apiClient = require("gw2api-client");
+const {
+  db, eventHub
+} = require("./arc-interface/main-proxy");
 
 
 const remoteModificator = 100;
 
-module.exports = async({
-  db, eventHub
-}) => {
+(async() => {
 
   let apiCounter = 0;
 
@@ -16,6 +17,7 @@ module.exports = async({
     for (const acc of accs) {
       try {
         if (apiCounter % remoteModificator === 0) {
+          //console.log(`Update Account stats remote: ${acc && acc.accountInfo && acc.accountInfo.name}`);
           const apiClient = gw2apiClient();
           apiClient.authenticate(acc.token);
           const accountInfo = await apiClient.account().get();
@@ -31,22 +33,25 @@ module.exports = async({
             eventHub
           });
         }
+        //console.log(`Update Account stats local: ${acc && acc.accountInfo && acc.accountInfo.name}`);
         const accountForLocal = await db.accounts.findOne({_id: acc._id});
         await updateAccStats.localUpdates({
           db,
           account: accountForLocal,
           eventHub
         });
-        apiCounter += 1;
-        if (apiCounter >= remoteModificator) {
-          apiCounter -= remoteModificator;
-        }
       } catch (error) {
         console.error(error);
       }
+    }
+    apiCounter += 1;
+    if (apiCounter >= remoteModificator) {
+      apiCounter -= remoteModificator;
     }
     setTimeout(updateAccounts, 3600);
   }
 
   updateAccounts();
-};
+})().catch((err) => {
+  console.error(err);
+});

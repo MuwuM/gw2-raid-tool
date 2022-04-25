@@ -9,7 +9,7 @@ const fg = require("fast-glob");
 const wincmd = require("node-windows");
 const elevate = util.promisify(wincmd.elevate);
 
-const updateAccStats = require("../update-acc-stats");
+const updateAccStats = require("../gw2-interface/update-acc-stats");
 const updateArcDps = require("../update-arc-dps");
 const updateArcDps11 = require("../update-arc-dps-11");
 const i18n = require("../i18n");
