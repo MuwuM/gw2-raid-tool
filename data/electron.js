@@ -1,9 +1,6 @@
 const electron = require("electron");
 const path = require("path");
 const fs = require("fs-extra");
-const pem = require("pem");
-const {promisify} = require("util");
-const verifySigningChain = promisify(pem.verifySigningChain);
 
 const {
   BrowserWindow,
@@ -11,6 +8,10 @@ const {
   Menu,
   MenuItem
 } = electron;
+
+async function verifySigningChain() {
+  return true;
+}
 
 module.exports = async({
   electronApp, initStatus
@@ -102,7 +103,7 @@ module.exports = async({
       eventHub, backendConfig
     } = initStatus;
 
-    baseConfig.mainWindowId = win.id;
+    backendConfig.mainWindowId = win.id;
 
     win.webContents.session.setCertificateVerifyProc(async(request, callback) => {
       const check = await verifySigningChain(request.certificate.data, backendConfig.certificate);

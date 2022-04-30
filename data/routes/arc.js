@@ -100,7 +100,7 @@ async function paginatedLogs(ctx, db, query) {
 }
 
 module.exports = async({
-  router, db, baseConfig, eventHub
+  router, db, baseConfig, backendConfig, eventHub
 }) => {
 
   let lastLog = await hashLog(JSON.stringify({}));
@@ -284,7 +284,7 @@ module.exports = async({
   const maxage = 31556952000;
 
   async function imgFromCache(ctx, localSub, url) {
-    const localFile = path.join(baseConfig.userDataDir, ".imgcache", ...localSub);
+    const localFile = path.join(backendConfig.userDataDir, ".imgcache", ...localSub);
     try {
 
       if (await fs.pathExists(`${localFile}.z`)) {

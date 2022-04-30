@@ -1,8 +1,6 @@
 const electron = require("electron");
-const {dialog} = electron;
 const path = require("path");
 const fs = require("fs-extra");
-const ini = require("ini");
 const detachedInterfaceWrapper = require("./detached-interface-wrapper");
 
 const dbConnect = require("./db");
@@ -18,10 +16,13 @@ const execAsync = util.promisify(execSync);
 
 const eventHub = require("./event-hub");
 const wings = require("./info/wings");
-const specs = require("./info/specs");
+const specs = require("./info/specs.json");
+const uniqueSpecs = require("./info/unique-specs.json");
 const pgk = require("./package.json");
 const handleSquirrelEvent = require("./handle-squirrel-event");
 const initStatus = require("./init-status");
+const loadConfig = require("./util/load-config");
+const loadArcdpsConfig = require("./util/load-arcdps-config");
 const isAdmin = (async() => {
   const {stdout} = await execAsync("whoami /groups");
   const isAdmin = (stdout.indexOf("12288") > -1);
@@ -52,65 +53,22 @@ electronHandler({
     compressedLogs: 0,
     currentLog: false
   };
-  const backendConfig = {};
-  const baseConfig = {
-    dbBaseDir: userDataDir,
+  const backendConfig = {
     userDataDir,
+    dbBaseDir: userDataDir
+  };
+  const baseConfig = {
     appVersion: pgk.version,
     isAdmin: await isAdmin()
   };
-  const db = await dbConnect({baseConfig});
+  const db = await dbConnect({backendConfig});
 
   initStatus.db = db;
   initStatus.baseConfig = baseConfig;
   initStatus.backendConfig = backendConfig;
   initStatus.eventHub = eventHub;
 
-  let savedConfig = await db.settings.findOne({default: true});
-  if (!savedConfig) {
-    savedConfig = await db.settings.insert({default: true});
-  }
-  baseConfig.savedConfigId = savedConfig._id;
-
-  if (!savedConfig.lang) {
-
-    const res = await dialog.showMessageBox({
-      title: "Sprache/Language/Langue:",
-      buttons: i18n.langLabels
-    });
-    if (res.canceled) {
-      console.error(new Error("no language selected"));
-      process.exit(1);
-    }
-    savedConfig.lang = i18n.langIds[res.response];
-    await db.settings.update({_id: savedConfig._id}, {$set: {lang: savedConfig.lang}});
-  }
-  baseConfig.lang = savedConfig.lang;
-
-  if (!savedConfig.gw2Dir) {
-    const res = await dialog.showOpenDialog({
-      title: i18n[baseConfig.lang].msgSelectInstall,
-      filters: [
-        {
-          name: "Gw2-64.exe",
-          extensions: ["exe"]
-        }
-      ],
-      properties: ["openFile"]
-    });
-    if (res.canceled || res.filePaths.length < 1 || !await fs.pathExists(res.filePaths[0])) {
-      console.error(new Error("no GW2 exe selected"));
-      process.exit(1);
-    }
-    savedConfig.gw2Dir = path.dirname(path.resolve(res.filePaths[0]));
-    await db.settings.update({_id: savedConfig._id}, {$set: {gw2Dir: savedConfig.gw2Dir}});
-  }
-  baseConfig.gw2Dir = savedConfig.gw2Dir;
-
-  baseConfig.launchBuddyDir = savedConfig.launchBuddyDir;
-  baseConfig.launchBuddyConfigDir = path.join(electronApp.getPath("appData"), "Gw2 Launchbuddy");
-
-  baseConfig.arcDisabled = savedConfig.arcDisabled;
+  const savedConfig = await loadConfig(db, baseConfig, electronApp);
 
 
   await updateGw2Instances({
@@ -121,56 +79,13 @@ electronHandler({
   initStatus.status = initStatus.state.Updating;
   await updater({
     baseConfig,
+    backendConfig,
     initStatus
   });
   initStatus.status = initStatus.state.Loading;
 
 
-  const arcConfigFilePath = path.join(baseConfig.gw2Dir, "addons/arcdps/arcdps.ini");
-  try {
-    const arcConfigFile = await fs.readFile(arcConfigFilePath);
-    const arcConfig = ini.parse(`${arcConfigFile}`);
-    let modified = false;
-    if (!arcConfig.session || arcConfig.session.boss_encounter_saving !== "1") {
-      arcConfig.session.boss_encounter_saving = "1";
-      modified = true;
-    }
-    if (typeof arcConfig.session.boss_encounter_path === "string" && arcConfig.session.boss_encounter_path !== "") {
-      const logsPath = arcConfig.session.boss_encounter_path;
-      if (savedConfig.logsPath !== logsPath) {
-        savedConfig.logsPath = logsPath;
-        await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {logsPath}});
-      }
-    } else {
-      if (savedConfig.logsPath !== false) {
-        savedConfig.logsPath = false;
-        await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {logsPath: false}});
-      }
-    }
-
-    if (modified) {
-      await new Promise((res) => {
-        function checkInstances() {
-          if (baseConfig.gw2Instances && baseConfig.gw2Instances.ready) {
-            res();
-          } else {
-            setTimeout(checkInstances, 100);
-          }
-        }
-        checkInstances();
-      });
-      if (baseConfig.gw2Instances.running.length <= 0) {
-        await fs.outputFile(arcConfigFilePath, ini.stringify(arcConfig));
-      } else {
-        console.warn("Could not update arc config");
-      }
-    }
-  } catch (error) {
-    console.warn("Arc config file not found", error);
-  }
-
-  baseConfig.logsPath = savedConfig.logsPath || path.join(electronApp.getPath("documents"), "Guild Wars 2/addons/arcdps/arcdps.cbtlogs");
-  baseConfig.eiConfig = path.resolve(electronApp.getAppPath(), "config.conf");
+  await loadArcdpsConfig(baseConfig, savedConfig, db, electronApp);
 
   //console.log({eiConfig: baseConfig.eiConfig});
   await detachedInterfaceWrapper(path.join(__dirname, "./gw2-interface.js"), {
@@ -200,12 +115,6 @@ electronHandler({
   });
   initStatus.io = io;
 
-  baseConfig.langs = i18n.langIds.map((id, index) => ({
-    id,
-    label: i18n.langLabels[index]
-  }));
-  baseConfig.deps = Object.keys(pgk.dependencies);
-
   let builds = (baseConfig.buildJsonPath && await fs.readJSON(baseConfig.buildJsonPath) || []);
   io.on("connection", async(socket) => {
     eventHub.sockets.push(socket);
@@ -215,7 +124,13 @@ electronHandler({
     socket.emit("progressConfig", {progressConfig});
     socket.emit("init", {
       wings,
-      specs
+      specs,
+      uniqueSpecs,
+      deps: Object.keys(pgk.dependencies),
+      langs: i18n.langIds.map((id, index) => ({
+        id,
+        label: i18n.langLabels[index]
+      }))
     });
     socket.emit("builds", {builds});
     for (const handler of eventHub.onHandler) {

@@ -22,6 +22,6 @@
     <span class="li-display-number-details">{{i18n.licenseMit}}</span>
     
     <h2 class="credits-section">{{i18n.creditsMorePackages}}</h2>
-    <div class="credits-deps"><span class="credits-dep" v-for="dep of baseConfig.deps"><a :href="'https://www.npmjs.com/package/'+encodeURIComponent(dep)">{{dep}}</a><template v-if="dep !== baseConfig.deps[baseConfig.deps.length -1]">,</template></span></div> 
+    <div class="credits-deps"><span class="credits-dep" v-for="dep of deps"><a :href="'https://www.npmjs.com/package/'+encodeURIComponent(dep)">{{dep}}</a><template v-if="dep !== deps[deps.length -1]">,</template></span></div> 
   </div>
 </main>

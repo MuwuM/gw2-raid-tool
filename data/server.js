@@ -9,9 +9,10 @@ const fs = require("fs-extra");
 const https = require("https");
 const SocketIo = require("socket.io");
 const ejs = require("ejs");
-const pem = require("pem");
+const selfsigned = require("selfsigned");
 const crypto = require("crypto");
-const createCertificate = promisify(pem.createCertificate);
+
+const signCert = promisify(selfsigned.generate);
 
 
 module.exports = async({
@@ -104,6 +105,7 @@ module.exports = async({
       router,
       db,
       baseConfig,
+      backendConfig,
       eventHub
     });
   }
@@ -134,16 +136,18 @@ module.exports = async({
 
   koaApp.use(router.middleware());
 
-  const keys = await createCertificate({
+  /*const keys = await createCertificate({
     selfSigned: true,
     days: 90
-  });
+  });*/
 
-  backendConfig.certificate = keys.certificate;
+  const signedCert = await signCert(null, {days: 90});
+
+  backendConfig.certificate = signedCert.cert;
 
   const httpsServer = https.createServer({
-    key: keys.serviceKey,
-    cert: keys.certificate
+    key: signedCert.private,
+    cert: signedCert.cert
   }, koaApp.callback());
   const io = SocketIo(httpsServer, {allowRequest: (req, callback) => {
     console.log("Check backend socket cert");

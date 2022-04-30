@@ -12,8 +12,10 @@ const eiRepo = {
   repo: "GW2-Elite-Insights-Parser"
 };
 
-module.exports = async({baseConfig}) => {
-  const eiLocalPath = path.resolve(baseConfig.userDataDir, "GuildWars2EliteInsights");
+module.exports = async({
+  baseConfig, backendConfig
+}) => {
+  const eiLocalPath = path.resolve(backendConfig.userDataDir, "GuildWars2EliteInsights");
   await fs.ensureDir(eiLocalPath);
   let eiPath = null;
   let ei_version = null;

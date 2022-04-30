@@ -5,6 +5,7 @@ const apiClient = gw2apiClient();
 
 (async() => {
   const target = path.join(__dirname, "specs.json");
+  const targetUnique = path.join(__dirname, "unique-specs.json");
 
   const specs = [];
 
@@ -43,6 +44,15 @@ const apiClient = gw2apiClient();
   }
 
   await fs.outputJSON(target, specs);
+
+  const uniqueSpecs = [];
+  for (const spec of specs) {
+    if (!uniqueSpecs.includes(spec.name)) {
+      uniqueSpecs.push(spec.name);
+    }
+  }
+  await fs.outputJSON(targetUnique, uniqueSpecs);
+
 
 })().catch((err) => {
   console.error(err);

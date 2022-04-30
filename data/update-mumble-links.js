@@ -56,7 +56,6 @@ module.exports = async({
     });
 
     if (lastActive !== currentActive) {
-      console.log("baseConfig: update-mumbleLink.js");
       eventHub.emit("baseConfig", {baseConfig});
       lastActive = currentActive;
     }

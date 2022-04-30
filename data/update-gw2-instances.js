@@ -37,7 +37,6 @@ module.exports = async({
     baseConfig.gw2Instances.ready = true;
     const newInstances = JSON.stringify(baseConfig.gw2Instances);
     if (oldInstances !== newInstances) {
-      console.log("baseConfig: update-gw2-instances.js");
       eventHub.emit("baseConfig", {baseConfig});
     }
     setTimeout(updateInstances, 1000);

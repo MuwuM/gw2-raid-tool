@@ -13,7 +13,7 @@ const keyUnblockedOpacity = 0;
 const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
 
 module.exports = async({
-  db, baseConfig,
+  db, baseConfig, backendConfig,
   eventHub
 }) => {
   if (baseConfig.isAdmin) {
@@ -22,13 +22,6 @@ module.exports = async({
       slot: 1,
       _id: 1
     });
-    baseConfig.uniqueSpecs = [];
-    for (const spec of specs) {
-      if (!baseConfig.uniqueSpecs.includes(spec.name)) {
-        baseConfig.uniqueSpecs.push(spec.name);
-      }
-    }
-
 
     eventHub.on("addKeyRule", async() => {
       //console.log("addKeyRule");
@@ -404,7 +397,7 @@ module.exports = async({
           updateBlockedKeys();
         }
         if (
-          typeof baseConfig.mainWindowId === "number"
+          typeof backendConfig.mainWindowId === "number"
         ) {
 
           for (const possible of possibleSlots()) {
@@ -426,7 +419,7 @@ module.exports = async({
               }
               continue;
             }
-            const parent = BrowserWindow.fromId(baseConfig.mainWindowId);
+            const parent = BrowserWindow.fromId(backendConfig.mainWindowId);
             blockingWindows[blockedSlot] = new BrowserWindow({
               width: possible.rect.width,
               height: possible.rect.height,

@@ -102,7 +102,10 @@ const app = createApp({
       mumbleLinkActive: false,
       keyRules: [],
       dayOfYear: DateTime.utc().ordinal,
-      validAhkKeys
+      validAhkKeys,
+      deps: [],
+      langs: [],
+      uniqueSpecs: []
     };
   },
   computed: {i18n() {
@@ -507,6 +510,8 @@ socket.on("init", (data) => {
   //console.log("wings", data);
   mnt.wings = data.wings;
   mnt.specs = data.specs;
+  mnt.deps = data.deps;
+  mnt.langs = data.langs;
   socket.emit("getKeyRules", {});
 });
 socket.on("logs", (data) => {

@@ -1,7 +1,7 @@
 const Datastore = require("nedb-promises");
 const path = require("path");
 
-module.exports = async({baseConfig}) => {
+module.exports = async({backendConfig}) => {
 
   const enabledDBs = [
     "logs",
@@ -14,7 +14,7 @@ module.exports = async({baseConfig}) => {
 
   const db = {};
   for (const enabledDB of enabledDBs) {
-    db[enabledDB] = Datastore.create({filename: path.resolve(baseConfig.dbBaseDir, `${enabledDB}.nedb`)});
+    db[enabledDB] = Datastore.create({filename: path.resolve(backendConfig.dbBaseDir, `${enabledDB}.nedb`)});
   }
   await db.known_friends.ensureIndex({
     fieldName: "entry",
