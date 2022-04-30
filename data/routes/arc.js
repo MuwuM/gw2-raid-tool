@@ -214,9 +214,6 @@ module.exports = async({
 
   nextTick = setTimeout(updateLogs, 1);
 
-  router.get("/logs", async(ctx) => {
-    await ctx.renderView("logs", {});
-  });
   router.get("/log/:hash", async(ctx) => {
     const log = await db.logs.findOne({hash: ctx.params.hash});
     if (log && log.htmlFile) {
@@ -274,14 +271,14 @@ module.exports = async({
   });
 
   router.get("/friends", async(ctx) => {
-    await ctx.renderView("friends", {});
+    await ctx.renderView();
   });
   router.get("/friends/:acc", async(ctx) => {
-    await ctx.renderView("friend", {});
+    await ctx.renderView();
   });
 
   router.get("/boss/:bossId", async(ctx) => {
-    await ctx.renderView("boss", {});
+    await ctx.renderView();
   });
 
   const maxage = 31556952000;

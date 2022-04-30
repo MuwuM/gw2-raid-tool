@@ -13,13 +13,9 @@ const keyUnblockedOpacity = 0;
 const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
 
 module.exports = async({
-  router, db, baseConfig,
+  db, baseConfig,
   eventHub
 }) => {
-  router.get("/map", async(ctx) => {
-    await ctx.renderView("map", {});
-  });
-
   if (baseConfig.isAdmin) {
     let keyRules = await db.blocked_key_rules.find({}).sort({
       spec: 1,

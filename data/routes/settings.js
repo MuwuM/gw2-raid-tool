@@ -17,14 +17,9 @@ const i18n = require("../i18n");
 const {spawn} = require("child_process");
 
 module.exports = async({
-  router, db, baseConfig, eventHub
+  db, baseConfig, eventHub
 }) => {
 
-  async function renderSettings(ctx) {
-    await ctx.renderView("settings", {});
-  }
-
-  router.get("/settings", async(ctx) => renderSettings(ctx));
   eventHub.on("addAccount", async({token}) => {
     if (token) {
       const acc = await db.accounts.insert({token});

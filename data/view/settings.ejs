@@ -76,8 +76,8 @@
       </template>
       <template v-if="!baseConfig.arcDisabled">
           <div>
-        <div class="li-display-number-details">arcdps (Dx 9): {{baseConfig.arcdpsVersionDate}} <a v-if="baseConfig.arcdpsVersionHasUpdates" href="/settings/updateArcDps" @click="updateArcDps($event)">Update verfügbar</a></div>
-        <div class="li-display-number-details">arcdps (Dx 11): {{baseConfig.arcdps11VersionDate}} <a v-if="baseConfig.arcdps11VersionHasUpdates" href="/settings/updateArcDps11" @click="updateArcDps11($event)">Update verfügbar</a></div>
+        <div class="li-display-number-details">arcdps (Dx 9): {{baseConfig.arcdpsVersionDate}} <a v-if="baseConfig.arcdpsVersionHasUpdates" @click="updateArcDps($event)">Update verfügbar</a></div>
+        <div class="li-display-number-details">arcdps (Dx 11): {{baseConfig.arcdps11VersionDate}} <a v-if="baseConfig.arcdps11VersionHasUpdates" @click="updateArcDps11($event)">Update verfügbar</a></div>
       </div>
     <a class="btn btn-success" href="#" @click="checkArcUpdates($event)">{{i18n.settingsCheckUpdatesButton}}</a>
       <a class="btn btn-danger" href="#" @click="disableArcUpdates($event)">{{i18n.settingsDisableButton}}</a>

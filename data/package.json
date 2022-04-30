@@ -26,7 +26,6 @@
     "jszip": "^3.9.1",
     "koa": "^2.13.4",
     "koa-better-router": "^2.1.1",
-    "koa-ejs": "^4.3.0",
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "luxon": "^2.3.2",
