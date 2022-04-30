@@ -1,6 +1,6 @@
 /* globals io,window,document */
 const socket = io();
-const {createApp} = require("vue");
+const Vue = require("vue");
 const {webFrame} = require("electron");
 const {DateTime} = require("luxon");
 
@@ -60,7 +60,7 @@ window.addEventListener("scroll", handleScrollUpdate);
 window.addEventListener("resize", onResize);
 onResize();
 
-const app = createApp({
+const app = Vue.createApp({
   data() {
     return {
       page: "overview",
