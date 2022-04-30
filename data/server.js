@@ -33,7 +33,7 @@ module.exports = async({
     i18nContent.push(fileContent.replace(/module\.exports\s*=\s*\{/, `window['i18n/${lang}'] = {`));
   }
 
-  let _global = {
+  const _global = {
     stylecss: await hashStaticFile("style.css"),
     bootstrapcss: await hashNodeModuleHard("bootswatch"),
     luxonversion: await hashNodeModule("luxon"),
@@ -45,15 +45,8 @@ module.exports = async({
   koaApp.context._global = _global;
   koaApp.context.renderView = async function() {
     const ctx = this;
-    _global = {
-      stylecss: await hashStaticFile("style.css"),
-      bootstrapcss: await hashNodeModuleHard("bootswatch"),
-      luxonversion: await hashNodeModule("luxon"),
-      socketversion: await hashNodeModule("socket.io"),
-      vueversion: await hashNodeModule("vue"),
-      i18nversion: await hashStr(i18nContent.join("\n")),
-      indexjsversion: await hashStaticFile("../public/index.js")
-    };
+    _global.stylecss = await hashStaticFile("style.css");
+    _global.indexjsversion = await hashStaticFile("../public/index.js");
     const tpl = await fs.readFile(viewPath, "utf8");
     const html = await ejs.render(tpl, {
       ..._global,
