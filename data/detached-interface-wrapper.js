@@ -6,7 +6,7 @@ module.exports = async(childProcessFile, {
   db, baseConfig, progressConfig, eventHub
 }, memoryModificator) => {
 
-  const pctMem = Math.max(256, Math.floor(os.freemem() / 10485760 * (Math.max(1, memoryModificator) / 100)));
+  const pctMem = Math.max(Math.ceil(4 * 1024 * (Math.max(1, memoryModificator) / 100)), Math.floor(os.freemem() / 10485760 * (Math.max(1, memoryModificator) / 100)));
   console.info(`Using up to ${pctMem}MB for ${path.basename(childProcessFile)}`);
   const child = fork(childProcessFile, {
     stdio: "inherit",
