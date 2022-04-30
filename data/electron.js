@@ -15,6 +15,18 @@ async function verifySigningChain(cert, ca) {
   return cleanCert === cleanCa;
 }
 
+function openExternal(url) {
+  try {
+    const link = new URL(url);
+    console.log(link);
+    if (link.protocol === "http:" || link.protocol === "https:") {
+      shell.openExternal(link.href);
+    }
+  } catch (error) {
+    console.warn(error);
+  }
+}
+
 module.exports = async({
   electronApp, initStatus
 }) => {
@@ -133,13 +145,13 @@ module.exports = async({
     win.webContents.on("will-navigate", (event, url) => {
       if (!url.startsWith(backendConfig.appDomain)) {
         event.preventDefault();
-        shell.openExternal(url);
+        openExternal(url);
         return false;
       }
     });
     win.webContents.setWindowOpenHandler((details) => {
       if (!details.url.startsWith(backendConfig.appDomain)) {
-        shell.openExternal(details.url);
+        openExternal(details.url);
         return {action: "deny"};
       }
       const url = new URL(details.url);
@@ -176,7 +188,7 @@ module.exports = async({
         menu.append(new MenuItem({
           label: "Open Link",
           click() {
-            shell.openExternal(linkURL);
+            openExternal(linkURL);
           }
         }));
         menu.append(new MenuItem({type: "separator"}));
