@@ -284,7 +284,7 @@ module.exports = async({
   const maxage = 31556952000;
 
   async function imgFromCache(ctx, localSub, url) {
-    const localFile = path.join(baseConfig.processDir, ".imgcache", ...localSub);
+    const localFile = path.join(baseConfig.userDataDir, ".imgcache", ...localSub);
     try {
 
       if (await fs.pathExists(`${localFile}.z`)) {

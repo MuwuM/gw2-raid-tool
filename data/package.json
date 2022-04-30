@@ -32,6 +32,7 @@
     "nedb-promises": "github:MuwuM/nedb-promises#v7.0.0",
     "node-processlist": "^1.0.2",
     "node-windows": "^1.0.0-beta.7",
+    "pem": "^1.14.6",
     "semver": "^7.3.7",
     "socket.io": "^4.5.0",
     "urllib": "^2.38.0",

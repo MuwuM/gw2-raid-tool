@@ -1,6 +1,9 @@
 const electron = require("electron");
 const path = require("path");
 const fs = require("fs-extra");
+const pem = require("pem");
+const {promisify} = require("util");
+const verifySigningChain = promisify(pem.verifySigningChain);
 
 const {
   BrowserWindow,
@@ -95,27 +98,39 @@ module.exports = async({
     });
     await initStatus.waitFor(initStatus.state.Loaded);
     const {
-      appDomain, baseConfig,
-      eventHub
+      baseConfig,
+      eventHub, backendConfig
     } = initStatus;
 
     baseConfig.mainWindowId = win.id;
 
-    await win.loadURL(`${appDomain}/`);
+    win.webContents.session.setCertificateVerifyProc(async(request, callback) => {
+      const check = await verifySigningChain(request.certificate.data, backendConfig.certificate);
+      if (
+        request.verificationResult === "net::ERR_CERT_AUTHORITY_INVALID" &&
+        check
+      ) {
+        callback(0);
+        return;
+      }
+      callback(-3);
+    });
+
+    await win.loadURL(`${backendConfig.appDomain}`);
     initStatus.offChange(setStatus);
 
     baseConfig.zoom = 1;
     eventHub.emit("baseConfig", {baseConfig});
 
     win.webContents.on("will-navigate", (event, url) => {
-      if (!url.startsWith(appDomain)) {
+      if (!url.startsWith(backendConfig.appDomain)) {
         event.preventDefault();
         shell.openExternal(url);
         return false;
       }
     });
     win.webContents.setWindowOpenHandler((details) => {
-      if (!details.url.startsWith(appDomain)) {
+      if (!details.url.startsWith(backendConfig.appDomain)) {
         shell.openExternal(details.url);
         return {action: "deny"};
       }
@@ -149,7 +164,7 @@ module.exports = async({
     win.webContents.on("context-menu", (event, {linkURL}) => {
       event.preventDefault();
       const menu = new Menu();
-      if (linkURL && !linkURL.startsWith(appDomain)) {
+      if (linkURL && !linkURL.startsWith(backendConfig.appDomain)) {
         menu.append(new MenuItem({
           label: "Open Link",
           click() {

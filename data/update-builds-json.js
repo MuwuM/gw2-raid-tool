@@ -4,7 +4,7 @@ const fs = require("fs-extra");
 const {app: electronApp} = require("electron");
 
 module.exports = async({baseConfig}) => {
-  const buildJsonPath = path.resolve(baseConfig.processDir, "builds.json");
+  const buildJsonPath = path.resolve(baseConfig.userDataDir, "builds.json");
 
   const localBuilds = path.resolve(process.cwd(), "../gw2-raid-builds/builds.json");
   if (!electronApp.isPackaged && await fs.pathExists(localBuilds)) {

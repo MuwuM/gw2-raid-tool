@@ -1,20 +1,23 @@
 const {getPort} = require("get-port-please");
 const Koa = require("koa");
 const path = require("path");
+const {promisify} = require("util");
 const Router = require("koa-better-router");
 const serve = require("koa-static");
 const mount = require("koa-mount");
 const fs = require("fs-extra");
-const http = require("http");
+const https = require("https");
 const SocketIo = require("socket.io");
 const ejs = require("ejs");
-
+const pem = require("pem");
 const crypto = require("crypto");
+const createCertificate = promisify(pem.createCertificate);
+
 
 module.exports = async({
-  db, baseConfig, eventHub
+  db, baseConfig, backendConfig, eventHub
 }) => {
-  const port = await getPort({port: 7002});
+  backendConfig.port = await getPort({port: 7002});
 
   const koaApp = new Koa();
   const router = Router().loadMethods();
@@ -131,12 +134,22 @@ module.exports = async({
 
   koaApp.use(router.middleware());
 
-  const httpServer = http.createServer(koaApp.callback());
-  const io = SocketIo(httpServer, {});
-  httpServer.listen(port);
+  const keys = await createCertificate({
+    selfSigned: true,
+    days: 90
+  });
 
-  return {
-    port,
-    io
-  };
+  backendConfig.certificate = keys.certificate;
+
+  const httpsServer = https.createServer({
+    key: keys.serviceKey,
+    cert: keys.certificate
+  }, koaApp.callback());
+  const io = SocketIo(httpsServer, {allowRequest: (req, callback) => {
+    console.log("Check backend socket cert");
+    callback(null, true);
+  }});
+  httpsServer.listen(backendConfig.port);
+
+  return {io};
 };

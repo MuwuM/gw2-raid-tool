@@ -13,7 +13,7 @@ const eiRepo = {
 };
 
 module.exports = async({baseConfig}) => {
-  const eiLocalPath = path.resolve(baseConfig.processDir, "GuildWars2EliteInsights");
+  const eiLocalPath = path.resolve(baseConfig.userDataDir, "GuildWars2EliteInsights");
   await fs.ensureDir(eiLocalPath);
   let eiPath = null;
   let ei_version = null;

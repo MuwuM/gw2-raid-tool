@@ -38,6 +38,7 @@ module.exports = async({
   mumbleLink.on("error", (err) => {
     console.error(err);
   });
+  let lastActive = null;
   mumbleLink.on("mumbleLink", (mumbleLinkStats) => {
     baseConfig.mumbleLinkStats = mumbleLinkStats;
     const stats = Object.values(baseConfig.mumbleLinkStats).filter((a) => a.name === "Guild Wars 2");
@@ -48,7 +49,17 @@ module.exports = async({
     } else if (stats.length < 1) {
       baseConfig.mumbleLinkActive = false;
     }
-    eventHub.emit("baseConfig", {baseConfig});
+
+    const currentActive = JSON.stringify({
+      ...baseConfig.mumbleLinkActive,
+      time: true
+    });
+
+    if (lastActive !== currentActive) {
+      console.log("baseConfig: update-mumbleLink.js");
+      eventHub.emit("baseConfig", {baseConfig});
+      lastActive = currentActive;
+    }
   });
 
 };

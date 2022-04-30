@@ -1,7 +1,9 @@
-/* globals io,Vue,window,document */
+/* globals io,window,document */
 const socket = io();
+const {createApp} = require("vue");
 const {webFrame} = require("electron");
 const {DateTime} = require("luxon");
+
 
 const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
 const colors = [
@@ -58,7 +60,7 @@ window.addEventListener("scroll", handleScrollUpdate);
 window.addEventListener("resize", onResize);
 onResize();
 
-const app = Vue.createApp({
+const app = createApp({
   data() {
     return {
       page: "overview",

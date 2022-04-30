@@ -44,7 +44,7 @@ electronHandler({
 
 (async() => {
   //
-  const processDir = electronApp.getPath("userData");
+  const userDataDir = electronApp.getPath("userData");
   const progressConfig = {
     parsingLogs: 0,
     parsedLogs: 0,
@@ -52,9 +52,10 @@ electronHandler({
     compressedLogs: 0,
     currentLog: false
   };
+  const backendConfig = {};
   const baseConfig = {
-    dbBaseDir: processDir,
-    processDir,
+    dbBaseDir: userDataDir,
+    userDataDir,
     appVersion: pgk.version,
     isAdmin: await isAdmin()
   };
@@ -62,6 +63,7 @@ electronHandler({
 
   initStatus.db = db;
   initStatus.baseConfig = baseConfig;
+  initStatus.backendConfig = backendConfig;
   initStatus.eventHub = eventHub;
 
   let savedConfig = await db.settings.findOne({default: true});
@@ -190,11 +192,10 @@ electronHandler({
     eventHub
   });
 
-  const {
-    port, io
-  } = await server({
+  const {io} = await server({
     db,
     baseConfig,
+    backendConfig,
     eventHub
   });
   initStatus.io = io;
@@ -243,8 +244,7 @@ electronHandler({
 
 
   await eventHub.registerIo(io);
-  const appDomain = `http://127.0.0.1:${port}`;
-  initStatus.appDomain = appDomain;
+  backendConfig.appDomain = `https://127.0.0.1:${backendConfig.port}/`;
   initStatus.status = initStatus.state.Loaded;
 })().catch((err) => {
   console.error(err);
