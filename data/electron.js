@@ -9,8 +9,10 @@ const {
   MenuItem
 } = electron;
 
-async function verifySigningChain() {
-  return true;
+async function verifySigningChain(cert, ca) {
+  const cleanCert = cert.replace(/[\n\r]+/g, "");
+  const cleanCa = ca.replace(/[\n\r]+/g, "");
+  return cleanCert === cleanCa;
 }
 
 module.exports = async({
