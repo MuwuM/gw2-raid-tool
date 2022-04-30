@@ -512,6 +512,7 @@ socket.on("init", (data) => {
   mnt.specs = data.specs;
   mnt.deps = data.deps;
   mnt.langs = data.langs;
+  mnt.uniqueSpecs = data.uniqueSpecs;
   socket.emit("getKeyRules", {});
 });
 socket.on("logs", (data) => {
