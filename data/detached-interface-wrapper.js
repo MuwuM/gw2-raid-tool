@@ -53,11 +53,15 @@ module.exports = async(childProcessFile, {
             reqId
           });
         } catch (error) {
-          child.send({
-            msg: "error",
-            err: (error && error.stack) || error,
-            reqId
-          });
+          if (!child.killed) {
+            child.send({
+              msg: "error",
+              err: (error && error.stack) || error,
+              reqId
+            });
+          } else {
+            console.error(error);
+          }
         }
       } else if (msg === "getBaseConfig") {
         child.send({

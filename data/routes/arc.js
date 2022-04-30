@@ -174,7 +174,7 @@ module.exports = async({
         ...readStats
       };
       if (stats.bossInfo && !stats.bossInfo.name_en) {
-        stats.bossInfo.name_en = (logs[0] && logs[0].fightName && logs[0].fightName.replace(/\s+CM\s*$/, "")) || "???";
+        stats.bossInfo.name_en = (logs?.[0]?.fightName && logs[0].fightName.replace(/\s+CM\s*$/, "")) || "???";
       }
       if (stats.bossInfo && !stats.bossInfo.name_de) {
         stats.bossInfo.name_de = stats.bossInfo.name_en;
@@ -216,7 +216,7 @@ module.exports = async({
 
   router.get("/log/:hash", async(ctx) => {
     const log = await db.logs.findOne({hash: ctx.params.hash});
-    if (log && log.htmlFile) {
+    if (log?.htmlFile) {
       ctx.type = "text/html";
       if (await fs.pathExists(`${log.htmlFile}z`)) {
         const file = `${await unzip(await fs.readFile(`${log.htmlFile}z`))}` ;
@@ -250,7 +250,7 @@ module.exports = async({
           method: "POST",
           files: {file: fs.createReadStream(evtcPath)}
         });
-        if (res.data && res.data.permalink) {
+        if (res?.data?.permalink) {
           log.permalink = res.data.permalink;
           await db.logs.update({_id: log._id}, {$set: {permalink: log.permalink}});
         }

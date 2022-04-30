@@ -9,7 +9,7 @@ module.exports = {
     Quill: true,
     AbortError: true
   },
-  parserOptions: {ecmaVersion: 2018},
+  parserOptions: {ecmaVersion: 2021},
   extends: "eslint:recommended",
   rules: {
     "indent": [
@@ -138,10 +138,7 @@ module.exports = {
 
     "object-curly-newline": [
       "error",
-      {
-        minProperties: 2,
-        minProperties: 2
-      }
+      {minProperties: 2}
     ],
 
     "object-curly-spacing": [

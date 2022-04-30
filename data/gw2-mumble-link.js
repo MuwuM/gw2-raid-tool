@@ -199,7 +199,7 @@ function MumbleLink(options) {
           continue;
         }
         const stats = await readStats(data, opts.parseUiStates);
-        if (stats.context && stats.context.processId) {
+        if (stats.context?.processId) {
           processesMap[stats.context.processId] = key;
         } else {
           try {
@@ -221,7 +221,7 @@ function MumbleLink(options) {
           )
           ) {
             stats.time = Date.now();
-          } else if (mumbleLinkStats[key] && mumbleLinkStats[key].time) {
+          } else if (mumbleLinkStats[key]?.time) {
             stats.time = mumbleLinkStats[key].time;
           } else {
             stats.time = Date.now();

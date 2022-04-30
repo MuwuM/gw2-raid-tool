@@ -26,8 +26,8 @@ module.exports = async({
     eventHub.on("addKeyRule", async() => {
       //console.log("addKeyRule");
       let spec = "";
-      if (baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec) {
-        spec = specs.find((sp) => sp.id === baseConfig.mumbleLinkActive.identity.spec).name;
+      if (backendConfig.mumbleLinkActive?.identity?.spec) {
+        spec = specs.find((sp) => sp.id === backendConfig.mumbleLinkActive.identity.spec).name;
       }
       await db.blocked_key_rules.insert({
         active: false,
@@ -80,14 +80,10 @@ module.exports = async({
 
 
     const possibleSlots = () => {
-      let uiSize = baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.uisz;
+      let uiSize = backendConfig.mumbleLinkActive?.identity?.uisz;
       if (typeof uiSize !== "number") {
         uiSize = 1;
       }
-      /*let spec = baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec;
-      if (typeof uiSize !== "number") {
-        spec = "";
-      }*/
       const uiSizes = [
         {
           boxSize: 50,
@@ -306,23 +302,23 @@ module.exports = async({
 
         const filters = [{active: true}];
 
-        //baseConfig.mumbleLinkActive.identity.name;
+        //backendConfig.mumbleLinkActive.identity.name;
 
-        if (baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec) {
+        if (backendConfig.mumbleLinkActive?.identity?.spec) {
           filters.push({$or: [
             {spec: ""},
-            {spec: specs.find((sp) => sp.id === baseConfig.mumbleLinkActive.identity.spec).name}
+            {spec: specs.find((sp) => sp.id === backendConfig.mumbleLinkActive.identity.spec).name}
           ]});
         }
 
         let keysToBlock = [];
         let blockingRules = [];
         if (
-          baseConfig.mumbleLinkActive &&
-      !baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus &&
-      !baseConfig.mumbleLinkActive.uiStates.IsMapOpen &&
-      baseConfig.mumbleLinkActive.uiStates.GameHasFocus &&
-      baseConfig.mumbleLinkActive.context.mountIndex === 0
+          backendConfig.mumbleLinkActive &&
+      !backendConfig.mumbleLinkActive?.uiStates?.TextboxHasFocus &&
+      !backendConfig.mumbleLinkActive?.uiStates?.IsMapOpen &&
+      backendConfig.mumbleLinkActive?.uiStates?.GameHasFocus &&
+      backendConfig.mumbleLinkActive?.context?.mountIndex === 0
         ) {
           blockingRules = await db.blocked_key_rules.find({$and: filters});
           keysToBlock = [];
@@ -334,7 +330,7 @@ module.exports = async({
               }
               keysToBlock.push(key);
             }
-            if (blockingWindows[rule.slot] && (blockingWindows[rule.slot].getOpacity() !== keyBlockedOpacity)) {
+            if (blockingWindows[rule.slot] && blockingWindows[rule.slot].getOpacity() !== keyBlockedOpacity) {
               //console.log(`show ${rule.slot} overlay`);
               blockingWindows[rule.slot].setOpacity(keyBlockedOpacity);
             }
@@ -368,7 +364,7 @@ module.exports = async({
               //console.log(`triggered: ${blockedKey}`);
             }, true);
           }
-          //console.log(baseConfig.mumbleLinkActive);
+          //console.log(backendConfig.mumbleLinkActive);
           console.info(`Blocking keys: ${JSON.stringify(keysToBlock)}`);
         } else {
           console.info("Unblocked all keys");
@@ -383,68 +379,67 @@ module.exports = async({
     };
 
     let lastMumbleLinkActive = null;
-    eventHub.onLocal("baseConfig", () => {
+    eventHub.onLocal("mumbleLinkActive", () => {
       try {
         const newMumbleLinkActive = JSON.stringify({
-          spec: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.identity && baseConfig.mumbleLinkActive.identity.spec,
-          TextboxHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.TextboxHasFocus,
-          GameHasFocus: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.GameHasFocus,
-          IsMapOpen: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.uiStates && baseConfig.mumbleLinkActive.uiStates.IsMapOpen,
-          mountIndex: baseConfig.mumbleLinkActive && baseConfig.mumbleLinkActive.context && baseConfig.mumbleLinkActive.context.mountIndex
+          spec: backendConfig?.mumbleLinkActive?.identity?.spec,
+          TextboxHasFocus: backendConfig?.mumbleLinkActive?.uiStates?.TextboxHasFocus,
+          GameHasFocus: backendConfig?.mumbleLinkActive?.uiStates?.GameHasFocus,
+          IsMapOpen: backendConfig?.mumbleLinkActive?.uiStates?.IsMapOpen,
+          mountIndex: backendConfig?.mumbleLinkActive?.context?.mountIndex
         });
         if (newMumbleLinkActive !== lastMumbleLinkActive) {
           lastMumbleLinkActive = newMumbleLinkActive;
           updateBlockedKeys();
         }
-        if (
-          typeof backendConfig.mainWindowId === "number"
-        ) {
 
-          for (const possible of possibleSlots()) {
-            const blockedSlot = possible.slot;
-            if (blockingWindows[blockedSlot]) {
-              const win = blockingWindows[blockedSlot];
-              if (win.isDestroyed()) {
-                delete blockingWindows[blockedSlot];
-                continue;
-              }
-              const bounds = win.getBounds();
-              if (
-                bounds.width !== possible.rect.width ||
+        let newWindow = false;
+
+        for (const possible of possibleSlots()) {
+          const blockedSlot = possible.slot;
+
+          if (blockingWindows[blockedSlot]) {
+            const win = blockingWindows[blockedSlot];
+            if (win.isDestroyed()) {
+              delete blockingWindows[blockedSlot];
+              continue;
+            }
+            const bounds = win.getBounds();
+            if (
+              bounds.width !== possible.rect.width ||
                 bounds.height !== possible.rect.height ||
                 bounds.x !== possible.rect.x ||
                 bounds.y !== possible.rect.y
-              ) {
-                win.setBounds(possible.rect);
-              }
-              continue;
+            ) {
+              win.setBounds(possible.rect);
             }
-            const parent = BrowserWindow.fromId(backendConfig.mainWindowId);
-            blockingWindows[blockedSlot] = new BrowserWindow({
-              width: possible.rect.width,
-              height: possible.rect.height,
-              x: possible.rect.x,
-              y: possible.rect.y,
-              title: `Block Slot: ${blockedSlot}`,
-              //parent,
-              resizable: false,
-              alwaysOnTop: true,
-              fullscreenable: false,
-              focusable: false,
-              frame: false,
-              hasShadow: false,
-              opacity: keyUnblockedOpacity
-              //transparent: true
-            });
-            blockingWindows[blockedSlot].setAlwaysOnTop(true, "screen-saver");
-            blockingWindows[blockedSlot].setVisibleOnAllWorkspaces(true);
-            blockingWindows[blockedSlot].loadURL(`file://${path.join(__dirname, "../static/locked-skill.html")}`);
-            blockingWindows[blockedSlot].showInactive();
-            parent.on("close", () => {
-              blockingWindows[blockedSlot].close();
-            });
+            continue;
           }
+
+          blockingWindows[blockedSlot] = new BrowserWindow({
+            width: possible.rect.width,
+            height: possible.rect.height,
+            x: possible.rect.x,
+            y: possible.rect.y,
+            title: `Block Slot: ${blockedSlot}`,
+            resizable: false,
+            alwaysOnTop: true,
+            fullscreenable: false,
+            focusable: false,
+            frame: false,
+            hasShadow: false,
+            opacity: keyUnblockedOpacity
+          });
+          blockingWindows[blockedSlot].setAlwaysOnTop(true, "screen-saver");
+          blockingWindows[blockedSlot].setVisibleOnAllWorkspaces(true);
+          blockingWindows[blockedSlot].loadURL(`file://${path.join(__dirname, "../static/locked-skill.html")}`);
+          blockingWindows[blockedSlot].showInactive();
+          newWindow = true;
         }
+        if (newWindow) {
+          updateBlockedKeys();
+        }
+        //console.log(Object.keys(blockingWindows));
 
       } catch (error) {
         console.error(error);

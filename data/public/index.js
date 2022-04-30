@@ -435,17 +435,17 @@ const app = createApp({
     },
     logPath(activeLog, logs) {
       const log = logs.find((l) => l.hash === activeLog);
-      if (log && log.isUploading) {
+      if (log?.isUploading) {
         return `/log/${activeLog}?is=uploading`;
       }
       return `/log/${activeLog}`;
     }
   },
   updated() {
-    document.title = `Raid Tool${(this.accounts.length >= 1) ? ` - ${this.accounts.filter((a) => a.accountInfo && a.accountInfo.name).map((a) => a.accountInfo.name)
+    document.title = `Raid Tool${(this.accounts.length >= 1) ? ` - ${this.accounts.filter((a) => a?.accountInfo?.name).map((a) => a.accountInfo.name)
       .join(" / ")}` : ""}`;
     //document.body.parentElement.style.fontSize = `${this.baseConfig.zoom * 16}px`;
-    if (this.baseConfig && this.baseConfig.zoom) {
+    if (this.baseConfig?.zoom) {
       webFrame.setZoomFactor(this.baseConfig.zoom);
     }
     onResize();
@@ -495,8 +495,6 @@ socket.on("baseConfig", (data) => {
   mnt.lang = data.baseConfig.lang;
   mnt.gw2Instances = data.baseConfig.gw2Instances;
   mnt.anyNvidiaShareInstanceRunning = data.baseConfig.gw2Instances.nvidiaShare && (data.baseConfig.gw2Instances.nvidiaShare.length > 0);
-  mnt.mumbleLinkActive = data.baseConfig.mumbleLinkActive;
-
 });
 socket.on("progressConfig", (data) => {
   //console.log("baseConfig", data);
@@ -505,6 +503,9 @@ socket.on("progressConfig", (data) => {
 socket.on("keyRules", (data) => {
   //console.log("keyRules", data);
   mnt.keyRules = data.keyRules;
+});
+socket.on("mumbleLinkActive", (data) => {
+  mnt.mumbleLinkActive = data.mumbleLinkActive;
 });
 socket.on("init", (data) => {
   //console.log("wings", data);
@@ -576,9 +577,9 @@ socket.on("builds", (data) => {
 
 function handleClick(event) {
   const a = event.target.closest("a");
-  const relativeUrl = a && a.href && new URL(a.href, window.location.href);
+  const relativeUrl = a?.href && new URL(a.href, window.location.href);
   const baseUrl = new URL("/", window.location.href);
-  if (!event.defaultPrevented && relativeUrl && relativeUrl.href.startsWith(baseUrl.href)) {
+  if (!event.defaultPrevented && relativeUrl?.href?.startsWith(baseUrl.href)) {
     const url = new URL(a.href, window.location.href);
 
     const path = url.pathname;

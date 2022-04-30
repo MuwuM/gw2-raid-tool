@@ -40,6 +40,13 @@ module.exports = async({
     });
 
     win.setMenu(null);
+    win.on("closed", () => {
+      for (const child of BrowserWindow.getAllWindows()) {
+        if (win !== child && !child.isDestroyed()) {
+          child.close();
+        }
+      }
+    });
 
     //console.log(config.bounds);
     if (config.bounds) {
@@ -102,8 +109,6 @@ module.exports = async({
       baseConfig,
       eventHub, backendConfig
     } = initStatus;
-
-    backendConfig.mainWindowId = win.id;
 
     win.webContents.session.setCertificateVerifyProc(async(request, callback) => {
       const check = await verifySigningChain(request.certificate.data, backendConfig.certificate);

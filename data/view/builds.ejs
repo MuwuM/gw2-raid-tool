@@ -11,7 +11,7 @@
           :class="{'btn':true, 'btn-outline-primary':true, 'active':c===activeBuildClass}" :title="c">
             <img class="boon-icon" :src="'/img/profession/'+c+'.png'">
           </a>
-          <a v-if="mumbleLinkActive && mumbleLinkActive.identity && mumbleLinkActive.identity.spec" v-on:click="toggleBuildClass('active')" 
+          <a v-if="mumbleLinkActive?.identity?.spec" v-on:click="toggleBuildClass('active')" 
           :class="{'btn':true, 'btn-outline-primary':true, 'active':'active'===activeBuildClass}" :title="i18n.buildClassFromCurrentClass">
             *
           </a>

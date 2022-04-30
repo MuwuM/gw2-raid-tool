@@ -12,7 +12,7 @@
     </thead>
     <tbody>
       <tr v-for="acc in accounts">
-        <th scope="row">{{(acc.accountInfo && acc.accountInfo.name) || "???"}}</th>
+        <th scope="row">{{(acc.accountInfo?.name) || "???"}}</th>
         <td>{{(acc.token)?"*****":""}}</td>
         <!--<td>Column content</td>-->
         <td><button class="btn btn-danger" @click="removeAccount(acc.token, $event)">Löschen</button></td>

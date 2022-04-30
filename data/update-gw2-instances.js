@@ -23,11 +23,20 @@ module.exports = async({
       const nvidiaShare = [];
       for (const prog of list) {
         if (prog.name === "Gw2-64.exe") {
-          running.push(prog);
+          running.push({
+            name: prog.name,
+            pid: prog.pid
+          });
         } else if (prog.name === "Gw2.Launchbuddy.exe") {
-          lauchbuddy.push(prog);
+          lauchbuddy.push({
+            name: prog.name,
+            pid: prog.pid
+          });
         } else if (prog.name === "NVIDIA Share.exe") {
-          nvidiaShare.push(prog);
+          nvidiaShare.push({
+            name: prog.name,
+            pid: prog.pid
+          });
         }
       }
       baseConfig.gw2Instances.running = running;

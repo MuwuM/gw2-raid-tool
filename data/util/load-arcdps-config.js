@@ -28,7 +28,7 @@ module.exports = async function loadArcdpsConfig(baseConfig, savedConfig, db, el
     if (modified) {
       await new Promise((res) => {
         function checkInstances() {
-          if (baseConfig.gw2Instances && baseConfig.gw2Instances.ready) {
+          if (baseConfig.gw2Instances?.ready) {
             res();
           } else {
             setTimeout(checkInstances, 100);

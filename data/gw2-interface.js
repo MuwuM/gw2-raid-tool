@@ -33,7 +33,7 @@ const remoteModificator = 100;
             eventHub
           });
         }
-        //console.log(`Update Account stats local: ${acc && acc.accountInfo && acc.accountInfo.name}`);
+        //console.log(`Update Account stats local: ${acc?.accountInfo?.name}`);
         const accountForLocal = await db.accounts.findOne({_id: acc._id});
         await updateAccStats.localUpdates({
           db,

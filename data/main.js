@@ -104,6 +104,7 @@ electronHandler({
   updateMumbleLinkData({
     db,
     baseConfig,
+    backendConfig,
     eventHub
   });
 
@@ -122,6 +123,7 @@ electronHandler({
     socket.emit("gw2Instances", {gw2Instances: baseConfig.gw2Instances});
     socket.emit("baseConfig", {baseConfig});
     socket.emit("progressConfig", {progressConfig});
+    socket.emit("mumbleLinkActive", {mumbleLinkActive: backendConfig.mumbleLinkActive || false});
     socket.emit("init", {
       wings,
       specs,

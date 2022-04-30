@@ -11,9 +11,9 @@
         <a v-for="step in wing.steps" :href="step.triggerID && ('/boss/'+encodeURIComponent(step.triggerID))" :class="{
           'wing-step':true,
           'wing-step-completed':(
-            (wing.isStrike && wing.isStrikeWeekly &&accounts.find(a=>a.completedStrikesWeekly&&a.completedStrikesWeekly[step.triggerID])) || 
-            (wing.isStrike && accounts.find(a=>a.completedStrikesDaily&&a.completedStrikesDaily[step.triggerID]))) || 
-            accounts.find(a=>a.completedSteps&&a.completedSteps.includes(step.id)
+            (wing.isStrike && wing.isStrikeWeekly &&accounts.find(a=>a.completedStrikesWeekly?.[step.triggerID])) || 
+            (wing.isStrike && accounts.find(a=>a.completedStrikesDaily?.[step.triggerID]))) || 
+            accounts.find(a=>a.completedSteps?.includes(step.id)
           )
         }"><img
           class="wing-boss-icon"
@@ -26,19 +26,19 @@
       
           <div class="wing-step-tooltip">
             <div class="wing-step-tooltip-title">{{step['name_'+lang]}}:</div>
-            <template v-if="!step.kpName && totalKps.raidBossKp && totalKps.raidBossKp[step.id] > 0">
+            <template v-if="!step.kpName && totalKps.raidBossKp?.[step.id] > 0">
 <div v-for="acc in accounts">
   <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])}">
     <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
   </span>
-  <span v-if="!wing.isStrike &&(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="!wing.isStrike &&!(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="wing.isStrike && wing.isStrikeWeekly &&(acc.completedStrikesWeekly&&acc.completedStrikesWeekly[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="wing.isStrike && wing.isStrikeWeekly &&!(acc.completedStrikesWeekly&&acc.completedStrikesWeekly[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="step.hasCM && (acc.completedCMs&&acc.completedCMs[step.triggerID])" class="wing-step-tooltip-mark-cm">CM✓</span>
-  <span v-if="step.hasCM && !(acc.completedCMs&&acc.completedCMs[step.triggerID])" class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open">CM🗙</span>
+  <span v-if="!wing.isStrike &&(acc.completedSteps?.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="!wing.isStrike &&!(acc.completedSteps?.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily?.[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&!(acc.completedStrikesDaily?.[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="wing.isStrike && wing.isStrikeWeekly &&(acc.completedStrikesWeekly?.[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="wing.isStrike && wing.isStrikeWeekly &&!(acc.completedStrikesWeekly?.[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="step.hasCM && (acc.completedCMs?.[step.triggerID])" class="wing-step-tooltip-mark-cm">CM✓</span>
+  <span v-if="step.hasCM && !(acc.completedCMs?.[step.triggerID])" class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open">CM🗙</span>
   <strong :style="{color:acc.color}">{{acc.accountInfo.name}}:</strong> <span>{{(acc.kps.raidBossKp[step.id]||0)}} KP</span>
 </div>
             </template>
@@ -47,31 +47,31 @@
   <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])}">
     <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
   </span>
-  <span v-if="!wing.isStrike &&(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="!wing.isStrike &&!(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="wing.isStrike && wing.isStrikeWeekly &&(acc.completedStrikesWeekly&&acc.completedStrikesWeekly[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="wing.isStrike && wing.isStrikeWeekly &&!(acc.completedStrikesWeekly&&acc.completedStrikesWeekly[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="step.hasCM && (acc.completedCMs&&acc.completedCMs[step.triggerID])" class="wing-step-tooltip-mark-cm">CM✓</span>
-  <span v-if="step.hasCM && !(acc.completedCMs&&acc.completedCMs[step.triggerID])" class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open">CM🗙</span>
+  <span v-if="!wing.isStrike &&(acc.completedSteps?.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="!wing.isStrike &&!(acc.completedSteps?.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily?.[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&!(acc.completedStrikesDaily?.[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="wing.isStrike && wing.isStrikeWeekly &&(acc.completedStrikesWeekly?.[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="wing.isStrike && wing.isStrikeWeekly &&!(acc.completedStrikesWeekly?.[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="step.hasCM && (acc.completedCMs?.[step.triggerID])" class="wing-step-tooltip-mark-cm">CM✓</span>
+  <span v-if="step.hasCM && !(acc.completedCMs?.[step.triggerID])" class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open">CM🗙</span>
   <strong :style="{color:acc.color}">{{acc.accountInfo.name}}:</strong> <span>{{(acc.kps[step.kpName]||0)}} KP</span>
 </div>
             </template>
             <template v-if="!(!step.kpName && totalKps.raidBossKp && totalKps.raidBossKp[step.id] > 0) && !(step.kpName && totalKps[step.kpName] && totalKps[step.kpName] > 0)">
 <span class="li-display-number-details">{{i18n.noKP}}</span>
 <div v-for="acc in accounts">
-  <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])}">
+  <span v-if="isDailyToday(wing,step,dayOfYear)" :class="{'wing-step-tooltip-mark':true,'wing-step-tooltip-mark-open':!(acc.completedStrikesDaily?.[step.triggerID])}">
     <img src="/img/Daily_Strike_Mission.png" class="daily-strike-icon" v-if="isDailyToday(wing,step,dayOfYear)" :title="i18n.isDailyToday" />
   </span>
-  <span v-if="!wing.isStrike &&(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="!wing.isStrike &&!(acc.completedSteps&&acc.completedSteps.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&!(acc.completedStrikesDaily&&acc.completedStrikesDaily[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="wing.isStrike && wing.isStrikeWeekly &&(acc.completedStrikesWeekly&&acc.completedStrikesWeekly[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
-  <span v-if="wing.isStrike && wing.isStrikeWeekly &&!(acc.completedStrikesWeekly&&acc.completedStrikesWeekly[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
-  <span v-if="step.hasCM && (acc.completedCMs&&acc.completedCMs[step.triggerID])" class="wing-step-tooltip-mark-cm">CM✓</span>
-  <span v-if="step.hasCM && !(acc.completedCMs&&acc.completedCMs[step.triggerID])" class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open">CM🗙</span>
+  <span v-if="!wing.isStrike &&(acc.completedSteps?.includes(step.id))" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="!wing.isStrike &&!(acc.completedSteps?.includes(step.id))" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&(acc.completedStrikesDaily?.[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="wing.isStrike && !wing.isStrikeWeekly &&!(acc.completedStrikesDaily?.[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="wing.isStrike && wing.isStrikeWeekly &&(acc.completedStrikesWeekly?.[step.triggerID])" class="wing-step-tooltip-mark">✓</span>
+  <span v-if="wing.isStrike && wing.isStrikeWeekly &&!(acc.completedStrikesWeekly?.[step.triggerID])" class="wing-step-tooltip-mark wing-step-tooltip-mark-open">🗙</span>
+  <span v-if="step.hasCM && (acc.completedCMs?.[step.triggerID])" class="wing-step-tooltip-mark-cm">CM✓</span>
+  <span v-if="step.hasCM && !(acc.completedCMs?.[step.triggerID])" class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open">CM🗙</span>
   <strong :style="{color:acc.color}">{{acc.accountInfo.name}}</strong>
 </div>
             </template>
@@ -146,7 +146,7 @@
       <span class="li-display-number">{{(totalKps.zhaitaffy % 1000)}}</span>
     </div>
   </div>
-  <template v-for="acc in accounts.filter(acc=>acc.kps && acc.kps.unopenedBoxes && acc.kps.unopenedBoxes.length > 0&& acc.accountInfo && acc.accountInfo.name)">
+  <template v-for="acc in accounts.filter(acc=> acc.kps?.unopenedBoxes && acc.kps.unopenedBoxes.length > 0 && acc.accountInfo?.name)">
     <template v-for="wing in wings">
       <template v-for="step in wing.steps">
         <template v-for="box in acc.kps.unopenedBoxes.filter(box=>step.id === box.boss)">
