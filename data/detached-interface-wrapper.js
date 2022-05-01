@@ -1,4 +1,7 @@
 const {fork} = require("child_process");
+const {
+  dialog, shell
+} = require("electron");
 const os = require("os");
 const path = require("path");
 
@@ -24,7 +27,7 @@ module.exports = async(childProcessFile, {
       return;
     }
     console.warn({"child.exitCode": child.exitCode});
-    if (child.exitCode === 134) {
+    if (child.exitCode === 134 || child.exitCode === 9) {
       setTimeout(() => {
         module.exports(childProcessFile, {
           db,
@@ -33,6 +36,18 @@ module.exports = async(childProcessFile, {
           eventHub
         });
       }, 1000);
+    } else {
+      dialog.showMessageBox({
+        title: "Error processing logs",
+        message: "Unexpected error processing logs: \nPlease report this issue.\n\nThank you. \n\nTo continue parsing logs, you have to restart the Raid Tool.",
+        type: "error"
+      }).then(() => {
+        const newIssueUrl = new URL("https://github.com/MuwuM/gw2-raid-tool/issues/new");
+        newIssueUrl.searchParams.set("title", "Error processing my logs");
+        newIssueUrl.searchParams.set("body", `I got an error processing my logs: \n\`\`\`\nUnexpected Exit Code: ${child.exitCode}\n\`\`\`\n`);
+        shell.openExternal(newIssueUrl.href);
+      });
+
     }
   });
 
