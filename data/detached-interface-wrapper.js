@@ -22,6 +22,10 @@ module.exports = async(childProcessFile, {
     child.kill();
   });
 
+  child.on("error", (err) => {
+    console.error(err);
+  });
+
   child.on("exit", () => {
     if (isExiting) {
       return;
