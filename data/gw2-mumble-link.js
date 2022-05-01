@@ -2,7 +2,7 @@ const NodeIPC = require("@fynnix/node-easy-ipc");
 const EventEmitter = require("events");
 class MumbleLinkEmitter extends EventEmitter {}
 
-const size = 10580;
+const size = 5460;
 
 function readText(access, start, length) {
   let i = 0;
