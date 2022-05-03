@@ -229,7 +229,7 @@ module.exports = async({
     //console.log("startGame", {});
     if (baseConfig.launchBuddyDir) {
       if (baseConfig.gw2Instances.lauchbuddy.length < 1) {
-        const started = await elevate(path.join(baseConfig.launchBuddyDir, "Gw2.Launchbuddy.exe"), {cwd: baseConfig.launchBuddyDir});
+        const started = await elevate(`"${path.join(baseConfig.launchBuddyDir, "Gw2.Launchbuddy.exe")}"`, {cwd: baseConfig.launchBuddyDir});
         baseConfig.gw2Instances.lauchbuddy.push({
           name: "Gw2.Launchbuddy.exe",
           pid: started.pid
