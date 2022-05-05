@@ -136,6 +136,18 @@ export type ProgressConfig = {
   compressedLogs: number;
   currentLog: string | false;
 };
+export type ProgressConfigProxied = {
+  parsingLogs: number;
+  parsedLogs: number;
+  compressingLogs: number;
+  compressedLogs: number;
+  currentLog: string | false;
+  $parsingLogs: number;
+  $parsedLogs: number;
+  $compressingLogs: number;
+  $compressedLogs: number;
+  $currentLog: string | false;
+};
 
 export type NedbDocument = any;
 

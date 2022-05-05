@@ -7,7 +7,7 @@ const delayProgressConfig = {};
  * @type {{
  * db:Object.<string, import("nedb-promises")>,
  * baseConfig:import("../raid-tool").BaseConfig,
- * progressConfig:import("../raid-tool").ProgressConfig,
+ * progressConfig:import("../raid-tool").ProgressConfigProxied,
  * eventHub:import("../raid-tool").EventHubEmitter
  * }}
  */
