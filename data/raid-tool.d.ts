@@ -124,7 +124,7 @@ export type SavedConfig = {
 export type BackendConfig = {
   userDataDir: string;
   mumbleLinkActive: MumbleLinkData;
-  mumbleLinkStats: Object<string, MumbleLinkData>;
+  mumbleLinkStats: { [pid: number]: MumbleLinkData };
   port: number;
   appDomain: string;
 };
@@ -170,8 +170,8 @@ type StatusCode = number;
 export type InitStatus = {
   status: StatusCode;
   step: string;
-  state: Object<string, StatusCode>;
-  stateLabel: Object<StatusCode, string>;
+  state: { [label: string]: StatusCode };
+  stateLabel: { [status: StatusCode]: string };
   db: NedbDatabase;
   onChange: (handler: EventHandler) => void;
   offChange: (handler: EventHandler) => void;
