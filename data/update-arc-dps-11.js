@@ -25,7 +25,9 @@ function md5File(path) {
     input.pipe(output);
   });
 }
-
+/**
+ * @param {{baseConfig:import("./raid-tool").BaseConfig, dialogs}} param0
+ */
 module.exports = async({
   baseConfig, dialogs
 }) => {

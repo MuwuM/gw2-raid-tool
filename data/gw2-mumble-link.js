@@ -19,6 +19,12 @@ function bit_test(num, bit) {
   return ((num >> bit) % 2 !== 0);
 }
 
+/**
+ *
+ * @param {*} access
+ * @param {*} parseUiStates
+ * @returns {import("./raid-tool").MumbleLinkData}
+ */
 async function readStats(access, parseUiStates) {
   const uiVersion = access.readUInt32LE(0);
   if (!uiVersion) {
@@ -240,5 +246,4 @@ function MumbleLink(options) {
   setImmediate(readMumbleLinkData);
   return emitter;
 }
-
 module.exports = MumbleLink;

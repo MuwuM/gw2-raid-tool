@@ -16,6 +16,9 @@ const i18n = require("../i18n");
 
 const {spawn} = require("child_process");
 
+/**
+ * @type {import("../raid-tool").ServerRouteHandler}
+ */
 module.exports = async({
   db, baseConfig, eventHub
 }) => {

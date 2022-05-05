@@ -46,6 +46,9 @@ electronHandler({
 (async() => {
   //
   const userDataDir = electronApp.getPath("userData");
+  /**
+   * @type {import("./raid-tool").ProgressConfig}
+   */
   const progressConfig = {
     parsingLogs: 0,
     parsedLogs: 0,
@@ -53,10 +56,17 @@ electronHandler({
     compressedLogs: 0,
     currentLog: false
   };
+
+  /**
+   * @type {import("./raid-tool").BackendConfig}
+   */
   const backendConfig = {
     userDataDir,
     dbBaseDir: userDataDir
   };
+  /**
+   * @type {import("./raid-tool").BaseConfig}
+   */
   const baseConfig = {
     appVersion: pgk.version,
     isAdmin: await isAdmin()
@@ -87,7 +97,6 @@ electronHandler({
 
   await loadArcdpsConfig(baseConfig, savedConfig, db, electronApp);
 
-  //console.log({eiConfig: baseConfig.eiConfig});
   await detachedInterfaceWrapper(path.join(__dirname, "./gw2-interface.js"), {
     db,
     baseConfig,
@@ -102,7 +111,6 @@ electronHandler({
   }, 50);
 
   updateMumbleLinkData({
-    db,
     baseConfig,
     backendConfig,
     eventHub

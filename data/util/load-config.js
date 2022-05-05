@@ -4,8 +4,15 @@ const path = require("path");
 const fs = require("fs-extra");
 
 const i18n = require("../i18n");
-
+/**
+ * @param  {import("../raid-tool").NedbDatabase} db
+ * @param  {import("../raid-tool").BaseConfig} baseConfig
+ * @param  {import("../raid-tool").ElectronApp} electronApp
+ */
 module.exports = async function loadConfig(db, baseConfig, electronApp) {
+  /**
+   * @type {import("../raid-tool").SavedConfig}
+   */
   let savedConfig = await db.settings.findOne({default: true});
   if (!savedConfig) {
     savedConfig = await db.settings.insert({default: true});

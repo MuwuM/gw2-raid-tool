@@ -18,6 +18,11 @@ for (const w of strikeWings) {
   }
 }
 
+/**
+ *
+ * @param {{db:import("../raid-tool").NedbDatabase, apiClient, account, eventHub:import("../raid-tool").EventHub}} param0
+ * @returns
+ */
 module.exports = async({
   db, apiClient, account, eventHub
 }) => {
@@ -223,6 +228,11 @@ module.exports = async({
   }
 };
 
+/**
+ *
+ * @param {{db:import("../raid-tool").NedbDatabase, account, eventHub:import("../raid-tool").EventHub}} param0
+ * @returns
+ */
 module.exports.localUpdates = async({
   db, account, eventHub
 }) => {

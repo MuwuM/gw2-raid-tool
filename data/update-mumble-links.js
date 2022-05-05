@@ -4,6 +4,14 @@ const fs = require("fs-extra");
 const {XMLParser} = require("fast-xml-parser");
 const xml = new XMLParser();
 
+/**
+ *
+ * @param {{
+ * baseConfig:import("./raid-tool").BaseConfig,
+ * backendConfig:import("./raid-tool").BackendConfig,
+ * eventHub:import("./raid-tool").EventHub
+ * }} param0
+ */
 module.exports = async({
   baseConfig, backendConfig, eventHub
 }) => {
@@ -39,11 +47,15 @@ module.exports = async({
     console.error(err);
   });
   let lastActive = null;
+
   mumbleLink.on("mumbleLink", (mumbleLinkStats) => {
     //baseConfig.mumbleLinkStats = mumbleLinkStats;
     const stats = Object.values(mumbleLinkStats).filter((a) => a.name === "Guild Wars 2");
     stats.sort((a, b) => b.time - a.time);
     const active = stats[0];
+    /**
+     * @type {import("./raid-tool").MumbleLinkData}
+     */
     let mumbleLinkActive;
     if (active) {
       mumbleLinkActive = active;

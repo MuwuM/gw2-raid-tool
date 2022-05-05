@@ -5,6 +5,15 @@ const {
 const os = require("os");
 const path = require("path");
 
+/**
+ * @param {string} childProcessFile
+ * @param {{
+ *  db:import("./raid-tool").NedbDatabase>,
+ *  baseConfig:import("./raid-tool").BaseConfig,
+ *  progressConfig:import("./raid-tool").ProgressConfig,
+ *  eventHub:import("./raid-tool").EventHub}}
+ * @param {number} memoryModificator
+ */
 module.exports = async(childProcessFile, {
   db, baseConfig, progressConfig, eventHub
 }, memoryModificator) => {
@@ -38,7 +47,7 @@ module.exports = async(childProcessFile, {
           baseConfig,
           progressConfig,
           eventHub
-        });
+        }, memoryModificator);
       }, 1000);
     } else {
       dialog.showMessageBox({

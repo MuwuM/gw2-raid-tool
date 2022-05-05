@@ -3,6 +3,14 @@ let reqIdCount = 0;
 
 const delayProgressConfig = {};
 
+/**
+ * @type {{
+ * db:Object.<string, import("nedb-promises")>,
+ * baseConfig:import("../raid-tool").BaseConfig,
+ * progressConfig:import("../raid-tool").ProgressConfig,
+ * eventHub:import("../raid-tool").EventHubEmitter
+ * }}
+ */
 module.exports = {
   db: new Proxy({}, {get(t, database) {
     if (!t[database]) {

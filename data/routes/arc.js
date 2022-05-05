@@ -60,6 +60,9 @@ const kittyGolemTriggerIds = [
   19676
 ];
 
+/**
+ * @param  {Object.<string, import("nedb-promises")>} db
+ */
 async function paginatedLogs(ctx, db, query) {
   const page = (parseInt(ctx.query.p, 10) || 0);
   const maxPages = Math.ceil((await db.logs.count(query)) / 50);
@@ -98,7 +101,9 @@ async function paginatedLogs(ctx, db, query) {
     stats
   };
 }
-
+/**
+ * @type {import("../raid-tool").ServerRouteHandler}
+ */
 module.exports = async({
   router, db, baseConfig, backendConfig, eventHub
 }) => {

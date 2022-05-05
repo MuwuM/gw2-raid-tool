@@ -1,6 +1,11 @@
 const Datastore = require("nedb-promises");
 const path = require("path");
 
+/**
+ *
+ * @param {*} param0
+ * @returns import("./base-config").NedbDatabase
+ */
 module.exports = async({backendConfig}) => {
 
   const enabledDBs = [
@@ -12,6 +17,9 @@ module.exports = async({backendConfig}) => {
     "blocked_key_rules"
   ];
 
+  /**
+   * @type {import("./raid-tool").NedbDatabase}
+   */
   const db = {};
   for (const enabledDB of enabledDBs) {
     db[enabledDB] = Datastore.create({filename: path.resolve(backendConfig.dbBaseDir, `${enabledDB}.nedb`)});

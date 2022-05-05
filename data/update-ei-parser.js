@@ -11,7 +11,9 @@ const eiRepo = {
   owner: "baaron4",
   repo: "GW2-Elite-Insights-Parser"
 };
-
+/**
+ * @param {{baseConfig:import("./raid-tool").BaseConfig, backendConfig:import("./raid-tool").BackendConfig, initStatus:import("./raid-tool").InitStatus}} param0
+ */
 module.exports = async({
   baseConfig, backendConfig
 }) => {

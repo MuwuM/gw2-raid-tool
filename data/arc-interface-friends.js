@@ -1,5 +1,7 @@
 const readJson = require("./arc-interface/read-json");
-
+/**
+ * @param {{knownFriendCache, htmlFile, entry,baseConfig:import("./base-config").BaseConfig,db:import("./base-config").NedbDatabase>}}
+ */
 module.exports = async function updateKnownFriends({
   knownFriendCache, htmlFile, entry, db, baseConfig
 }) {

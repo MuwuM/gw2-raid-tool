@@ -1,5 +1,14 @@
+/**
+ * @type {import("socket.io").Server}
+ */
 let io;
+/**
+ * @type {Array<import("./raid-tool").EventHandlerStored>}
+ */
 let queue = [];
+/**
+ * @type {import("./raid-tool").EventHub}
+ */
 module.exports = {
   registerIo(_io) {
     io = _io;

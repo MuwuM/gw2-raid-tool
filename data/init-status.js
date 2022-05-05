@@ -1,4 +1,7 @@
 
+/**
+ * @type  {import("./raid-tool").InitStatus}
+ */
 const initStatus = {
   set status(name) {
     this._status = name;

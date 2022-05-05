@@ -3,6 +3,9 @@ const urllib = require("urllib");
 const fs = require("fs-extra");
 const {app: electronApp} = require("electron");
 
+/**
+ * @param {{baseConfig:import("./raid-tool").BaseConfig, backendConfig:import("./raid-tool").BackendConfig, initStatus:import("./raid-tool").InitStatus}} param0
+ */
 module.exports = async({
   baseConfig, backendConfig
 }) => {

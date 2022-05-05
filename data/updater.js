@@ -4,6 +4,10 @@ const updateBuildsJson = require("./update-builds-json");
 const updateEiParser = require("./update-ei-parser");
 const updateRaidTool = require("./update-raid-tool");
 
+/**
+ *
+ * @param {{baseConfig:import("./raid-tool").BaseConfig, backendConfig:import("./raid-tool").BackendConfig, initStatus:import("./raid-tool").InitStatus}} param0
+ */
 module.exports = async({
   baseConfig, backendConfig, initStatus
 }) => {

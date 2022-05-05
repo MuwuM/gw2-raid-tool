@@ -1,11 +1,13 @@
 const processlist = require("node-processlist");
-
+/**
+ * @param {{baseConfig:import("./raid-tool").BaseConfig,eventHub:import("./raid-tool").EventHub}} param0
+ */
 module.exports = async({
   eventHub, baseConfig
 }) => {
   baseConfig.gw2Instances = {
     running: [],
-    launchBuddy: [],
+    lauchbuddy: [],
     nvidiaShare: [],
     ready: false
   };

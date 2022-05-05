@@ -2,6 +2,12 @@ const path = require("path");
 const fs = require("fs-extra");
 const ini = require("ini");
 
+/**
+ * @param  {import("../raid-tool").BaseConfig} baseConfig
+ * @param  {import("../raid-tool").SavedConfig} savedConfig
+ * @param  {import("../raid-tool").NedbDatabase} db
+ * @param  {import("../raid-tool").ElectronApp} electronApp
+ */
 module.exports = async function loadArcdpsConfig(baseConfig, savedConfig, db, electronApp) {
   const arcConfigFilePath = path.join(baseConfig.gw2Dir, "addons/arcdps/arcdps.ini");
   try {

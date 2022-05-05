@@ -7,14 +7,16 @@ const serve = require("koa-static");
 const mount = require("koa-mount");
 const fs = require("fs-extra");
 const https = require("https");
-const SocketIo = require("socket.io");
+const {Server: SocketIo} = require("socket.io");
 const ejs = require("ejs");
 const selfsigned = require("selfsigned");
 const crypto = require("crypto");
 
 const signCert = promisify(selfsigned.generate);
 
-
+/**
+ * @param {{db:import("./raid-tool").NedbDatabase, baseConfig:import("./raid-tool").BaseConfig, backendConfig:import("./raid-tool").BackendConfig, eventHub:import("./raid-tool").EventHub}}
+ */
 module.exports = async({
   db, baseConfig, backendConfig, eventHub
 }) => {
@@ -149,7 +151,7 @@ module.exports = async({
     key: signedCert.private,
     cert: signedCert.cert
   }, koaApp.callback());
-  const io = SocketIo(httpsServer, {allowRequest: (req, callback) => {
+  const io = new SocketIo(httpsServer, {allowRequest: (req, callback) => {
     console.log("Check backend socket cert");
     callback(null, true);
   }});

@@ -27,6 +27,10 @@ function openExternal(url) {
   }
 }
 
+/**
+ *
+ * @param {{electronApp:import("./raid-tool").ElectronApp, initStatus:import("./raid-tool").InitStatus}} param0
+ */
 module.exports = async({
   electronApp, initStatus
 }) => {
