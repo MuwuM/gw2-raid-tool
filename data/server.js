@@ -138,11 +138,6 @@ module.exports = async({
 
   koaApp.use(router.middleware());
 
-  /*const keys = await createCertificate({
-    selfSigned: true,
-    days: 90
-  });*/
-
   const signedCert = await signCert(null, {days: 90});
 
   backendConfig.certificate = signedCert.cert;
@@ -151,10 +146,7 @@ module.exports = async({
     key: signedCert.private,
     cert: signedCert.cert
   }, koaApp.callback());
-  const io = new SocketIo(httpsServer, {allowRequest: (req, callback) => {
-    console.log("Check backend socket cert");
-    callback(null, true);
-  }});
+  const io = new SocketIo(httpsServer, {});
   httpsServer.listen(backendConfig.port);
 
   return {io};

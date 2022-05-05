@@ -19,16 +19,16 @@ const arcFileHandlerInit = (logsPath, counter) => {
   }
   const arcFileHandler = new EventEmitter({captureRejections: true});
   arcFileHandler.on("log", async(entry) => {
-    console.log(`adding: ${entry}`);
+    console.info(`adding: ${entry}`);
     counter.i++;
     progressConfig.parsingLogs = counter.i;
     const done = await singleton();
     try {
-      console.log(`parsing: ${entry}`);
+      console.info(`parsing: ${entry}`);
       progressConfig.$currentLog = entry;
       await updateLogEntry(logsPath, entry);
       progressConfig.$currentLog = false;
-      console.log(`parsed ${entry}`);
+      console.info(`parsed ${entry}`);
       counter.j++;
       progressConfig.$parsedLogs = counter.j;
       if (counter.i === counter.j && counter.chokidarReady) {

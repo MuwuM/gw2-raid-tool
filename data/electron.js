@@ -18,7 +18,7 @@ async function verifySigningChain(cert, ca) {
 function openExternal(url) {
   try {
     const link = new URL(url);
-    console.log(link);
+    //console.log(link);
     if (link.protocol === "http:" || link.protocol === "https:") {
       shell.openExternal(link.href);
     }
