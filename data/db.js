@@ -3,7 +3,7 @@ const path = require("path");
 
 /**
  *
- * @param {*} param0
+ * @param {{backendConfig:import("./raid-tool").BackendConfig}} param0
  * @returns import("./base-config").NedbDatabase
  */
 module.exports = async({backendConfig}) => {

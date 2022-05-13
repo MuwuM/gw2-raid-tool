@@ -127,6 +127,7 @@ export type BackendConfig = {
   mumbleLinkStats: { [pid: number]: MumbleLinkData };
   port: number;
   appDomain: string;
+  dbBaseDir: string;
 };
 
 export type ProgressConfig = {

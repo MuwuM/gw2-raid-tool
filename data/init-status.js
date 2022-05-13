@@ -1,3 +1,4 @@
+const EventEmitter = require("events");
 
 /**
  * @type  {import("./raid-tool").InitStatus}
@@ -6,9 +7,7 @@ const initStatus = {
   set status(name) {
     this._status = name;
     this._step = "";
-    for (const handler of this._handler) {
-      handler(this._status, this._step);
-    }
+    this._emitter.emit("statusChange", this._status, this._step);
   },
   get status() {
     return this._status;
@@ -16,9 +15,7 @@ const initStatus = {
   _status: 0,
   set step(name) {
     this._step = name;
-    for (const handler of this._handler) {
-      handler(this._status, this._step);
-    }
+    this._emitter.emit("statusChange", this._status, this._step);
   },
   get step() {
     return this._step;
@@ -42,16 +39,13 @@ const initStatus = {
     }
     return this._stateLabels;
   },
-  _handler: [],
+  _emitter: new EventEmitter(),
   onChange(handler) {
-    handler(this._status);
-    this._handler.push(handler);
+    handler(this._status, this._step);
+    this._emitter.on("statusChange", handler);
   },
   offChange(handler) {
-    const index = this._handler.indexOf(handler);
-    if (index >= 0) {
-      this._handler.splice(index, 1);
-    }
+    this._emitter.off("statusChange", handler);
   },
   waitFor(status) {
     if (status <= this._status) {
@@ -62,10 +56,10 @@ const initStatus = {
         if (status > stat) {
           return;
         }
-        this.offChange(handler);
+        this._emitter.off("statusChange", handler);
         res(stat);
       };
-      this._handler.push(handler);
+      this._emitter.on("statusChange", handler);
     });
   }
 };

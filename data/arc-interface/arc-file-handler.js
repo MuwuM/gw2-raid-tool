@@ -9,7 +9,7 @@ const arcFileHandlerInit = (logsPath, counter) => {
   function singleton() {
     return new Promise((res) => {
       let next;
-      const done = new Promise((res) => next = res);
+      const done = new Promise((innerRes) => next = innerRes);
       queue.then(() => res(next)).catch((err) => {
         console.error(err);
         next();

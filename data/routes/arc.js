@@ -22,8 +22,13 @@ function ensureArray(fightName) {
   return [fightName];
 }
 
+function structuredClonePolyfill(data) {
+  //structuredClone will be there with nodejs 17.X
+  return JSON.parse(JSON.stringify(data));
+}
+
 function enhanceLogs(logs) {
-  const copyLogs = JSON.parse(JSON.stringify(logs.filter((l) => l)));
+  const copyLogs = structuredClonePolyfill(logs.filter((l) => l));
 
   let fightName = null;
   let recordedByName = null;
@@ -101,6 +106,7 @@ async function paginatedLogs(ctx, db, query) {
     stats
   };
 }
+
 /**
  * @type {import("../raid-tool").ServerRouteHandler}
  */
@@ -108,8 +114,10 @@ module.exports = async({
   router, db, baseConfig, backendConfig, eventHub
 }) => {
 
-  let lastLog = await hashLog(JSON.stringify({}));
-  let lastFriendsLog = await hashLog(JSON.stringify({}));
+  const emptyLogFilter = await hashLog(JSON.stringify({}));
+
+  let lastLog = emptyLogFilter;
+  let lastFriendsLog = emptyLogFilter;
   let nextTick;
 
   const logFilters = {
@@ -122,13 +130,13 @@ module.exports = async({
     clearTimeout(nextTick);
     logFilters.p = data.p || 0;
     logFilters.config = data.config || {};
-    lastLog = await hashLog(JSON.stringify({}));
+    lastLog = emptyLogFilter;
     nextTick = setTimeout(updateLogs, 1);
   });
   eventHub.on("friendsFilter", async(/*data*/) => {
     //console.log("friendsFilter changed", data);
     clearTimeout(nextTick);
-    lastFriendsLog = await hashLog(JSON.stringify({}));
+    lastFriendsLog = emptyLogFilter;
     nextTick = setTimeout(updateLogs, 1);
   });
 
@@ -224,10 +232,10 @@ module.exports = async({
     if (log?.htmlFile) {
       ctx.type = "text/html";
       if (await fs.pathExists(`${log.htmlFile}z`)) {
-        const file = `${await unzip(await fs.readFile(`${log.htmlFile}z`))}` ;
+        const file = `${await unzip(await fs.readFile(`${log.htmlFile}z`))}`;
         ctx.body = adjustArcHtml(log, file, ctx);
       } else {
-        const file = `${await fs.readFile(log.htmlFile)}` ;
+        const file = `${await fs.readFile(log.htmlFile)}`;
         ctx.body = adjustArcHtml(log, file, ctx);
       }
     }
@@ -241,7 +249,7 @@ module.exports = async({
       log.permalinkFailed = false;
       await db.logs.update({_id: log._id}, {$set: {permalinkFailed: log.permalinkFailed}});
       clearTimeout(nextTick);
-      lastLog = await hashLog(JSON.stringify({}));
+      lastLog = emptyLogFilter;
       nextTick = setTimeout(updateLogs, 1);
       let evtcPath = path.join(baseConfig.logsPath, log.entry);
       const evtcDonePath = path.join(baseConfig.logsPath, ".raid-tool", log.entry);
@@ -261,7 +269,7 @@ module.exports = async({
         }
         delete logsUploading[log.hash];
         clearTimeout(nextTick);
-        lastLog = await hashLog(JSON.stringify({}));
+        lastLog = emptyLogFilter;
         nextTick = setTimeout(updateLogs, 1);
       } catch (error) {
         console.error(error);
@@ -269,7 +277,7 @@ module.exports = async({
         delete logsUploading[log.hash];
         await db.logs.update({_id: log._id}, {$set: {permalinkFailed: log.permalinkFailed}});
         clearTimeout(nextTick);
-        lastLog = await hashLog(JSON.stringify({}));
+        lastLog = emptyLogFilter;
         nextTick = setTimeout(updateLogs, 1);
       }
     }
@@ -298,7 +306,7 @@ module.exports = async({
           directives.push("immutable");
           ctx.set("Cache-Control", directives.join(","));
         }
-        ctx.body = await unzip(await fs.readFile(`${localFile}.z`)) ;
+        ctx.body = await unzip(await fs.readFile(`${localFile}.z`));
         return;
       }
       if (await fs.pathExists(localFile)) {
