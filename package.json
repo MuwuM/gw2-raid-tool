@@ -10,11 +10,11 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^18.2.0",
+    "electron": "^18.2.3",
     "electron-packager": "^15.5.1",
     "electron-rebuild": "^3.2.7",
     "electron-winstaller": "^5.0.0",
-    "eslint": "^8.14.0",
+    "eslint": "^8.15.0",
     "fast-glob": "^3.2.11",
     "node-abi": "^3.15.0",
     "semver": "^7.3.7",
