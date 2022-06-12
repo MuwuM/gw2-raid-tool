@@ -18,12 +18,12 @@
     "chokidar": "^3.5.3",
     "ejs": "^3.1.8",
     "fast-glob": "^3.2.11",
-    "fast-xml-parser": "^4.0.7",
+    "fast-xml-parser": "^4.0.8",
     "fs-extra": "^10.1.0",
     "get-port-please": "^2.5.0",
-    "gw2api-client": "^7.5.1",
+    "gw2api-client": "^7.5.2",
     "ini": "^3.0.0",
-    "jszip": "^3.9.1",
+    "jszip": "^3.10.0",
     "koa": "^2.13.4",
     "koa-better-router": "^2.1.1",
     "koa-mount": "^4.0.0",
@@ -34,8 +34,8 @@
     "node-windows": "^1.0.0-beta.7",
     "selfsigned": "^2.0.1",
     "semver": "^7.3.7",
-    "socket.io": "^4.5.0",
+    "socket.io": "^4.5.1",
     "urllib": "^2.38.0",
-    "vue": "^3.2.33"
+    "vue": "^3.2.37"
   }
 }
