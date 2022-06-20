@@ -29,7 +29,7 @@
     "koa-mount": "^4.0.0",
     "koa-static": "^5.0.0",
     "luxon": "^2.4.0",
-    "nedb-promises": "github:MuwuM/nedb-promises#v7.0.0",
+    "nedb-promises": "^6.1.0",
     "node-processlist": "^1.0.2",
     "node-windows": "^1.0.0-beta.7",
     "selfsigned": "^2.0.1",
