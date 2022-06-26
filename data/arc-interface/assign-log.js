@@ -58,27 +58,38 @@ module.exports = async function assignLog(logsPath, htmlFile, entry) {
     console.warn("could not read log");
     return;
   }
-  await db.logs.insert({
-    hash: await hashLog(htmlFile),
-    htmlFile,
-    fightIcon: fightIconMap[json.triggerID] || (
-      json.fightIcon && json.fightIcon.startsWith("https://wiki.guildwars2.com/images/") && json.fightIcon
-    ),
-    eliteInsightsVersion: json.eliteInsightsVersion,
-    triggerID: json.triggerID,
-    fightName: json.fightName,
-    arcVersion: json.arcVersion,
-    gW2Build: json.gW2Build,
-    language: json.language,
-    languageID: json.languageID,
-    recordedBy: json.recordedBy,
-    timeStart: json.timeStartStd,
-    timeEnd: json.timeEndStd,
-    timeEndMs: DateTime.fromFormat(json.timeEndStd, "yyyy-MM-dd HH:mm:ss ZZ").toMillis(),
-    duration: json.duration,
-    success: json.success,
-    isCM: json.isCM,
-    entry,
-    players: json.players.map((p) => p.account)
-  });
+  try {
+
+    await db.logs.insert({
+      hash: await hashLog(htmlFile),
+      htmlFile,
+      fightIcon: fightIconMap[json.triggerID] || (
+        json.fightIcon && json.fightIcon.startsWith("https://wiki.guildwars2.com/images/") && json.fightIcon
+      ),
+      eliteInsightsVersion: json.eliteInsightsVersion,
+      triggerID: json.triggerID,
+      fightName: json.fightName,
+      arcVersion: json.arcVersion,
+      gW2Build: json.gW2Build,
+      language: json.language,
+      languageID: json.languageID,
+      recordedBy: json.recordedBy,
+      timeStart: json.timeStartStd,
+      timeEnd: json.timeEndStd,
+      timeEndMs: DateTime.fromFormat(json.timeEndStd, "yyyy-MM-dd HH:mm:ss ZZ").toMillis(),
+      duration: json.duration,
+      success: json.success,
+      isCM: json.isCM,
+      entry,
+      players: json.players.map((p) => p.account)
+    });
+  } catch (error) {
+    console.warn(error);
+    const known = await db.logs.findOne({htmlFile});
+    if (known) {
+      await db.logs.update({_id: known._id}, {$set: {entry}});
+      //console.log(known);
+      return;
+    }
+  }
 };
