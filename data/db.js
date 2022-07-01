@@ -27,31 +27,31 @@ module.exports = async({backendConfig}) => {
   await db.known_friends.ensureIndex({
     fieldName: "entry",
     unique: true
-  });
+  }).catch((err) => console.warn(err));
   await db.friends.ensureIndex({
     fieldName: "account",
     unique: true
-  });
+  }).catch((err) => console.warn(err));
   await db.logs.ensureIndex({
     fieldName: "htmlFile",
     unique: true
-  });
+  }).catch((err) => console.warn(err));
   await db.logs.ensureIndex({
     fieldName: "entry",
     unique: true
-  });
+  }).catch((err) => console.warn(err));
   await db.logs.ensureIndex({
     fieldName: "hash",
     unique: true,
     sparse: true
-  });
+  }).catch((err) => console.warn(err));
   await db.logs.ensureIndex({
     fieldName: "fightName",
     sparse: true
-  });
+  }).catch((err) => console.warn(err));
   await db.logs.ensureIndex({
     fieldName: "triggerID",
     sparse: true
-  });
+  }).catch((err) => console.warn(err));
   return db;
 };

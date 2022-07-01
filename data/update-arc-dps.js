@@ -69,7 +69,7 @@ module.exports = async({
         version,
         file
       ] = row.split(/\s+/);
-      if (file !== "d3d9.dll") {
+      if (file !== "d3d9.dll" && file !== "d3d11.dll") {
         continue;
       }
       latestVersion = version;
