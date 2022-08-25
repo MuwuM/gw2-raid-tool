@@ -6,8 +6,8 @@ const crypto = require("crypto");
 const {DateTime} = require("luxon");
 const {dialog} = require("electron");
 
-const arcVersionUrl = "https://www.deltaconnected.com/arcdps/x64/d3d9.dll.md5sum";
-const arcDownloadUrl = "https://www.deltaconnected.com/arcdps/x64/d3d9.dll";
+const arcVersionUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll.md5sum";
+const arcDownloadUrl = "https://www.deltaconnected.com/arcdps/x64/d3d11.dll";
 
 function md5File(path) {
   return new Promise((resolve, reject) => {
