@@ -114,6 +114,7 @@ const raidBossCofferItems = {
 };
 const legendaryInsight = 77302;
 const legendaryDivination = 88485;
+const legendaryInsightWallet = 70;
 const boneSkinnerSkins = [
   93869,
   93872,
@@ -122,6 +123,7 @@ const boneSkinnerSkins = [
 
 const fractalUCE = 81743;
 const fractalUFE = 94020;
+const fractalUFEWallet = 59;
 const boneskinnerKp = 93781;
 
 const coalescenceLdItems = [
@@ -132,6 +134,12 @@ const coalescenceLdItems = [
 const zhaitaffy = 43319;
 const zhaitaffyJorbreaker = 43320;
 
+const strikeCofferCM = {
+  97269: "aetherblade_hideout",
+  96638: "xunlai_jade_junkyard",
+  96419: "kaineng_overlook",
+  95986: "harvest_temple"
+};
 
 module.exports = {
   legendaryArmor,
@@ -139,11 +147,14 @@ module.exports = {
   raidBossCofferItems,
   legendaryInsight,
   legendaryDivination,
+  legendaryInsightWallet,
   boneSkinnerSkins,
   fractalUCE,
   fractalUFE,
+  fractalUFEWallet,
   boneskinnerKp,
   coalescenceLdItems,
+  strikeCofferCM,
   zhaitaffy,
   zhaitaffyJorbreaker
 };

@@ -90,6 +90,8 @@ module.exports = async({
       }
       if (item.id === itemIds.legendaryInsight || item.id === itemIds.legendaryDivination) {
         li += item.count || 0;
+      } else if (typeof itemIds.strikeCofferCM[item.id] === "string") {
+        li += item.count || 0;
       } else if (typeof itemIds.raidBossCofferItems[item.id] === "string") {
 
         /* if (item["@char"]) {
@@ -185,8 +187,11 @@ module.exports = async({
       }
     }
     for (const walletItem of wallet) {
-      if (walletItem.id === 59) {
+      if (walletItem.id === itemIds.fractalUFEWallet) {
         fractal += (walletItem.value || 0);
+      }
+      if (walletItem.id === itemIds.legendaryInsightWallet) {
+        li += (walletItem.value || 0);
       }
     }
     const kps = {
