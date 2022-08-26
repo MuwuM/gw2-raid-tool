@@ -64,7 +64,7 @@ href="/static/style.css?${ctx._global.stylecss}"
 
   file = file.replace(/\{\{getLogData\(\)\.parser\}\}/, "<a href=\"https://baaron4.github.io/GW2-Elite-Insights-Parser/\" target=\"_top\">{{getLogData().parser}}</a>");
 
-  file = file.replace(/name:\s+logData\.fightName,[\s\S]+?icon:\s+logData\.fightIcon/, "name: logData.fightName,\n  triggerID: logData.fightID,\n  icon: logData.fightIcon");
+  file = file.replace(/name:\s+logData\.fightName,[\s\S]+?icon:\s+logData\.fightIcon/, "name: logData.fightName,\n  triggerID: logData.fightID || logData.triggerID,\n  icon: logData.fightIcon");
 
   file = file.replace(/<h3 class="card-header text-center">{{ encounter\.name }}<\/h3>/, "<h3 class=\"card-header text-center\"><a :href=\"'/boss/'+encodeURIComponent(encounter.triggerID)\" target=\"_top\">{{encounter.name}}</a></h3>");
 
