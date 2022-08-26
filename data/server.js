@@ -20,7 +20,13 @@ const signCert = promisify(selfsigned.generate);
 module.exports = async({
   db, baseConfig, backendConfig, eventHub
 }) => {
-  backendConfig.port = await getPort({port: 7002});
+  backendConfig.port = await getPort({
+    port: 7002,
+    alternativePortRange: [
+      7003,
+      7100
+    ]
+  });
 
   const koaApp = new Koa();
   const router = Router().loadMethods();

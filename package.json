@@ -10,14 +10,14 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^19.0.8",
-    "electron-packager": "^15.5.1",
-    "electron-rebuild": "^3.2.7",
+    "electron": "^20.1.0",
+    "electron-packager": "^16.0.0",
+    "electron-rebuild": "^3.2.9",
     "electron-winstaller": "^5.0.0",
-    "eslint": "^8.19.0",
+    "eslint": "^8.22.0",
     "fast-glob": "^3.2.11",
-    "node-abi": "^3.22.0",
+    "node-abi": "^3.24.0",
     "semver": "^7.3.7",
-    "ssh2-sftp-client": "^9.0.1"
+    "ssh2-sftp-client": "^9.0.3"
   }
 }
