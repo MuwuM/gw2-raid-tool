@@ -1,4 +1,4 @@
-const {getPort} = require("get-port-please");
+const {getPort} = require("./get-port-please");
 const Koa = require("koa");
 const path = require("path");
 const {promisify} = require("util");
