@@ -10,7 +10,7 @@ const wincmd = require("node-windows");
 const elevate = util.promisify(wincmd.elevate);
 
 const updateAccStats = require("../gw2-interface/update-acc-stats");
-const updateArcDps = require("../update-arc-dps");
+//const updateArcDps = require("../update-arc-dps");
 const updateArcDps11 = require("../update-arc-dps-11");
 const i18n = require("../i18n");
 
@@ -208,7 +208,7 @@ module.exports = async({
     baseConfig.arcDisabled = false;
     eventHub.emit("baseConfig", {baseConfig});
     await db.settings.update({_id: baseConfig.savedConfigId}, {$set: {arcDisabled: baseConfig.arcDisabled}});
-    try {
+    /*try {
       await updateArcDps({
         baseConfig,
         dialogs: false
@@ -216,7 +216,7 @@ module.exports = async({
       eventHub.emit("baseConfig", {baseConfig});
     } catch (error) {
       console.error(error);
-    }
+    }*/
     try {
       await updateArcDps11({
         baseConfig,
