@@ -158,6 +158,7 @@ module.exports = async({
         conf.triggerID = {$in: ensureArray(bossInfo.triggerID)};
         const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]];
         stats = {
+          ...stats,
           bossIcon,
           bossInfo
         };
@@ -174,7 +175,11 @@ module.exports = async({
         });
       }
       conf.players = {$elemMatch: account};
-      stats = {friend};
+      stats = {...stats,friend};
+    }
+    if (logFilters.config.cmOnly) {
+      conf.isCM = true;
+      stats = {...stats,cmOnly:true}
     }
 
 

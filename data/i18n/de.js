@@ -101,5 +101,6 @@ module.exports = {
   keyRuleNoSlot: "kein Slot sperren",
   keyRuleDelete: "Löschen",
   addKeyRule: "Regel hinzufügen",
-  keyRuleRequireAdmin: "Das Raid-Tool muss als Adminitrator gestartet werden, um Tasten sperren zu können."
+  keyRuleRequireAdmin: "Das Raid-Tool muss als Adminitrator gestartet werden, um Tasten sperren zu können.",
+  cmOnlyLabel:"nur CM anzeigen"
 };

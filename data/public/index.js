@@ -1,8 +1,8 @@
 /* globals io,window,document */
 const socket = io();
 const Vue = require("vue");
-const {webFrame} = require("electron");
-const {DateTime} = require("luxon");
+const { webFrame } = require("electron");
+const { DateTime } = require("luxon");
 
 
 const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
@@ -108,14 +108,18 @@ const app = Vue.createApp({
       uniqueSpecs: []
     };
   },
-  computed: {i18n() {
-    return new Proxy(window[`i18n/${this.lang}`], {get(target, p) {
-      if (!target[p]) {
-        return `__${p}__`;
-      }
-      return target[p];
-    }});
-  }},
+  computed: {
+    i18n() {
+      return new Proxy(window[`i18n/${this.lang}`], {
+        get(target, p) {
+          if (!target[p]) {
+            return `__${p}__`;
+          }
+          return target[p];
+        }
+      });
+    }
+  },
   methods: {
     toggleBuildClass(c) {
       if (this.activeBuildClass === c) {
@@ -156,9 +160,9 @@ const app = Vue.createApp({
       return (builds || []).filter((b) => (!activeBuildClass ||
         (activeBuildClass === "active" && b.class === this.specs.find((s) => s.id === this.mumbleLinkActive.identity.spec).profession) ||
         b.class === activeBuildClass) &&
-      (!activeBuildSubClass || b.spec === activeBuildSubClass) &&
-      (!activeBuildRole || b.role.split("-")[0] === activeBuildRole) &&
-      (!activeBuildSubRole || b.role === activeBuildSubRole));
+        (!activeBuildSubClass || b.spec === activeBuildSubClass) &&
+        (!activeBuildRole || b.role.split("-")[0] === activeBuildRole) &&
+        (!activeBuildSubRole || b.role === activeBuildSubRole));
     },
     selectPage(page, info, event) {
       preventDefault(event);
@@ -184,12 +188,51 @@ const app = Vue.createApp({
         const friend = this.pageConfig && this.pageConfig.id;
         if (friend) {
           this.page = "friend";
-          this.showLogPage(0, {friend});
+          this.showLogPage(0, { friend });
         } else {
           this.showFriendsPage(0);
         }
       } else if (page === "boss") {
-        this.showLogPage(0, {bossId: this.pageConfig && this.pageConfig.id});
+        this.showLogPage(0, { bossId: this.pageConfig && this.pageConfig.id });
+      }
+    },
+    overviewStatus(accounts, step, wing) {
+      let completed = false;
+
+      if (wing.isStrike && wing.isStrikeWeekly && accounts.find(a => a.completedStrikesWeekly?.[step.triggerID])) {
+        completed = true;
+      } else if (wing.isStrike && accounts.find(a => a.completedStrikesDaily?.[step.triggerID])) {
+        completed = true;
+      } else if (wing.isFractal && accounts.find(a => a.completedFractalsDaily?.[step.triggerID])) {
+        completed = true;
+      } else if (accounts.find(a => a.completedSteps?.includes(step.id))) {
+        completed = true;
+      }
+      return {
+        completed
+      }
+    },
+    overviewStatusAcc(step, wing,acc) {
+      let completed = false;
+      let completedCM = acc.completedCMs?.[step.triggerID];
+
+      if(wing.isFractal){
+        completedCM = false;
+      }
+
+      if (wing.isStrike && wing.isStrikeWeekly && acc.completedStrikesWeekly?.[step.triggerID]) {
+        completed = true;
+      } else if (wing.isStrike && acc.completedStrikesDaily?.[step.triggerID]) {
+        completed = true;
+      } else if (wing.isFractal && acc.completedFractalsDaily?.[step.triggerID]) {
+        completed = true;
+        completedCM = acc.completedCMs?.[step.triggerID];
+      } else if (acc.completedSteps?.includes(step.id)) {
+        completed = true;
+      }
+      return {
+        completed,
+        completedCM
       }
     },
     svgBossBorder(accounts, step, wing) {
@@ -250,7 +293,7 @@ const app = Vue.createApp({
 
         d.push(`${x1Outline},${y1Outline}`);
         if (x1Outline !== x2Outline && y1Outline !== y2Outline) {
-          for (let i = Math.ceil(rot * 4); i <= Math.floor(rotEnd * 4);i++) {
+          for (let i = Math.ceil(rot * 4); i <= Math.floor(rotEnd * 4); i++) {
             if (i === 0) {
               d.push(`${0},${0}`);
             } else if (i === 1) {
@@ -263,7 +306,7 @@ const app = Vue.createApp({
           }
         }
         if (x1Outline === x2Outline && y1Outline === y2Outline) {
-          for (let i = 0; i <= 3;i++) {
+          for (let i = 0; i <= 3; i++) {
             if (i === 0) {
               d.push(`${0},${0}`);
             } else if (i === 1) {
@@ -278,7 +321,7 @@ const app = Vue.createApp({
         d.push(`${x2Outline},${y2Outline}`);
         d.push(`${x2Inline},${y2Inline}`);
         if (x1Outline !== x2Outline && y1Outline !== y2Outline) {
-          for (let i = Math.floor(rotEnd * 4); i >= Math.ceil(rot * 4) ;i--) {
+          for (let i = Math.floor(rotEnd * 4); i >= Math.ceil(rot * 4); i--) {
             if (i === 0) {
               d.push(`${border},${border}`);
             } else if (i === 1) {
@@ -291,7 +334,7 @@ const app = Vue.createApp({
           }
         }
         if (x1Outline === x2Outline && y1Outline === y2Outline) {
-          for (let i = 3; i >= 1 ;i--) {
+          for (let i = 3; i >= 1; i--) {
             if (i === 0) {
               d.push(`${border},${border}`);
             } else if (i === 1) {
@@ -306,11 +349,7 @@ const app = Vue.createApp({
         d.push(`${x1Inline},${y1Inline}`);
         rot = rotEnd;
         let opacity = 0.2;
-        if (!wing.isStrike && acc.completedSteps && acc.completedSteps.includes(step.id)) {
-          opacity = 1;
-        } else if (wing.isStrike && wing.isStrikeWeekly && acc.completedStrikesWeekly && acc.completedStrikesWeekly[step.triggerID]) {
-          opacity = 1;
-        } else if (wing.isStrike && acc.completedStrikesDaily && acc.completedStrikesDaily[step.triggerID]) {
+        if (this.overviewStatusAcc(step, wing,acc).completed) {
           opacity = 1;
         }
         parts.push({
@@ -335,7 +374,7 @@ const app = Vue.createApp({
       if (typeof filters === "object" && filters) {
         this.logFilters.config = filters;
       }
-      const logFilter = {...this.logFilters};
+      const logFilter = { ...this.logFilters };
 
       socket.emit("logFilter", logFilter);
     },
@@ -345,20 +384,20 @@ const app = Vue.createApp({
       socket.emit("friendsFilter", friendsFilter);
     },
     uploadLog(logHash) {
-      socket.emit("uploadLog", {hash: logHash});
+      socket.emit("uploadLog", { hash: logHash });
     },
     addAccount(token, event) {
       preventDefault(event);
-      socket.emit("addAccount", {token});
+      socket.emit("addAccount", { token });
       this.token = "";
     },
     removeAccount(token, event) {
       preventDefault(event);
-      socket.emit("removeAccount", {token});
+      socket.emit("removeAccount", { token });
     },
     changeLang(lang, event) {
       preventDefault(event);
-      socket.emit("changeLang", {lang});
+      socket.emit("changeLang", { lang });
     },
     selectLogsPath(event) {
       preventDefault(event);
@@ -378,27 +417,27 @@ const app = Vue.createApp({
     },
     deleteKeyRule(keyRule, event) {
       preventDefault(event);
-      socket.emit("deleteKeyRule", {keyRule});
+      socket.emit("deleteKeyRule", { keyRule });
     },
     updateKeyRuleActive(keyRule, event) {
       preventDefault(event);
       keyRule.active = event.target.checked;
-      socket.emit("updateKeyRule", {keyRule});
+      socket.emit("updateKeyRule", { keyRule });
     },
     updateKeyRuleSlot(keyRule, event) {
       preventDefault(event);
       keyRule.slot = event.target.value || "";
-      socket.emit("updateKeyRule", {keyRule});
+      socket.emit("updateKeyRule", { keyRule });
     },
     updateKeyRuleSpec(keyRule, event) {
       preventDefault(event);
       keyRule.spec = event.target.value || "";
-      socket.emit("updateKeyRule", {keyRule});
+      socket.emit("updateKeyRule", { keyRule });
     },
     updateKeyRuleKeys(keyRule, event) {
       preventDefault(event);
       keyRule.keys = event.target.value || "";
-      socket.emit("updateKeyRule", {keyRule});
+      socket.emit("updateKeyRule", { keyRule });
     },
     removeLaunchBuddyDir(event) {
       preventDefault(event);
@@ -426,7 +465,7 @@ const app = Vue.createApp({
     },
     resetAllLogs(confirmReset, event) {
       preventDefault(event);
-      socket.emit("resetAllLogs", {confirmReset});
+      socket.emit("resetAllLogs", { confirmReset });
       this.confirmReset = "";
     },
     startGame(event) {
@@ -625,7 +664,7 @@ setInterval(() => {
   mnt.dayOfYear = DateTime.utc().ordinal;
   const els = document.querySelectorAll("[data-rel-time]");
   for (const el of els) {
-    el.textContent = DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"), 10)).toRelative({locale: mnt.lang});
+    el.textContent = DateTime.fromMillis(parseInt(el.getAttribute("data-rel-time"), 10)).toRelative({ locale: mnt.lang });
   }
 }, 500);
 

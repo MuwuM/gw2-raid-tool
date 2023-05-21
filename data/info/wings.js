@@ -416,7 +416,7 @@ module.exports = [
         name_en: "Kaineng Overlook",
         name_de: "Kaineng Overlook",
         name_fr: "Kaineng Overlook",
-        triggerID: 24485,
+        triggerID: [24485, 24266],
         img: "MinisterLi.png",
         hasCM: true,
         dailyIndex: 2
@@ -432,6 +432,116 @@ module.exports = [
         hasCM: true,
         dailyIndex: 3
       }
+    ]
+  },
+  {
+    w: "FractalCMs",
+    w_img: "Fraktal-Relikt_Icon.png",
+    w_img_text:"98",
+    isFractal: true,
+    name_en: "Fractals of the Mists CM",
+    name_de: "Fraktale der Nebel CM",
+    name_fr: "Fractales des Brumes CM",
+    id: "fractal_cms_nightmare",
+    steps: [{
+      id: "nightmare_fractal_mama",
+      type: "Boss",
+      name_en: "Nightmare Fractal: MAMA",
+      name_de: "Albtraum-Fraktal: MAMA",
+      name_fr: "Fractale des Cauchemars: MAMA",
+      triggerID: 17021,
+      img: "MAMA.png",
+      hasCM: true,
+      dailyIndex: 0
+    }, {
+      id: "nightmare_fractal_siax",
+      type: "Boss",
+      name_en: "Nightmare Fractal: Siax",
+      name_de: "Albtraum-Fraktal: Siax",
+      name_fr: "Fractale des Cauchemars: Siax",
+      triggerID: 17028,
+      img: "Siax.png",
+      hasCM: true,
+      dailyIndex: 0
+    }, {
+      id: "nightmare_fractal_ensolyss",
+      type: "Boss",
+      name_en: "Nightmare Fractal: Ensolyss",
+      name_de: "Albtraum-Fraktal: Ensolyss",
+      name_fr: "Fractale des Cauchemars: Ensolyss",
+      triggerID: 16948,
+      img: "Ensolyss.png",
+      hasCM: true,
+      dailyIndex: 0
+    },
+    ]
+  },
+  {
+    w: "FractalCMs",
+    w_img: "Fraktal-Relikt_Icon.png",
+    w_img_text:"99",
+    isFractal: true,
+    name_en: "Fractals of the Mists CM",
+    name_de: "Fraktale der Nebel CM",
+    name_fr: "Fractales des Brumes CM",
+    id: "fractal_cms_shattered_observatory",
+    steps: [
+      {
+        id: "shattered_observatory_fractal_skorvald",
+        type: "Boss",
+        name_en: "Shattered Observatory Fractal: Skorvald",
+        name_de: "Fraktal Zerschmettertes Observatorium: Skorvald",
+        name_fr: "Fractale de l'Observatoire détruit: Skorvald",
+        triggerID: 17632,
+        img: "Skorvald_the_Shattered.png",
+        hasCM: true,
+        dailyIndex: 0
+      },
+      {
+        id: "shattered_observatory_fractal_artsariiv",
+        type: "Boss",
+        name_en: "Shattered Observatory Fractal: Artsariiv/Viirastra",
+        name_de: "Fraktal Zerschmettertes Observatorium: Artsariiv/Viirastra",
+        name_fr: "Fractale de l'Observatoire détruit: Artsariiv/Viirastra",
+        triggerID: 17949,
+        img: "Artsariiv.png",
+        hasCM: true,
+        dailyIndex: 0
+      },
+      {
+        id: "shattered_observatory_fractal_arkk",
+        type: "Boss",
+        name_en: "Shattered Observatory Fractal: Arkk",
+        name_de: "Fraktal Zerschmettertes Observatorium: Arkk",
+        name_fr: "Fractale de l'Observatoire détruit: Arkk",
+        triggerID: 17759,
+        img: "Arkk.png",
+        hasCM: true,
+        dailyIndex: 0
+      },
+    ]
+  },
+  {
+    w: "FractalCMs",
+    w_img: "Fraktal-Relikt_Icon.png",
+    w_img_text:"100",
+    isFractal: true,
+    name_en: "Fractals of the Mists CM",
+    name_de: "Fraktale der Nebel CM",
+    name_fr: "Fractales des Brumes CM",
+    id: "fractal_cms_sunqua_peak",
+    steps: [
+      {
+        id: "sunqua_peak_fractal",
+        type: "Boss",
+        name_en: "Sunqua Peak Fractal",
+        name_de: "Fraktal Sunqua-Gipfel",
+        name_fr: "Fractale du Pic de Sunqua",
+        triggerID: 23254,
+        img: "Ai.png",
+        hasCM: true,
+        dailyIndex: 0
+      },
     ]
   }
 ];

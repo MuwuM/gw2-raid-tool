@@ -14,8 +14,15 @@
           :alt="stats.bossInfo['name_'+lang]"
         >{{stats.bossInfo['name_'+lang]}}</h2>
       <div v-if="stats">
-        <span>{{i18n.killsLabel}} {{stats.kills}} {{i18n.cmOfKills(stats.cmKills)}}</span>
-        <span>{{i18n.failsLabel}} {{stats.fails}}</span>
+        <template v-if="stats.cmOnly">
+          <span class="me-1">CM {{i18n.killsLabel}} {{stats.kills}}</span>
+          <span class="me-1">CM {{i18n.failsLabel}} {{stats.fails}}</span>
+        </template>
+        <template v-else>
+          <span class="me-1">{{i18n.killsLabel}} {{stats.kills}} {{i18n.cmOfKills(stats.cmKills)}}</span>
+          <span class="me-1">{{i18n.failsLabel}} {{stats.fails}}</span>
+        </template>
+        
       </div>
     </div>
   </div>

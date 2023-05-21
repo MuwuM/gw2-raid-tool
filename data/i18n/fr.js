@@ -101,5 +101,6 @@ module.exports = {
   keyRuleNoSlot: "bloquer sans slot",
   keyRuleDelete: "Supprimer",
   addKeyRule: "Ajouter une règle",
-  keyRuleRequireAdmin: "L'outil de raid doit être lancé en tant qu'administrateur pour pouvoir bloquer les clés."
+  keyRuleRequireAdmin: "L'outil de raid doit être lancé en tant qu'administrateur pour pouvoir bloquer les clés.",
+  cmOnlyLabel:"n'affiche que le CM"
 };

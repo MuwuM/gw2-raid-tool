@@ -3,17 +3,35 @@ const itemIds = require("../info/item-ids");
 const wings = require("../info/wings");
 
 
+function ensureArray(arr){
+  if(Array.isArray(arr)){
+    return arr
+  }
+  return [arr]
+}
+
 const strikeWings = wings.filter((w) => w.isStrike);
 
 const strikeIds = [];
 const strikeIdsWeekly = [];
 for (const w of strikeWings) {
   for (const step of w.steps) {
-    if (step.triggerID) {
+    for (const triggerID of ensureArray(step.triggerID)) {
       if (w.isStrikeWeekly) {
-        strikeIdsWeekly.push(step.triggerID);
+        strikeIdsWeekly.push(triggerID);
       }
-      strikeIds.push(step.triggerID);
+      strikeIds.push(triggerID);
+    }
+  }
+}
+
+const fractalWings = wings.filter((w) => w.isFractal);
+
+const fractalIds = [];
+for (const w of fractalWings) {
+  for (const step of w.steps) {
+    for (const triggerID of ensureArray(step.triggerID)) {
+      fractalIds.push(triggerID);
     }
   }
 }
@@ -281,6 +299,7 @@ module.exports.localUpdates = async({
   if (account.accountInfo && account.accountInfo.name) {
 
     const completedStrikesDaily = {};
+    const completedFractalsDaily = {};
     const startOfStrikeDailyReset = DateTime.utc().startOf("day");
     const endOfStrikeDailyReset = startOfStrikeDailyReset.plus({days: 1});
 
@@ -299,6 +318,24 @@ module.exports.localUpdates = async({
 
     if (!account.completedStrikesDaily || JSON.stringify(completedStrikesDaily) !== JSON.stringify(account.completedStrikesDaily)) {
       await db.accounts.update({_id: account._id}, {$set: {completedStrikesDaily}});
+      eventHub.emit("accounts", {accounts: await db.accounts.find({})});
+    } 
+    
+    const fractals = await db.logs.find({
+      timeEndMs: {
+        $gt: startOfStrikeDailyReset.toMillis(),
+        $lte: endOfStrikeDailyReset.toMillis()
+      },
+      triggerID: {$in: fractalIds},
+      players: {$elemMatch: account.accountInfo.name},
+      success: true
+    });
+    for (const fractal of fractals) {
+      completedFractalsDaily[fractal.triggerID] = true;
+    }
+
+    if (!account.completedFractalsDaily || JSON.stringify(completedFractalsDaily) !== JSON.stringify(account.completedFractalsDaily)) {
+      await db.accounts.update({_id: account._id}, {$set: {completedFractalsDaily}});
       eventHub.emit("accounts", {accounts: await db.accounts.find({})});
     }
   }
