@@ -17,7 +17,7 @@ module.exports = async function checkLogs(logsPath, baseFile, dateName, entry, p
       result
     });*/
     if (!result.startsWith("Completed parsing")) {
-      if (result.match(/(^Fight is too short(:.+)?$|^Buffs can not be stackless$)/)) {
+      if (result.match(/^(Program:\s*)?(Fight is too short(:.+)?|Buffs can not be stackless|No valid players|Enervators not found)$/)) {
         console.warn(`Removed broken: ${entry}`);
         await fs.remove(path.join(logsPath, entry));
       } else {

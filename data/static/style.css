@@ -446,3 +446,6 @@ nav+main.arc-log-display.arc-log-display-friend{
 .build-name-label .build-name{
   flex: 1 1 100%;
 }
+.table>:not(caption)>*>*{
+  color: inherit;
+}

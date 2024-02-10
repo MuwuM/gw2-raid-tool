@@ -21,9 +21,9 @@ module.exports = async({
   db, baseConfig, backendConfig, eventHub
 }) => {
   backendConfig.port = await getPort({
-    port: 7002,
+    port: 7012,
     alternativePortRange: [
-      7003,
+      7013,
       7100
     ]
   });
