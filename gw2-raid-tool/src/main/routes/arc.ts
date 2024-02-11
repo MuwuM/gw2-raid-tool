@@ -62,8 +62,6 @@ function enhanceLogs(logs) {
     if (logsUploading[log.hash]) {
       log.isUploading = true
     }
-    //2020-07-03 23:23:53 +02:00
-    log.timeEndDiff = DateTime.fromMillis(log.timeEndMs).toRelative({ locale: 'de' })
     const cleanFightName = log.fightName.replace(/\s+/g, '')
     if (cleanFightName === fightName) {
       collapseNumber += 1

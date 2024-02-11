@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { data, i18n, api, selectLog } from "@renderer/preload-api";
 import { preventDefault, img } from "../util";
+import { DateTime } from "luxon";
 function showLogPage(page, filters, event) {
   preventDefault(event);
   data.logFilters.p = page;
@@ -9,6 +10,10 @@ function showLogPage(page, filters, event) {
   }
   const logFilter = { ...data.logFilters };
   api.logFilter(logFilter);
+}
+
+function timeEndDiff(log, _currenttime) {
+  return DateTime.fromMillis(log.timeEndMs).toRelative({ locale: "de" });
 }
 </script>
 <template>
@@ -95,8 +100,7 @@ function showLogPage(page, filters, event) {
                   'bg-success': log.success,
                   'bg-danger': !log.success,
                 }"
-                :data-rel-time="log.timeEndMs"
-                >{{ log.timeEndDiff }}</span
+                >{{ timeEndDiff(log, data.currenttime) }}</span
               >
             </div>
           </div>
@@ -127,8 +131,7 @@ function showLogPage(page, filters, event) {
                   'bg-success': log.success,
                   'bg-danger': !log.success,
                 }"
-                :data-rel-time="log.timeEndMs"
-                >{{ log.timeEndDiff }}</span
+                >{{ timeEndDiff(log, data.currenttime) }}</span
               >
             </div>
           </div>

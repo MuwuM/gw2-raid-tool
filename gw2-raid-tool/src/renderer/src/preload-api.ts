@@ -71,7 +71,8 @@ export const data = reactive({
   lang: 'de' as Lang,
   langs: i18nLoader.langs,
   deps: Object.keys(pkg.dependencies),
-  keyRules: [] as TODO[]
+  keyRules: [] as TODO[],
+  currenttime: Date.now()
 })
 
 export const wings = reactive(wingsBase as WingsRes)
@@ -142,6 +143,7 @@ export function selectPage(page, info, event?) {
 setInterval(() => {
   const now = DateTime.utc()
   data.dayOfYear = now.ordinal
+  data.currenttime = now.toMillis()
 }, 100)
 
 export const i18n = new Proxy(
