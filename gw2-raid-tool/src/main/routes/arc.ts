@@ -1,6 +1,5 @@
 import path from 'path'
 import fs from 'fs-extra'
-import { DateTime } from 'luxon'
 import urllib from 'urllib'
 import zlib from 'zlib'
 import { promisify } from 'util'
