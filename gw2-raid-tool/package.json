@@ -1,7 +1,7 @@
 {
   "name": "gw2-raid-tool",
   "productName": "GW2 Raid Tool",
-  "version": "4.0.2-dev",
+  "version": "4.0.3-dev",
   "description": "Das ultimative Programm fürs Raiden",
   "main": "./out/main/index.js",
   "author": "MuwuM",
@@ -70,6 +70,7 @@
     "eslint-plugin-vue": "^9.17.0",
     "minimatch": "^9.0.3",
     "prettier": "^3.0.2",
+    "ssh2-sftp-client": "^10.0.3",
     "ts-node": "^10.9.2"
   }
 }

@@ -161,6 +161,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   })
 
   async function updateLogs() {
+    //console.log('updateLogs...')
     let stats = {} as TODO
     const conf = {} as TODO
     if (logFilters.config.bossId) {

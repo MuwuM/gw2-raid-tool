@@ -67,6 +67,7 @@ electronHandler({
   initStatus.db = db
   initStatus.baseConfig = baseConfig
   initStatus.backendConfig = backendConfig
+  initStatus.progressConfig = progressConfig
   initStatus.eventHub = eventHub
 
   const savedConfig = await loadConfig(db, baseConfig, electronApp)

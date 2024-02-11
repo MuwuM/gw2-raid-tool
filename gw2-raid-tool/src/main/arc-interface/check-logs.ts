@@ -23,7 +23,7 @@ export default async function checkLogs(
       logFile,
       result
     });*/
-    if (!result.startsWith('Completed parsing')) {
+    if (!result.startsWith('Completed parsing') && !result.startsWith('Completed for killed')) {
       if (
         result.match(
           /^(Program:\s*)?(Fight is too short(:.+)?|Buffs can not be stackless|No valid players|Enervators not found)$/
@@ -37,6 +37,7 @@ export default async function checkLogs(
         }
         await fs.move(logFile, `${logFile}-backup`)
       }
+      console.warn('Result was: ' + result)
       return false
     }
     return true

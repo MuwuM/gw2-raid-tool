@@ -113,6 +113,7 @@ export default async function updateLogEntry(logsPath: string, entry: string) {
           throw new ErrorWithStack(err)
         }))
       ) {
+        console.info(`check logs failed: ${entry}`)
         return
       }
       console.info(`Log parsed: ${entry}`)

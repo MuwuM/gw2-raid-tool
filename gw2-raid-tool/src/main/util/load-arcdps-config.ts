@@ -3,6 +3,8 @@ import fs from 'fs-extra'
 import ini from 'ini'
 import { BaseConfig, ElectronApp, NedbDatabase, SavedConfig } from '../../raid-tool'
 
+import eiConfPath from '../../../resources/eliteinsights.conf?asset'
+
 export default async function loadArcdpsConfig(
   baseConfig: BaseConfig,
   savedConfig: SavedConfig,
@@ -58,5 +60,5 @@ export default async function loadArcdpsConfig(
   baseConfig.logsPath =
     savedConfig.logsPath ||
     path.join(electronApp.getPath('documents'), 'Guild Wars 2/addons/arcdps/arcdps.cbtlogs')
-  baseConfig.eiConfig = path.resolve(electronApp.getAppPath(), 'config.conf')
+  baseConfig.eiConfig = eiConfPath
 }

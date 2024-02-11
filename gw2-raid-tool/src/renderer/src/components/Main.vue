@@ -111,8 +111,8 @@ onUpdated(() => {
       </li>
       <li class="nav-item-spacer">
         <div
-          v-if="data.progressConfig.parsingLogs > 0"
-          :title="data.progressConfig.currentLog || ''"
+          v-if="data.progressConfig?.parsingLogs > 0"
+          :title="data.progressConfig?.currentLog || ''"
           class="progress progress-parsingLogs"
           style="display: flex"
         >

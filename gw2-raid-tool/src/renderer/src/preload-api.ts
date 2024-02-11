@@ -219,10 +219,10 @@ api.ipc.onKeyRules(({ keyRules }) => {
   data.keyRules = keyRules
 })
 
-/*
-api.ipc.onProgressConfig((progressConfig) => {
+api.ipc.onProgressConfig(({ progressConfig }) => {
+  console.log({ progressConfig })
   data.progressConfig = progressConfig
 })
-api.ipc.onMumbleLinkActive((mumbleLinkActive) => {
+api.ipc.onMumbleLinkActive(({ mumbleLinkActive }) => {
   data.mumbleLinkActive = mumbleLinkActive
-})*/
+})

@@ -5,7 +5,8 @@ import {
   NedbDatabase,
   BaseConfig,
   BackendConfig,
-  EventHub
+  EventHub,
+  ProgressConfig
 } from '../raid-tool'
 
 type Handler = (...args: any[]) => void
@@ -17,6 +18,7 @@ class InitStatusClass implements InitStatusUninitialized {
   db?: NedbDatabase
   baseConfig?: BaseConfig
   backendConfig?: BackendConfig
+  progressConfig?: ProgressConfig
   eventHub?: EventHub
 
   set status(name) {

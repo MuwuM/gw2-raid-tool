@@ -4,7 +4,7 @@ import { dialog, shell } from 'electron'
 import os from 'os'
 import path from 'path'
 
-export default async (
+const wrapper = async (
   childProcessFile: string,
   {
     db,
@@ -46,7 +46,7 @@ export default async (
     console.warn({ 'child.exitCode': child.exitCode })
     if (child.exitCode === 134 || child.exitCode === 9) {
       setTimeout(() => {
-        module.exports(
+        wrapper(
           childProcessFile,
           {
             db,
@@ -127,3 +127,5 @@ export default async (
     }
   )
 }
+
+export default wrapper
