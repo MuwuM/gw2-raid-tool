@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { data, i18n, api, selectPage } from "@renderer/preload-api";
-import { preventDefault } from "../util";
+import { preventDefault, img } from "../util";
 import specs from "../../../info/specs.json";
 import Overview from "./Overview.vue";
 import Settings from "./Settings.vue";
@@ -201,9 +201,12 @@ onUpdated(() => {
             class="boon-icon"
             style="width: 1em; height: 1em"
             :src="
-              '/img/profession/' +
-              specs.find((s) => s.id === data.mumbleLinkActive?.identity?.spec)?.name +
-              '.png'
+              img(
+                '/img/profession/' +
+                  specs.find((s) => s.id === data.mumbleLinkActive?.identity?.spec)
+                    ?.name +
+                  '.png'
+              )
             "
           />
           {{ data.mumbleLinkActive?.identity?.name || "" }}
