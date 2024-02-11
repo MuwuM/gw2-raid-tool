@@ -32,7 +32,15 @@ const config = defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [vue()]
+    plugins: [vue()],
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve('src/renderer/index.html'),
+          'locked-skill': resolve('src/renderer/locked-skill.html')
+        }
+      }
+    }
   }
 })
 

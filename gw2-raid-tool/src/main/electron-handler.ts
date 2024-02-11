@@ -24,15 +24,15 @@ function navigateFromLogsUrl(win, urlStr) {
 
   const path = url.pathname
   const pathParts = path.split('/')
-  console.log({ url, pathParts })
+  //console.log({ url, pathParts })
   if (!pathParts[1]) {
-    console.log('send selectPage', { page: 'overview', info: {} })
+    //console.log('send selectPage', { page: 'overview', info: {} })
     win.webContents.send('selectPage', { page: 'overview', info: {} })
   } else {
-    console.log('send selectPage', {
+    /*console.log('send selectPage', {
       page: pathParts[1],
       info: { id: pathParts[2], action: pathParts[3] }
-    })
+    })*/
     win.webContents.send('selectPage', {
       page: pathParts[1],
       info: { id: pathParts[2], action: pathParts[3] }
@@ -143,22 +143,16 @@ export default async ({
     socket.send('baseConfig', { baseConfig })
     socket.send('progressConfig', { progressConfig })
     socket.send('mumbleLinkActive', { mumbleLinkActive: backendConfig.mumbleLinkActive || false })
-    /* TODO socket.send('init', {
-      wings,
-      specs,
-      uniqueSpecs,
-      deps: Object.keys(pgk.dependencies),
-      langs: i18n.langIds.map((id, index) => ({
-        id,
-        label: i18n.langLabels[index]
-      }))
-    })*/
-    //socket.send('builds', { builds })
+    eventHub.emit('keyRules', {
+      keyRules: await db.blocked_key_rules.find({}).sort({
+        spec: 1,
+        slot: 1,
+        _id: 1
+      })
+    })
     win.on('close', () => {
       eventHub.sockets = eventHub.sockets.filter((s) => s === socket)
     })
-
-    //await win.loadURL(`${backendConfig.appDomain}`)
     initStatus.offChange(setStatus)
 
     baseConfig.zoom = 1

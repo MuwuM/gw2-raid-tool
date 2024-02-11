@@ -158,11 +158,11 @@ api.ipc.onLoading((val) => {
   data.loading.step = val.step
 })
 api.ipc.onBaseConfig(({ baseConfig }) => {
-  console.log({ baseConfig })
+  //console.log({ baseConfig })
   data.baseConfig = baseConfig
 })
 api.ipc.onAccounts(({ accounts }) => {
-  console.log({ accounts })
+  //console.log({ accounts })
   data.accounts = accounts
   const accs = data.accounts.filter((a) => a.kps && a.accountInfo)
   const totalKps = {}
@@ -194,7 +194,7 @@ api.ipc.onAccounts(({ accounts }) => {
   data.totalKps = totalKps
 })
 api.ipc.onLogs(({ logs, page, maxPages, stats }) => {
-  console.log('onLogs', { logs, page, maxPages, stats })
+  //console.log('onLogs', { logs, page, maxPages, stats })
   data.logs = logs
   data.logsPage = page
   data.logsMaxPages = maxPages
@@ -207,15 +207,15 @@ api.ipc.onLogs(({ logs, page, maxPages, stats }) => {
   }
 })
 api.ipc.onSelectPage(({ page, info }) => {
-  console.log('onSelectPage', { page, info })
+  //console.log('onSelectPage', { page, info })
   selectPage(page, info)
 })
 api.ipc.onFriends(({ friends }) => {
-  console.log({ friends })
+  //console.log({ friends })
   data.friends = friends
 })
 api.ipc.onKeyRules(({ keyRules }) => {
-  console.log({ keyRules })
+  //console.log({ keyRules })
   data.keyRules = keyRules
 })
 

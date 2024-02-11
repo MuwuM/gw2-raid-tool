@@ -30,7 +30,7 @@ import { Stats } from 'fs'
     installerDir = path.resolve(rootDir, 'installer-dist-dev')
   }
 
-  console.log('Packing')
+  console.info('Packing')
 
   const appIcon = path.resolve(dataDir, 'resources', 'icon.ico')
   const installerIcon = path.resolve(dataDir, 'resources', 'installer.ico')
@@ -74,7 +74,6 @@ import { Stats } from 'fs'
       async (buildPath, electronVersion, _platform, arch, callback) => {
         try {
           console.info(`rebuilding: ${buildPath}`)
-          console.log({ rebuild })
           await rebuild.rebuild({
             buildPath,
             electronVersion,

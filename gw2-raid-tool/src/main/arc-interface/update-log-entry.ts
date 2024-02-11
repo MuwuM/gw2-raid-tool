@@ -13,7 +13,7 @@ import ErrorWithStack from '../error-with-stack'
 /*function logHeap(msg) {
   const mem = process.memoryUsage();
 
-  console.log(`heap: ${(mem.heapUsed / mem.heapTotal * 100).toFixed(2)}% (${(mem.heapTotal / 1048576).toFixed(3)} MB) -> ${msg}`);
+  //console.log(`heap: ${(mem.heapUsed / mem.heapTotal * 100).toFixed(2)}% (${(mem.heapTotal / 1048576).toFixed(3)} MB) -> ${msg}`);
 }*/
 function logHeap(_msg: string) {}
 

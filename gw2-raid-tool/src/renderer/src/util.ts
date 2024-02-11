@@ -7,6 +7,6 @@ export function preventDefault(event) {
 export function img(imgPath: string) {
   const publicDir = import.meta.url.replace(/\/out\/.*$/, '/resources/')
   const file = new URL(imgPath.replace(/^\/img\//, './img/'), publicDir).href
-  // console.log({ publicDir, file })
+  //console.log({ publicDir, file })
   return file
 }

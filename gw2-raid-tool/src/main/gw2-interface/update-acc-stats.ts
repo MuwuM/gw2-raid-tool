@@ -117,11 +117,6 @@ export default async ({
       } else if (typeof itemIds.strikeCofferCM[item.id] === 'string') {
         li += item.count || 0
       } else if (typeof itemIds.raidBossCofferItems[item.id] === 'string') {
-        /* if (item["@char"]) {
-          console.log(`Box: ${item.id} @ ${item["@char"]}`);
-        } else {
-          console.log(`Box: ${item.id}`);
-        }*/
         const boss = itemIds.raidBossCofferItems[item.id]
         let bossKp = 0
         if (Object.values(itemIds.raidBossKpItems).includes(boss)) {

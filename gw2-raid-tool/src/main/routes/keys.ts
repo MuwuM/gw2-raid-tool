@@ -1,4 +1,4 @@
-import ahkApi from '../ahk-manager'
+import ahkApi, { AHKManager } from '../ahk-manager'
 import { path as ahkPath } from 'ahk.exe'
 import { BrowserWindow, app, screen } from 'electron'
 
@@ -75,7 +75,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
     });*/
 
     let blocked_keys = [] as TODO[]
-    let ahkInstance = null as TODO
+    let ahkInstance: AHKManager | null
     const blockingWindows = {} as Record<string, BrowserWindow>
 
     const possibleSlots = () => {
@@ -360,7 +360,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
               key: k,
               noInterrupt: false
             })),
-            { tmpDir }
+            { tmpDir, ahkV1: true }
           )
           for (const blockedKey of keysToBlock) {
             ahkInstance.setHotkey(

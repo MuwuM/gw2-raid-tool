@@ -8,7 +8,7 @@ function removeAccount(token, event) {
 }
 function addAccount(token, event) {
   preventDefault(event);
-  console.log({ token });
+  //console.log({ token });
   api.addAccount({ token });
   data.token = "";
 }

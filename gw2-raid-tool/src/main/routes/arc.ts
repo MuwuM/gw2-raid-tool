@@ -146,7 +146,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   }
 
   eventHub.on('logFilter', async (data) => {
-    console.log('logFilter changed', data)
+    //console.log('logFilter changed', data)
     clearTimeout(nextTick)
     logFilters.p = data.p || 0
     logFilters.config = data.config || {}
@@ -329,7 +329,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
         return respondWithFile(url.body)
       }
 
-      console.log('gw2-log', { host, pathname, searchParams })
+      //console.log('gw2-log', { host, pathname, searchParams })
       return new Response('', { status: 404 })
     })
   })

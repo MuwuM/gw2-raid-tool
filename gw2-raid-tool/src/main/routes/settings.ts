@@ -16,7 +16,7 @@ import { ServerRouteHandler } from '../../raid-tool'
 
 export default (async ({ db, baseConfig, eventHub }) => {
   eventHub.on('addAccount', async ({ token }) => {
-    console.log({ addAccount: { token } })
+    //console.log({ addAccount: { token } })
     if (token) {
       const acc = await db.accounts.insert({ token })
       eventHub.emit('accounts', { accounts: await db.accounts.find({}) })

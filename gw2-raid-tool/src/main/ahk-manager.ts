@@ -29,70 +29,45 @@ SOFTWARE.
 import { spawn } from 'child_process'
 import fs from 'fs/promises'
 import { TODO } from '../raid-tool'
+import { dirname } from 'path'
 
 type HotkeysListWithKeyAndModifiers = { key: string; modifiers?: string[]; noInterrupt?: boolean }
 type HotkeysListWithKeys = { keys: string[]; noInterrupt?: boolean }
 
-/**
- * Initiates AHK NodeJS with the following parameters
- * @module ahknodejs
- * @param {string} path - The path to AutoHotKey.exe
- * @param {[
- *  {key: string,
- *   modifiers?: [
- *    string
- *   ],
- *   noInterrupt?: boolean
- *  }?,
- *  {
- *   keys: [string],
- *   noInterrupt?: boolean
- *  }?
- * ]?} hotkeysList - A list of to-be-used hotkeys
- * @param {{
- *  defaultColorVariation?: number
- * }} options - The options to initiate AHK NodeJS with
- * @returns An object containing this package's functions
- */
+export type AHKManager = {
+  hotkeys: Record<string, TODO>
+  hotkeysPending: Array<TODO>
+  setHotkey: (
+    key:
+      | string
+      | {
+          keys?: TODO
+          modifiers?: string[]
+          key?: string
+        },
+    run: () => void,
+    instant: boolean
+  ) => void
+  waitForInterrupt: () => Promise<void>
+  stop: () => Promise<void>
+}
+
 export default async function (
   path: string,
   hotkeysList: Array<HotkeysListWithKeyAndModifiers | HotkeysListWithKeys> = [],
   options: {
-    defaultColorVariation?: number
     tmpDir?: string
+    ahkV1?: boolean
   } = {}
-) {
-  const ahk = {
-    defaultColorVariation: 1,
-    width: 1366,
-    height: 768,
+): Promise<AHKManager> {
+  const rootDir = dirname(require.resolve('ahknodejs'))
+
+  const ahk: AHKManager = {
     hotkeys: {},
-    hotkeysPending: [] as TODO[],
-    stop: undefined as TODO,
-    /**
-     * Turns pixel coordinates into screen percentages
-     * @param {[x: number, y: number]} x - The coordinates
-     * @returns The array with pixels as screen percentages.
-     */
-    toPercent(x) {
-      return [(x[0] * 100) / ahk.width, (x[1] * 100) / ahk.height]
-    },
-    /**
-     * Turns screen percentages into pixel coordinates
-     * @param {[x: number, y: number]} x - The percentages
-     * @returns The array with screen percentages as pixels.
-     */
-    toPx(x) {
-      return [(x[0] / 100) * ahk.width, (x[1] / 100) * ahk.height]
-    },
-    /**
-     * Sets a hotkey to a function
-     * @param {string | object} key - The hotkey to bind
-     * @param {function} run - The function to run on bind
-     * @param {boolean} instant - Whether or not to instantly run the hotkey
-     */
+    hotkeysPending: [],
+
     setHotkey(key, run, instant) {
-      let ahkKey
+      let ahkKey: TODO
       if (typeof key === 'string') {
         ahkKey = key
       } else {
@@ -118,7 +93,7 @@ export default async function (
           }
           ahkKey =
             mod +
-            key.key
+            (key.key as string)
               .replace(/!/g, '{!}')
               .replace(/#/g, '{#}')
               .replace(/\+/g, '{+}')
@@ -133,16 +108,6 @@ export default async function (
       }
     },
     /**
-     * Sleeps for a certain amount of time
-     * @param {number} x - The time in ms to sleep for
-     * @returns A promise that is fufilled once the time is up
-     */
-    sleep(x) {
-      return new Promise((resolve) => {
-        setTimeout(resolve, x)
-      })
-    },
-    /**
      * Runs a hotkey if one is detected
      */
     async waitForInterrupt() {
@@ -150,12 +115,22 @@ export default async function (
         await ahk.hotkeysPending[0]()
         ahk.hotkeysPending.shift()
       }
+    },
+    /**
+     * Stops hotkey runner
+     */
+    stop() {
+      if (hotkeys && !hotkeys.killed) {
+        const ended = new Promise<void>((res) => {
+          hotkeys.stdout.on('end', () => res())
+        })
+        hotkeys.kill()
+        return ended
+      }
+      return Promise.resolve()
     }
   }
-  if (options.defaultColorVariation) {
-    ahk.defaultColorVariation = options.defaultColorVariation
-  }
-  let hotkeysString = `#NoTrayIcon
+  var hotkeysString = `#NoTrayIcon
 #SingleInstance Force
 stdout := FileOpen("*", "w \`n")
 
@@ -197,39 +172,18 @@ write(x) {
       }
     }
   })
-  await fs.writeFile(`${options.tmpDir || __dirname}\\hotkeys.ahk`, hotkeysString)
-  const hotkeys = spawn(path, [`${options.tmpDir || __dirname}\\hotkeys.ahk`])
-
-  let stopping = false
-  function childProcessesEnding(code) {
-    //console.log({"Exiting: ": code});
-    if (!stopping) {
-      process.exit(code)
-    }
-  }
-
-  function stop() {
-    stopping = true
-    if (!hotkeys.killed) {
-      hotkeys.kill()
-    }
-  }
-  ahk.stop = stop
-
-  hotkeys.stderr.on('data', (chuck) => {
-    console.warn(chuck.toString())
+  await fs.writeFile(`${options.tmpDir || rootDir}\\hotkeys.ahk`, hotkeysString)
+  const hotkeys = spawn(path, [`${options.tmpDir || rootDir}\\hotkeys.ahk`], { detached: true })
+  //hotkeys.stdout.on('end', process.exit)
+  process.on('SIGINT', process.exit)
+  process.on('exit', function () {
+    if (!hotkeys.killed) hotkeys.kill()
   })
-  hotkeys.stdout.on('end', childProcessesEnding)
-
-  process.on('SIGINT', stop)
-  process.on('exit', stop)
-  hotkeys.stdout.on('data', (data) => {
+  hotkeys.stdout.on('data', function (data) {
     data = data.toString()
-    if (ahk.hotkeys[data].instant) {
-      ahk.hotkeys[data]()
-    } else {
-      ahk.hotkeysPending.push(ahk.hotkeys[data])
-    }
+    if (ahk.hotkeys[data].instant) ahk.hotkeys[data]()
+    else ahk.hotkeysPending.push(ahk.hotkeys[data])
   })
+
   return ahk
 }
