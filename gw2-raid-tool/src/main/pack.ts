@@ -1,24 +1,15 @@
 import * as packager from '@electron/packager'
 import * as rebuild from '@electron/rebuild'
-import electronInstaller from 'electron-winstaller'
-import path from 'path'
-import fs from 'fs-extra'
+import * as electronInstaller from 'electron-winstaller'
+import * as path from 'path'
+import * as fs from 'fs-extra'
 import fg from 'fast-glob'
-import semver, { SemVer } from 'semver'
+import * as semver from 'semver'
 import { minimatch } from 'minimatch'
 import Client from 'ssh2-sftp-client'
 
 import uploadConfig from '../../../upload-config.json'
 import { Stats } from 'fs'
-//import execDetached from './arc-interface/exec-detached'
-
-//import npmPackage from '../../package.json'
-
-//type npmPackageScripts = keyof typeof npmPackage.scripts
-
-//function npmRun(script: npmPackageScripts, args: string[], cwd: string) {
-//  return execDetached('npm.cmd', [script, ...args], { cwd })
-//}
 ;(async () => {
   const rootDir = path.resolve(__dirname, '../../../')
 
@@ -28,7 +19,7 @@ import { Stats } from 'fs'
 
   const electronVersion = pgkLock.packages['node_modules/electron'].version
 
-  const parsedVersion = semver.parse(pgk.version) as SemVer
+  const parsedVersion = semver.parse(pgk.version) as semver.SemVer
   const isDevBuild = parsedVersion.prerelease.includes('dev')
   console.info({ isDevBuild })
 
