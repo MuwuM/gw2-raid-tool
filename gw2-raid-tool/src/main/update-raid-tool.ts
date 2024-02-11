@@ -1,5 +1,6 @@
 import { app as electronApp, autoUpdater } from 'electron'
 import semver from 'semver'
+import { InitStatusUninitialized } from '../raid-tool'
 
 const updateUrlProd = 'https://tool.raid-static.de/'
 const updateUrlDev = 'https://tool.raid-static.de/dev/'

@@ -122,7 +122,6 @@ export default async ({
     win.on('resized', updateWindowConfig)
     win.on('move', updateWindowConfig)
 
-    //await win.loadURL(`file://${__dirname}/static/updating.html`)
     win.loadFile(path.join(__dirname, '../renderer/index.html'))
     const setStatus = (status: number, step?: string) => {
       win.webContents.send('loading', { status, step })

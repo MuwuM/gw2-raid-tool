@@ -82,6 +82,7 @@ electronHandler({
     backendConfig,
     initStatus
   })
+
   initStatus.status = RaidToolDef.InitStatusStatusCode.Loading
 
   await loadArcdpsConfig(baseConfig, savedConfig, db, electronApp)

@@ -125,6 +125,7 @@ export type BaseConfig = {
   launchBuddyDir: string | null
   launchBuddyConfigDir: string
   possibleSlots?: Array<{ slot: string }>
+  boringBg?: boolean
 }
 
 export type SavedConfig = {

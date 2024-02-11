@@ -2,7 +2,7 @@
 import { data, i18n } from "@renderer/preload-api";
 </script>
 <template>
-  <main id="credits">
+  <main id="credits" :class="{ 'with-bg': !data.baseConfig?.boringBg }">
     <div class="container pb-5">
       <h1>Credits</h1>
       <h3 class="credits-name">GW2-Elite-Insights-Parser</h3>
@@ -66,4 +66,16 @@ import { data, i18n } from "@renderer/preload-api";
       </div>
     </div>
   </main>
+  <template v-if="!data.baseConfig?.boringBg">
+    <img class="bg-video" src="../assets/2560px-Travel_Room_concept_art.jpg" alt="" />
+    <div class="bg-glow"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-fog"></div>
+    <div class="bg-fog"></div>
+  </template>
 </template>
