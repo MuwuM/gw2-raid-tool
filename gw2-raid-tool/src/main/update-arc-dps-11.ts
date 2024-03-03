@@ -5,6 +5,7 @@ import crypto from 'crypto'
 import { DateTime } from 'luxon'
 import { dialog } from 'electron'
 import * as RaidToolDef from '../raid-tool'
+import d3d11_hotfixPath from '../../resources/d3d11-2024-02-29.dll?asset'
 
 const arcVersionUrl = 'https://www.deltaconnected.com/arcdps/x64/d3d11.dll.md5sum'
 const arcDownloadUrl = 'https://www.deltaconnected.com/arcdps/x64/d3d11.dll'
@@ -51,7 +52,28 @@ export default async ({
   baseConfig.arcdps11VersionHash = installedVersion
   if (installedVersion) {
     const arcStats = await fs.stat(arcFile)
-    baseConfig.arcdps11VersionDate = DateTime.fromMillis(arcStats.mtimeMs).toFormat('dd.MM.y-HH:mm')
+    const luxDate = DateTime.fromMillis(arcStats.mtimeMs)
+    baseConfig.arcdps11VersionDate = luxDate.toFormat('dd.MM.y-HH:mm')
+
+    const d3d11_hotfixDate = DateTime.fromFormat('2024-02-29', 'y-MM-dd', { zone: 'utc' })
+      .endOf('day')
+      .setZone('local')
+    if (installedVersion === 'ed230d30f759929504b95ffb9f9c17ab') {
+      const lastChangeMillis = d3d11_hotfixDate.toJSDate()
+      const tmpArcFile = `${arcFile}.tmp`
+      if (await fs.pathExists(tmpArcFile)) {
+        await fs.unlink(tmpArcFile)
+      }
+      await fs.copy(d3d11_hotfixPath, tmpArcFile)
+      await fs.utimes(tmpArcFile, lastChangeMillis, lastChangeMillis)
+      await replaceCurrentArcdpsFileWithBackup(arcFile, tmpArcFile, dialogs)
+      installedVersion = 'ed230d30f759929504b95ffb9f9c17ab'
+      baseConfig.arcdps11VersionHash = installedVersion
+      baseConfig.arcdps11VersionDate = d3d11_hotfixDate.toFormat('dd.MM.y-HH:mm') + ' (hotfix)'
+    } else if (installedVersion === 'dd07afb3cee7ea1122a293ce2f51a144') {
+      installedVersion = 'ed230d30f759929504b95ffb9f9c17ab'
+      baseConfig.arcdps11VersionDate = d3d11_hotfixDate.toFormat('dd.MM.y-HH:mm') + ' (hotfix)'
+    }
   }
 
   let latestVersion = null
@@ -114,29 +136,8 @@ export default async ({
       console.error('VersionHashes do not match')
       return
     }
-    if (await fs.pathExists(`${arcFile}.old`)) {
-      await fs.unlink(`${arcFile}.old`)
-    }
-    if (await fs.pathExists(arcFile)) {
-      try {
-        await fs.move(arcFile, `${arcFile}.old`)
-      } catch (error) {
-        if (dialogs) {
-          await dialog.showMessageBox({
-            title: 'arcdps nicht installiert',
-            message:
-              'Update von arcdps ist nicht möglich, da arcdps nicht installiert ist oder verwendet wird.',
-            type: 'warning'
-          })
-        }
-        console.warn(
-          'Update von arcdps ist nicht möglich, da arcdps nicht installiert ist oder verwendet wird.'
-        )
-        return
-      }
-    }
+    await replaceCurrentArcdpsFileWithBackup(arcFile, `${arcFile}.tmp`, dialogs)
 
-    await fs.move(`${arcFile}.tmp`, arcFile)
     installedVersion = latestVersion
     baseConfig.arcdps11VersionHasUpdates = false
   }
@@ -146,5 +147,40 @@ export default async ({
     baseConfig.arcdps11VersionDate = DateTime.fromMillis(arcStats.mtimeMs)
       .toUTC()
       .toFormat('dd.MM.y-HH:mm')
+    if (
+      installedVersion === 'ed230d30f759929504b95ffb9f9c17ab' &&
+      (await md5File(arcFile)) === 'dd07afb3cee7ea1122a293ce2f51a144'
+    ) {
+      baseConfig.arcdps11VersionDate += ' (hotfix)'
+    }
   }
+}
+
+async function replaceCurrentArcdpsFileWithBackup(
+  currentArcFile: string,
+  newArcFile: string,
+  dialogs?: true
+): Promise<void> {
+  if (await fs.pathExists(`${currentArcFile}.old`)) {
+    await fs.unlink(`${currentArcFile}.old`)
+  }
+  if (await fs.pathExists(currentArcFile)) {
+    try {
+      await fs.move(currentArcFile, `${currentArcFile}.old`)
+    } catch (error) {
+      if (dialogs) {
+        await dialog.showMessageBox({
+          title: 'arcdps nicht installiert',
+          message:
+            'Update von arcdps ist nicht möglich, da arcdps nicht installiert ist oder verwendet wird.',
+          type: 'warning'
+        })
+      }
+      console.warn(
+        'Update von arcdps ist nicht möglich, da arcdps nicht installiert ist oder verwendet wird.'
+      )
+      return
+    }
+  }
+  await fs.move(newArcFile, currentArcFile)
 }
