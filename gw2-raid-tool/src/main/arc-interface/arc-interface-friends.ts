@@ -1,6 +1,5 @@
-import { TODO } from '../../raid-tool'
 import { baseConfig, db } from './main-proxy'
-import readJson from './read-json'
+import { LogJsonData, readLogJsonFiltered } from './read-json'
 
 export default async function updateKnownFriends({
   knownFriendCache,
@@ -12,9 +11,9 @@ export default async function updateKnownFriends({
   entry
 }) {
   const knownFriendCacheBefore = knownFriendCache
-  let json = null as TODO
+  let json: LogJsonData | null = null
   try {
-    json = await readJson(htmlFile.replace(/\.html$/, '.json'))
+    json = await readLogJsonFiltered(htmlFile.replace(/\.html$/, '.json'))
   } catch (error) {
     if (!knownFriendCache) {
       await db.known_friends.insert({

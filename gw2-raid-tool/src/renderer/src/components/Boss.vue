@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import { data, i18n } from "@renderer/preload-api";
 import LogList from "./LogList.vue";
+import LogView from "./LogView.vue";
 import { img } from "@renderer/util";
-
-function logPath(activeLog, logs) {
-  const log = logs.find((l) => l.hash === activeLog);
-  if (log?.isUploading) {
-    return `gw2-log:${activeLog}?is=uploading`;
-  }
-  return `gw2-log:${activeLog}`;
-}
 </script>
 <template>
   <main id="boss" class="arc-log-display-wrapper">
@@ -41,14 +34,7 @@ function logPath(activeLog, logs) {
     <div class="emptyspacer"></div>
     <div class="arc-log-display arc-log-display-friend">
       <LogList></LogList>
-      <iframe
-        v-if="data.activeLog"
-        name="arc-log-display-iframe"
-        class="arc-log-display-iframe"
-        :src="logPath(data.activeLog, data.logs)"
-        frameborder="0"
-        sandbox="allow-scripts allow-top-navigation-by-user-activation allow-same-origin"
-      ></iframe>
+      <LogView></LogView>
     </div>
   </main>
 </template>

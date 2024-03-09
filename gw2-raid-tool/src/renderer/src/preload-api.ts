@@ -72,7 +72,8 @@ export const data = reactive({
   langs: i18nLoader.langs,
   deps: Object.keys(pkg.dependencies),
   keyRules: [] as TODO[],
-  currenttime: Date.now()
+  currenttime: Date.now(),
+  logIsLoading: null as null | string
 })
 
 export const wings = reactive(wingsBase as WingsRes)
@@ -83,6 +84,7 @@ export function selectLog(log, event?) {
     data.activeLog = log.hash
   } else {
     data.activeLog = null
+    data.logIsLoading = null
   }
 }
 
@@ -109,6 +111,9 @@ function showLogPage(page: number, filters, event?) {
 
 export function selectPage(page, info, event?) {
   preventDefault(event)
+  if (data.page !== page) {
+    data.logIsLoading = null
+  }
   if (page === 'log' && info && info.id && info.action === 'upload') {
     uploadLog(info.id)
     return
@@ -119,8 +124,10 @@ export function selectPage(page, info, event?) {
     }
     return
   }
+
   data.page = page
   data.pageConfig = info
+
   /*console.log({
         page,
         info
@@ -203,6 +210,7 @@ api.ipc.onLogs(({ logs, page, maxPages, stats }) => {
   data.stats = stats
   if (!data.logs.find((l) => l.hash === data.activeLog)) {
     data.activeLog = null
+    data.logIsLoading = null
   }
   if (!data.activeLog && data.logs[0]) {
     selectLog(data.logs[0])

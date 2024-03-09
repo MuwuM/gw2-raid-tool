@@ -2,12 +2,11 @@ import fs from 'fs-extra'
 import path from 'path'
 
 import { db } from './main-proxy'
-import readJson from './read-json'
+import { LogJsonData, readLogJsonFiltered } from './read-json'
 import { DateTime } from 'luxon'
 import hashLog from '../hash-log'
 import fightIconMap from '../../info/fight-icon-map'
 import ErrorWithStack from '../error-with-stack'
-import { TODO } from '../../raid-tool'
 
 export default async function assignLog(logsPath: string, htmlFile: string, entry) {
   const known = await db.logs.findOne({ htmlFile })
@@ -17,9 +16,9 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
     return
   }
   const logFile = htmlFile.replace(/\.html$/, '.json')
-  let json = null as TODO
+  let json: LogJsonData | null = null
   try {
-    json = await readJson(logFile)
+    json = await readLogJsonFiltered(logFile)
   } catch (error) {
     console.error(new ErrorWithStack(error))
     let htmlStats
@@ -64,6 +63,10 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
     return
   }
 
+  if (!json) {
+    return
+  }
+
   try {
     await db.logs.insert({
       hash: await hashLog(htmlFile),
@@ -74,6 +77,7 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
           json.fightIcon.startsWith('https://wiki.guildwars2.com/images/') &&
           json.fightIcon),
       eliteInsightsVersion: json.eliteInsightsVersion,
+      eiEncounterID: json.eiEncounterID,
       triggerID: json.triggerID,
       fightName: json.fightName,
       arcVersion: json.arcVersion,
@@ -83,7 +87,9 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
       recordedBy: json.recordedBy,
       timeStart: json.timeStartStd,
       timeEnd: json.timeEndStd,
-      timeEndMs: DateTime.fromFormat(json.timeEndStd, 'yyyy-MM-dd HH:mm:ss ZZ').toMillis(),
+      timeEndMs: json.timeEndStd
+        ? DateTime.fromFormat(json.timeEndStd, 'yyyy-MM-dd HH:mm:ss ZZ').toMillis()
+        : 0,
       duration: json.duration,
       success: json.success,
       isCM: json.isCM,

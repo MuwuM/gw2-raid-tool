@@ -121,6 +121,7 @@ html.bg-img {
   pointer-events: none;
 }
 .arc-log-display {
+  position: relative;
   display: flex;
   flex-direction: row;
   height: calc(100vh - 0.1rem);
@@ -162,6 +163,40 @@ nav + main.arc-log-display.arc-log-display-friend {
 .arc-log-display-iframe {
   flex: 1 1 100%;
 }
+
+.arc-log-display-loading{
+  position: absolute;
+  inset: 0;
+  left: 15rem;
+  font-size: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.arc-log-display-loading .center-big-splash-blur{
+  margin-top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+.arc-log-display-loading .center-big-splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-top: 0;
+  width: 100%;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.arc-log-display-loading .arc-list-preview-icon {
+  max-width: 2.5rem;
+  height: 2.5rem;
+  margin-right: 0.5rem;
+}
+
 .li-section {
   margin-top: 2rem;
 }

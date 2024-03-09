@@ -42,10 +42,12 @@ export default {
   22521: '/img/Boneskinner.png',
   22711: '/img/Whisper_of_Jormag.png',
 
-  24033: '/img/MaiTrin.png',
-  23957: '/img/Ankka.png',
-  24485: '/img/MinisterLi.png',
-  24266: '/img/MinisterLi.png',
-  1378: '/img/DragonVoid.png',
-  43488: '/img/DragonVoid.png'
+  24033: '/img/MaiTrin.png', // Aetherblade Hideout
+  23957: '/img/Ankka.png', // Jade Junkyard
+  24485: '/img/MinisterLi.png', // Kaineng Overlook
+  24266: '/img/MinisterLi.png', // Kaineng Overlook
+  1378: '/img/DragonVoid.png', // Harvest Temple
+  43488: '/img/DragonVoid.png', // Harvest Temple
+
+  1: '/img/WvW_Menu_Bar_icon.png'
 }

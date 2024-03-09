@@ -5,6 +5,7 @@ import zlib from 'zlib'
 import { promisify } from 'util'
 const zip = promisify(zlib.deflate)
 const unzip = promisify(zlib.unzip)
+
 import adjustArcHtml from '../util/adjust-arc-html'
 import fightIconMap from '../../info/fight-icon-map'
 import hashLog from '../hash-log'
@@ -61,7 +62,7 @@ function enhanceLogs(logs) {
     if (logsUploading[log.hash]) {
       log.isUploading = true
     }
-    const cleanFightName = log.fightName.replace(/\s+/g, '')
+    const cleanFightName = (log.fightName || '').replace(/\s+/g, '')
     if (cleanFightName === fightName) {
       collapseNumber += 1
       log.displayCollapse = collapseNumber
@@ -158,104 +159,108 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   })
 
   async function updateLogs() {
-    //console.log('updateLogs...')
-    let stats = {} as TODO
-    const conf = {} as TODO
-    if (logFilters.config.bossId) {
-      const bossId = parseInt(decodeURIComponent(logFilters.config.bossId), 10)
+    try {
+      //console.log('updateLogs...')
+      let stats = {} as TODO
+      const conf = {} as TODO
+      if (logFilters.config.bossId) {
+        const bossId = parseInt(decodeURIComponent(logFilters.config.bossId), 10)
 
-      if (Number.isInteger(bossId)) {
-        let bossInfo = wings
-          .map((ws) => ws.steps)
-          .flat()
-          .find((s) => ensureArray(s.triggerID).includes(bossId)) as TODO
+        if (Number.isInteger(bossId)) {
+          let bossInfo = wings
+            .map((ws) => ws.steps)
+            .flat()
+            .find((s) => ensureArray(s.triggerID).includes(bossId)) as TODO
 
-        if (!bossInfo) {
-          bossInfo = { triggerID: bossId }
-        }
+          if (!bossInfo) {
+            bossInfo = { triggerID: bossId }
+          }
 
-        conf.triggerID = { $in: ensureArray(bossInfo.triggerID) }
-        const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]]
-        stats = {
-          ...stats,
-          bossIcon,
-          bossInfo
+          conf.triggerID = { $in: ensureArray(bossInfo.triggerID) }
+          const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]]
+          stats = {
+            ...stats,
+            bossIcon,
+            bossInfo
+          }
         }
       }
-    }
-    if (logFilters.config.friend) {
-      const account = decodeURIComponent(logFilters.config.friend)
-      let friend = await db.friends.findOne({ account })
-      conf.players = { $elemMatch: account }
-      stats = { ...stats, friend }
-    }
-    if (logFilters.config.cmOnly) {
-      conf.isCM = true
-      stats = { ...stats, cmOnly: true }
-    }
-
-    const {
-      page,
-      maxPages,
-      logs,
-      stats: readStats
-    } = await paginatedLogs({ query: { p: logFilters.p } }, db, conf)
-
-    if (logFilters.config.friend) {
-      const account = decodeURIComponent(logFilters.config.friend)
-      let friend = await db.friends.findOne({ account })
-      if (!friend && logs.length > 0) {
-        friend = await db.friends.insert({
-          account,
-          chars: [],
-          sharedLogs: 0
-        })
+      if (logFilters.config.friend) {
+        const account = decodeURIComponent(logFilters.config.friend)
+        let friend = await db.friends.findOne({ account })
+        conf.players = { $elemMatch: account }
         stats = { ...stats, friend }
       }
-    }
+      if (logFilters.config.cmOnly) {
+        conf.isCM = true
+        stats = { ...stats, cmOnly: true }
+      }
 
-    if (stats) {
-      stats = {
-        ...stats,
-        ...readStats
-      }
-      if (stats.bossInfo && !stats.bossInfo.name_en) {
-        stats.bossInfo.name_en =
-          (logs?.[0]?.fightName && logs[0].fightName.replace(/\s+CM\s*$/, '')) || '???'
-      }
-      if (stats.bossInfo && !stats.bossInfo.name_de) {
-        stats.bossInfo.name_de = stats.bossInfo.name_en
-      }
-    }
-    const newLog = await hashLog(
-      JSON.stringify({
-        page,
-        maxPages,
-        logs: logs.map((l) => l.hash),
-        stats
-      })
-    )
-    if (lastLog !== newLog) {
-      /*console.log("Log changed", {
-        lastLog,
-        newLog
-      });*/
-      eventHub.emit('logs', {
+      const {
         page,
         maxPages,
         logs,
-        stats
-      })
-      lastLog = newLog
-    }
+        stats: readStats
+      } = await paginatedLogs({ query: { p: logFilters.p } }, db, conf)
 
-    const friends = await db.friends.find({ sharedLogs: { $gte: 10 } }).sort({ sharedLogs: -1 })
+      if (logFilters.config.friend) {
+        const account = decodeURIComponent(logFilters.config.friend)
+        let friend = await db.friends.findOne({ account })
+        if (!friend && logs.length > 0) {
+          friend = await db.friends.insert({
+            account,
+            chars: [],
+            sharedLogs: 0
+          })
+          stats = { ...stats, friend }
+        }
+      }
 
-    const newFriendsLog = await hashLog(JSON.stringify({ friends }))
-    if (lastFriendsLog !== newFriendsLog) {
-      //console.log("newFriendsLog changed");
-      eventHub.emit('friends', { friends })
-      lastFriendsLog = newFriendsLog
+      if (stats) {
+        stats = {
+          ...stats,
+          ...readStats
+        }
+        if (stats.bossInfo && !stats.bossInfo.name_en) {
+          stats.bossInfo.name_en =
+            (logs?.[0]?.fightName && logs[0].fightName.replace(/\s+CM\s*$/, '')) || '???'
+        }
+        if (stats.bossInfo && !stats.bossInfo.name_de) {
+          stats.bossInfo.name_de = stats.bossInfo.name_en
+        }
+      }
+      const newLog = await hashLog(
+        JSON.stringify({
+          page,
+          maxPages,
+          logs: logs.map((l) => l.hash),
+          stats
+        })
+      )
+      if (lastLog !== newLog) {
+        /*console.log("Log changed", {
+        lastLog,
+        newLog
+      });*/
+        eventHub.emit('logs', {
+          page,
+          maxPages,
+          logs,
+          stats
+        })
+        lastLog = newLog
+      }
+
+      const friends = await db.friends.find({ sharedLogs: { $gte: 10 } }).sort({ sharedLogs: -1 })
+
+      const newFriendsLog = await hashLog(JSON.stringify({ friends }))
+      if (lastFriendsLog !== newFriendsLog) {
+        //console.log("newFriendsLog changed");
+        eventHub.emit('friends', { friends })
+        lastFriendsLog = newFriendsLog
+      }
+    } catch (error) {
+      console.error(error)
     }
 
     nextTick = setTimeout(updateLogs, 500)
@@ -266,7 +271,12 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   async function respondWithFile(buffer: Buffer) {
     const mime = (await fileTypeFromBuffer(buffer))?.mime || ''
     return new Response(buffer, {
-      headers: { 'content-type': mime, 'cache-control': `max-age=${(maxage / 1000) | 0},immutable` }
+      headers: {
+        'content-type': mime,
+        'cache-control': `max-age=${(maxage / 1000) | 0},immutable`
+      },
+      status: 200,
+      statusText: 'OK'
     })
   }
 
@@ -284,8 +294,16 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
           }
 
           if (await fs.pathExists(`${log.htmlFile}z`)) {
-            const file = `${await unzip(await fs.readFile(`${log.htmlFile}z`))}`
+            //const a = Date.now()
+            const zippedFile = await fs.readFile(`${log.htmlFile}z`)
+            //const b = Date.now()
+            //console.log({ name: log.fightName, 'read z': b - a })
+            const file = `${await unzip(zippedFile)}`
+            //const c = Date.now()
+            //console.log({ name: log.fightName, 'read z': b - a, unzip: c - b })
             body = adjustArcHtml(log, file, searchParams)
+            //const d = Date.now()
+            //console.log({ name: log.fightName, 'read z': b - a, unzip: c - b, adjust: d - c })
           } else {
             const file = `${await fs.readFile(log.htmlFile)}`
             body = adjustArcHtml(log, file, searchParams)
@@ -294,7 +312,9 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
         return new Response(body, {
           headers: {
             'content-type': 'text/html'
-          }
+          },
+          status: 200,
+          statusText: 'OK'
         })
       } else if (pathname.startsWith('/ext/bootswatch/bootstrap.min.css')) {
         const defaultPath = require.resolve('bootswatch/dist/darkly/bootstrap.min.css')
@@ -328,7 +348,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
       }
 
       //console.log('gw2-log', { host, pathname, searchParams })
-      return new Response('', { status: 404 })
+      return new Response('', { status: 404, statusText: 'Not Found' })
     })
   })
 
