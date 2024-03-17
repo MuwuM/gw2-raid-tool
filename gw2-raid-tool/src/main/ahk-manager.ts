@@ -34,9 +34,14 @@ import { dirname } from 'path'
 type HotkeysListWithKeyAndModifiers = { key: string; modifiers?: string[]; noInterrupt?: boolean }
 type HotkeysListWithKeys = { keys: string[]; noInterrupt?: boolean }
 
+type HotkeyRunner = {
+  (): void | Promise<void>
+  instant?: boolean
+}
+
 export type AHKManager = {
-  hotkeys: Record<string, TODO>
-  hotkeysPending: Array<TODO>
+  hotkeys: Record<string, HotkeyRunner>
+  hotkeysPending: Array<HotkeyRunner>
   setHotkey: (
     key:
       | string
@@ -45,7 +50,7 @@ export type AHKManager = {
           modifiers?: string[]
           key?: string
         },
-    run: () => void,
+    run: HotkeyRunner,
     instant: boolean
   ) => void
   waitForInterrupt: () => Promise<void>
@@ -60,14 +65,14 @@ export default async function (
     ahkV1?: boolean
   } = {}
 ): Promise<AHKManager> {
-  const rootDir = dirname(require.resolve('ahknodejs'))
+  const ahknodejsDir = dirname(require.resolve('ahknodejs'))
 
   const ahk: AHKManager = {
     hotkeys: {},
     hotkeysPending: [],
 
     setHotkey(key, run, instant) {
-      let ahkKey: TODO
+      let ahkKey: string
       if (typeof key === 'string') {
         ahkKey = key
       } else {
@@ -172,8 +177,10 @@ write(x) {
       }
     }
   })
-  await fs.writeFile(`${options.tmpDir || rootDir}\\hotkeys.ahk`, hotkeysString)
-  const hotkeys = spawn(path, [`${options.tmpDir || rootDir}\\hotkeys.ahk`], { detached: true })
+  await fs.writeFile(`${options.tmpDir || ahknodejsDir}\\hotkeys.ahk`, hotkeysString)
+  const hotkeys = spawn(path, [`${options.tmpDir || ahknodejsDir}\\hotkeys.ahk`], {
+    detached: true
+  })
   //hotkeys.stdout.on('end', process.exit)
   process.on('SIGINT', process.exit)
   process.on('exit', function () {

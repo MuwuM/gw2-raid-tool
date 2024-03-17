@@ -5,13 +5,63 @@ import { BrowserWindow, app, screen } from 'electron'
 import path from 'path'
 import specsSrc from '../../info/specs.json'
 const specs = specsSrc as SpecsJson
-import { MumbleLinkData, ServerRouteHandler, SpecsJson, TODO } from '../../raid-tool'
+import {
+  MumbleLinkData,
+  NedbDatabaseQuery,
+  NedbDocumentBlockedKeyRules,
+  ServerRouteHandler,
+  SpecsJson
+} from '../../raid-tool'
 
 const keyBlockedOpacity = 0.6
 const keyUnblockedOpacity = 0
 
 const validAhkKeys =
   /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/
+
+type SingleCharacter = { 0: string; length: 1 } & string
+
+type BlockableKey =
+  | SingleCharacter
+  | `F${number}`
+  | 'CapsLock'
+  | 'Space'
+  | 'Tab'
+  | 'Enter'
+  | 'Escape'
+  | 'Esc'
+  | 'Backspace'
+  | 'ScrollLock'
+  | 'Delete'
+  | 'Del'
+  | 'Insert'
+  | 'Ins'
+  | 'Home'
+  | 'End'
+  | 'PgUp'
+  | 'PgDn'
+  | 'Up'
+  | 'Down'
+  | 'Left'
+  | 'Right'
+  | `Numpad${number}`
+  | 'NumpadDot'
+  | 'NumLock'
+  | 'NumpadDiv'
+  | 'NumpadMult'
+  | 'NumpadAdd'
+  | 'NumpadSub'
+  | 'NumpadEnter'
+  | `LWin`
+  | `RWin`
+  | `LControl`
+  | `RControl`
+  | `LCtrl`
+  | `RCtrl`
+  | `LAlt`
+  | `RAlt`
+  | `LShift`
+  | `RShift`
 
 export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   if (baseConfig.isAdmin) {
@@ -32,7 +82,9 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
       }
       await db.blocked_key_rules.insert({
         active: false,
-        spec
+        spec,
+        slot: '',
+        keys: ''
       })
       keyRules = await db.blocked_key_rules.find({}).sort({
         spec: 1,
@@ -75,7 +127,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
       tmpDir
     });*/
 
-    let blocked_keys = [] as TODO[]
+    let blocked_keys = [] as NedbDocumentBlockedKeyRules[]
     let ahkInstance: AHKManager | null
     const blockingWindows = {} as Record<string, BrowserWindow>
 
@@ -292,7 +344,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
 
     const updateBlockedKeys = async () => {
       try {
-        const filters = [{ active: true }] as TODO[]
+        const filters = [{ active: true }] as NedbDatabaseQuery<NedbDocumentBlockedKeyRules>[]
 
         //backendConfig.mumbleLinkActive.identity.name;
 
@@ -311,8 +363,8 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
           })
         }
 
-        let keysToBlock = [] as TODO[]
-        let blockingRules = [] as TODO[]
+        let keysToBlock = [] as BlockableKey[]
+        let blockingRules = [] as NedbDocumentBlockedKeyRules[]
         if (
           backendConfig.mumbleLinkActive &&
           !backendConfig.mumbleLinkActive?.uiStates?.TextboxHasFocus &&
@@ -328,7 +380,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
               if (!key || !key.match(validAhkKeys)) {
                 continue
               }
-              keysToBlock.push(key)
+              keysToBlock.push(key as BlockableKey)
             }
             if (
               blockingWindows[rule.slot] &&
@@ -384,23 +436,30 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
       }
     }
 
-    let lastMumbleLinkActive = null as TODO
-    eventHub.onLocal('mumbleLinkActive', () => {
+    let lastMumbleLinkActiveSignatureJson = null as string | null
+    eventHub.onLocal('mumbleLinkActive', ({ mumbleLinkActive }) => {
+      if (!mumbleLinkActive) {
+        const mumbleLinkActiveSignatureJson = null
+        if (mumbleLinkActiveSignatureJson !== lastMumbleLinkActiveSignatureJson) {
+          lastMumbleLinkActiveSignatureJson = mumbleLinkActiveSignatureJson
+          updateBlockedKeys()
+        }
+        return
+      }
       try {
-        const newMumbleLinkActive = JSON.stringify({
-          spec: (backendConfig?.mumbleLinkActive as MumbleLinkData)?.identity?.spec,
-          TextboxHasFocus: (backendConfig?.mumbleLinkActive as MumbleLinkData)?.uiStates
-            ?.TextboxHasFocus,
-          GameHasFocus: (backendConfig?.mumbleLinkActive as MumbleLinkData)?.uiStates?.GameHasFocus,
-          IsMapOpen: (backendConfig?.mumbleLinkActive as MumbleLinkData)?.uiStates?.IsMapOpen,
-          mountIndex: (backendConfig?.mumbleLinkActive as MumbleLinkData)?.context?.mountIndex
+        const mumbleLinkActiveSignatureJson = JSON.stringify({
+          spec: mumbleLinkActive?.identity?.spec,
+          TextboxHasFocus: mumbleLinkActive?.uiStates?.TextboxHasFocus,
+          GameHasFocus: mumbleLinkActive?.uiStates?.GameHasFocus,
+          IsMapOpen: mumbleLinkActive?.uiStates?.IsMapOpen,
+          mountIndex: mumbleLinkActive?.context?.mountIndex
         })
-        if (newMumbleLinkActive !== lastMumbleLinkActive) {
-          lastMumbleLinkActive = newMumbleLinkActive
+        if (mumbleLinkActiveSignatureJson !== lastMumbleLinkActiveSignatureJson) {
+          lastMumbleLinkActiveSignatureJson = mumbleLinkActiveSignatureJson
           updateBlockedKeys()
         }
 
-        let newWindow = false as TODO
+        let newWindow = false
 
         for (const possible of possibleSlots()) {
           const blockedSlot = possible.slot
