@@ -73,7 +73,10 @@ onUpdated(() => {
         </li>
         <li class="nav-item active">
           <a
-            :class="{ 'nav-link': true, 'text-muted': !data.baseConfig.isAdmin }"
+            :class="{
+              'nav-link': true,
+              'text-muted': !data.baseConfig.isAdmin
+            }"
             href="#"
             tabindex="-1"
             @click="selectPage('keys', {}, $event)"

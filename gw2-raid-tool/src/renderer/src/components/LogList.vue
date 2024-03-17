@@ -37,7 +37,12 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
         <li class="page-item disabled w-50 text-center">
           <a class="page-link">{{ data.logsPage + 1 }}/{{ data.logsMaxPages }}</a>
         </li>
-        <li :class="{ 'page-item': true, disabled: data.logsPage >= data.logsMaxPages - 1 }">
+        <li
+          :class="{
+            'page-item': true,
+            disabled: data.logsPage >= data.logsMaxPages - 1
+          }"
+        >
           <a
             class="page-link"
             @click="
@@ -50,7 +55,12 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
             >›</a
           >
         </li>
-        <li :class="{ 'page-item': true, disabled: data.logsPage >= data.logsMaxPages - 1 }">
+        <li
+          :class="{
+            'page-item': true,
+            disabled: data.logsPage >= data.logsMaxPages - 1
+          }"
+        >
           <a
             class="page-link"
             @click="showLogPage(data.logsMaxPages - 1, null, $event as ClickEvent)"

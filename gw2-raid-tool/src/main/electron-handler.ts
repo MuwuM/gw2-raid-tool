@@ -130,7 +130,10 @@ export default async ({
         // })
         eventHub.emit('selectPage', {
           page: pathParts[1] as RaidToolDef.PageId,
-          info: { id: pathParts[2], action: pathParts[3] as RaidToolDef.PageAction }
+          info: {
+            id: pathParts[2],
+            action: pathParts[3] as RaidToolDef.PageAction
+          }
         })
       }
     }
@@ -142,7 +145,9 @@ export default async ({
     socket.send('gw2Instances', { gw2Instances: baseConfig.gw2Instances })
     socket.send('baseConfig', { baseConfig })
     socket.send('progressConfig', { progressConfig })
-    socket.send('mumbleLinkActive', { mumbleLinkActive: backendConfig.mumbleLinkActive || false })
+    socket.send('mumbleLinkActive', {
+      mumbleLinkActive: backendConfig.mumbleLinkActive || false
+    })
     eventHub.emit('keyRules', {
       keyRules: await db.blocked_key_rules.find({}).sort({
         spec: 1,

@@ -13,6 +13,15 @@ module.exports = {
   rules: {
     'vue/require-default-prop': 'off',
     'vue/multi-word-component-names': 'off',
-    '@typescript-eslint/no-explicit-any': 'off'
+    '@typescript-eslint/no-explicit-any': 'off',
+    'prettier/prettier': [
+      'warn',
+      {
+        singleQuote: true,
+        semi: false,
+        printWidth: 100,
+        trailingComma: 'none'
+      }
+    ]
   }
 }

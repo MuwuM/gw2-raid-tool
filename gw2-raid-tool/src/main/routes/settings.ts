@@ -171,11 +171,15 @@ export default (async ({ db, baseConfig, eventHub }) => {
       await db.logs.remove({}, { multi: true })
       await db.known_friends.remove({}, { multi: true })
       await db.friends.remove({}, { multi: true })
-      await dialog.showMessageBox({ message: i18n[baseConfig.lang].resetSuccess })
+      await dialog.showMessageBox({
+        message: i18n[baseConfig.lang].resetSuccess
+      })
       app.relaunch()
       app.exit(0)
     } else {
-      await dialog.showMessageBox({ message: i18n[baseConfig.lang].settingsResetInfoMessage })
+      await dialog.showMessageBox({
+        message: i18n[baseConfig.lang].settingsResetInfoMessage
+      })
     }
   })
 

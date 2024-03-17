@@ -2,6 +2,5 @@
   "emmet.includeLanguages": {
     "ejs": "html",
   },
-  "vue3snippets.enable-compile-vue-file-on-did-save-code": true,
   "eslint.experimental.useFlatConfig": false,
 }

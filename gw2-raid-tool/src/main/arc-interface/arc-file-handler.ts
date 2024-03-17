@@ -8,7 +8,13 @@ type DoneFunction = () => void
 
 const arcFileHandlerInit = (
   logsPath: string,
-  counter: { i: number; j: number; chokidarReady: boolean; k: number; l: number }
+  counter: {
+    i: number
+    j: number
+    chokidarReady: boolean
+    k: number
+    l: number
+  }
 ) => {
   let queue = Promise.resolve() as Promise<void>
   function singleton() {

@@ -30,7 +30,11 @@ import { spawn } from 'child_process'
 import fs from 'fs/promises'
 import { dirname } from 'path'
 
-type HotkeysListWithKeyAndModifiers = { key: string; modifiers?: string[]; noInterrupt?: boolean }
+type HotkeysListWithKeyAndModifiers = {
+  key: string
+  modifiers?: string[]
+  noInterrupt?: boolean
+}
 type HotkeysListWithKeys = { keys: string[]; noInterrupt?: boolean }
 
 type HotkeyRunner = {

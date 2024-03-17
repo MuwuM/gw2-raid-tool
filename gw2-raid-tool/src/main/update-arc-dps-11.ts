@@ -55,7 +55,9 @@ export default async ({
     const luxDate = DateTime.fromMillis(arcStats.mtimeMs)
     baseConfig.arcdps11VersionDate = luxDate.toFormat('dd.MM.y-HH:mm')
 
-    const d3d11_hotfixDate = DateTime.fromFormat('2024-02-29', 'y-MM-dd', { zone: 'utc' })
+    const d3d11_hotfixDate = DateTime.fromFormat('2024-02-29', 'y-MM-dd', {
+      zone: 'utc'
+    })
       .endOf('day')
       .setZone('local')
     if (installedVersion === 'ed230d30f759929504b95ffb9f9c17ab') {

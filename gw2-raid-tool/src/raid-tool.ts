@@ -348,7 +348,9 @@ interface NedbDatastoreFindWithSort<T extends NedbDocument, R extends (T | null)
 }
 
 export type KnownNedbDocument<T extends NedbDocument> = OptionalId<T> | null
-export type OptionalId<T extends NedbDocument> = Omit<T, '_id'> & { _id?: T['_id'] }
+export type OptionalId<T extends NedbDocument> = Omit<T, '_id'> & {
+  _id?: T['_id']
+}
 
 export interface NedbDatastore<T extends NedbDocument> {
   ensureIndex(index: { fieldName: keyof T; unique?: boolean; sparse?: boolean }): Promise<void>

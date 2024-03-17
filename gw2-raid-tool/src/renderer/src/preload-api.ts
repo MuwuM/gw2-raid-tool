@@ -23,7 +23,7 @@ import {
 import { reactive } from 'vue'
 
 import i18nLoader from '../../i18n/i18n-loader'
-import { BaseTranslationFile } from 'src/i18n/type'
+import { BaseTranslationFile, EnglishTranslationFile } from 'src/i18n/type'
 import { DateTime } from 'luxon'
 import wingsBase from '../../info/wings'
 import uniqueSpecsSrc from '../../info/unique-specs.json'
@@ -181,7 +181,7 @@ export const i18n = new Proxy({} as any, {
   get(_target, p: keyof BaseTranslationFile) {
     return i18nLoader[data.baseConfig.lang][p]
   }
-}) as BaseTranslationFile
+}) as BaseTranslationFile as EnglishTranslationFile
 
 api.ipc.on.loading((val) => {
   data.loading.status = val.status

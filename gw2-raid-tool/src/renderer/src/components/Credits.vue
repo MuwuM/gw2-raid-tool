@@ -16,7 +16,8 @@ import { data, i18n } from '@renderer/preload-api'
       <h3 class="credits-name">Electron</h3>
       <div>
         {{ i18n.creditsElectronPart1 }}
-        <a href="https://www.electronjs.org/">Electron</a> {{ i18n.creditsElectronPart2 }}
+        <a href="https://www.electronjs.org/">Electron</a>
+        {{ i18n.creditsElectronPart2 }}
       </div>
       <span class="li-display-number-details">{{ i18n.licenseMit }}</span>
 
