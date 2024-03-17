@@ -42,7 +42,7 @@ export default async ({
       icon: appIcon,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false,
+        contextIsolation: true,
         preload: path.join(__dirname, '../preload/index.js')
       }
     })
@@ -124,10 +124,10 @@ export default async ({
         //console.log('send selectPage', { page: 'overview', info: {} })
         eventHub.emit('selectPage', { page: 'overview', info: {} })
       } else {
-        console.log('send selectPage', {
-          page: pathParts[1],
-          info: { id: pathParts[2], action: pathParts[3] }
-        })
+        // console.log('send selectPage', {
+        //  page: pathParts[1],
+        //  info: { id: pathParts[2], action: pathParts[3] }
+        // })
         eventHub.emit('selectPage', {
           page: pathParts[1] as RaidToolDef.PageId,
           info: { id: pathParts[2], action: pathParts[3] as RaidToolDef.PageAction }

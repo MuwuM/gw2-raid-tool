@@ -5,50 +5,50 @@ import { ClickEvent, ClickOnButtonEvent, Lang } from "src/raid-tool";
 
 function removeAccount(token: string, event: ClickEvent) {
   preventDefault(event);
-  api.removeAccount({ token });
+  api.ipc.send.removeAccount({ token });
 }
 function addAccount(token: string, event: ClickEvent) {
   preventDefault(event);
   //console.log({ token });
-  api.addAccount({ token });
+  api.ipc.send.addAccount({ token });
   data.token = "";
 }
 function changeLang(lang: Lang, event?: ClickEvent) {
   preventDefault(event);
-  api.changeLang({ lang });
+  api.ipc.send.changeLang({ lang });
 }
 function selectGw2Dir(event: ClickEvent) {
   preventDefault(event);
-  api.selectGw2Dir({});
+  api.ipc.send.selectGw2Dir({});
 }
 function selectLaunchBuddyDir(event: ClickEvent) {
   preventDefault(event);
-  api.selectLaunchBuddyDir({});
+  api.ipc.send.selectLaunchBuddyDir({});
 }
 function removeLaunchBuddyDir(event: ClickEvent) {
   preventDefault(event);
-  api.removeLaunchBuddyDir({});
+  api.ipc.send.removeLaunchBuddyDir({});
 }
 function resetAllLogs(confirmReset: string, event: ClickEvent) {
   preventDefault(event);
-  api.resetAllLogs({ confirmReset });
+  api.ipc.send.resetAllLogs({ confirmReset });
   data.confirmReset = "";
 }
 function enableArcUpdates(event: ClickEvent) {
   preventDefault(event);
-  api.enableArcUpdates({});
+  api.ipc.send.enableArcUpdates({});
 }
 function updateArcDps11(event: ClickEvent) {
   preventDefault(event);
-  api.updateArcDps11({});
+  api.ipc.send.updateArcDps11({});
 }
 function checkArcUpdates(event: ClickEvent) {
   preventDefault(event);
-  api.checkArcUpdates({});
+  api.ipc.send.checkArcUpdates({});
 }
 function disableArcUpdates(event: ClickEvent) {
   preventDefault(event);
-  api.disableArcUpdates({});
+  api.ipc.send.disableArcUpdates({});
 }
 </script>
 <template>

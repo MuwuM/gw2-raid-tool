@@ -14,7 +14,7 @@ function showLogPage(
     data.logFilters.config = filters;
   }
   const logFilter = { ...data.logFilters };
-  api.logFilter(logFilter);
+  api.ipc.send.logFilter(logFilter);
 }
 
 function timeEndDiff(log: UiLogs, _currenttime: number) {

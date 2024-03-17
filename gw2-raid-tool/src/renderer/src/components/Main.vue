@@ -17,7 +17,7 @@ const specs = specsSrc as SpecsJson;
 
 function startGame(event?: ClickEvent) {
   preventDefault(event);
-  api.startGame({});
+  api.ipc.send.startGame({});
 }
 
 function handleScrollUpdate() {

@@ -491,38 +491,58 @@ export interface RaidToolConfig {
   fullscreen: boolean
 }
 
-type SendViaIpc<T extends keyof KnownEvents> = (data: KnownEvents[T]) => void
+type KeysOfKnownEvents<T extends Readonly<(keyof KnownEvents)[]>> = T[number]
+
+function exposeKnownEvents<T extends Readonly<(keyof KnownEvents)[]>>(events: T) {
+  return events
+}
+
+export const exposedListeners = exposeKnownEvents([
+  'loading',
+  'baseConfig',
+  'accounts',
+  'progressConfig',
+  'mumbleLinkActive',
+  'logs',
+  'selectPage',
+  'friends',
+  'keyRules'
+] as const)
+export type ExposedListenerKeys = KeysOfKnownEvents<typeof exposedListeners>
+
+export const exposedSenders = exposeKnownEvents([
+  'uploadLog',
+  'logFilter',
+  'friendsFilter',
+  'startGame',
+  'removeAccount',
+  'addAccount',
+  'changeLang',
+  'selectGw2Dir',
+  'selectLaunchBuddyDir',
+  'removeLaunchBuddyDir',
+  'resetAllLogs',
+  'enableArcUpdates',
+  'updateArcDps11',
+  'checkArcUpdates',
+  'disableArcUpdates',
+  'updateKeyRule',
+  'deleteKeyRule',
+  'addKeyRule'
+] as const)
+export type ExposedSenderKeys = KeysOfKnownEvents<typeof exposedSenders>
+
+export type ExposedIpc = {
+  on: {
+    [K in ExposedListenerKeys]: (callback: EventHandler<K>) => void
+  }
+  send: {
+    [K in ExposedSenderKeys]: (data: KnownEvents[K]) => void
+  }
+}
 
 export type PreloadApi = {
-  ipc: {
-    onLoading: (callback: EventHandler<'loading'>) => void
-    onBaseConfig: (callback: EventHandler<'baseConfig'>) => void
-    onAccounts: (callback: EventHandler<'accounts'>) => void
-    onProgressConfig: (callback: EventHandler<'progressConfig'>) => void
-    onMumbleLinkActive: (callback: EventHandler<'mumbleLinkActive'>) => void
-    onLogs: (callback: EventHandler<'logs'>) => void
-    onSelectPage: (callback: EventHandler<'selectPage'>) => void
-    onFriends: (callback: EventHandler<'friends'>) => void
-    onKeyRules: (callback: EventHandler<'keyRules'>) => void
-  }
-  uploadLog: SendViaIpc<'uploadLog'>
-  logFilter: SendViaIpc<'logFilter'>
-  friendsFilter: SendViaIpc<'friendsFilter'>
-  startGame: SendViaIpc<'startGame'>
-  removeAccount: SendViaIpc<'removeAccount'>
-  addAccount: SendViaIpc<'addAccount'>
-  changeLang: SendViaIpc<'changeLang'>
-  selectGw2Dir: SendViaIpc<'selectGw2Dir'>
-  selectLaunchBuddyDir: SendViaIpc<'selectLaunchBuddyDir'>
-  removeLaunchBuddyDir: SendViaIpc<'removeLaunchBuddyDir'>
-  resetAllLogs: SendViaIpc<'resetAllLogs'>
-  enableArcUpdates: SendViaIpc<'enableArcUpdates'>
-  updateArcDps11: SendViaIpc<'updateArcDps11'>
-  checkArcUpdates: SendViaIpc<'checkArcUpdates'>
-  disableArcUpdates: SendViaIpc<'disableArcUpdates'>
-  updateKeyRule: SendViaIpc<'updateKeyRule'>
-  deleteKeyRule: SendViaIpc<'deleteKeyRule'>
-  addKeyRule: SendViaIpc<'addKeyRule'>
+  ipc: ExposedIpc
 }
 export type PreloadApiData = {
   loading: { status: InitStatusStatusCode; step: string }

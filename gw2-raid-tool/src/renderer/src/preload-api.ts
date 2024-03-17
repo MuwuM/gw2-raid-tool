@@ -1,6 +1,7 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 import {
   BaseConfig,
+  ExposedIpc,
   InitStatusStatusCode,
   Lang,
   LogFilter,
@@ -15,7 +16,9 @@ import {
   UiBlockedKeyRules,
   UiFriends,
   UiLogs,
-  WingsRes
+  WingsRes,
+  exposedListeners,
+  exposedSenders
 } from '../../raid-tool'
 import { reactive } from 'vue'
 
@@ -55,7 +58,20 @@ export interface CustomWindow extends Window {
 }
 declare let window: CustomWindow
 
-export const api = window.api
+const ipc = { on: {}, send: {} } as ExposedIpc
+
+for (const channel of exposedListeners) {
+  ipc.on[channel] = window.api.ipc.on[channel] as any
+}
+
+for (const channel of exposedSenders) {
+  ipc.send[channel] = (data: any) => {
+    window.api.ipc.send[channel](JSON.parse(JSON.stringify(data))) as any
+  }
+}
+
+export const api = { ...window.api, ipc } as PreloadApi
+
 export const data = reactive({
   page: 'overview' as PageId,
   logsPage: 0 as number,
@@ -97,13 +113,13 @@ export function selectLog(log: UiLogs, event?: Event) {
 }
 
 function uploadLog(logHash: string) {
-  api.uploadLog({ hash: logHash })
+  api.ipc.send.uploadLog({ hash: logHash })
 }
 
 function showFriendsPage(event?: Event) {
   preventDefault(event)
   const friendsFilter = {}
-  api.friendsFilter(friendsFilter)
+  api.ipc.send.friendsFilter(friendsFilter)
 }
 
 function showLogPage(page: number, filters: LogFilter['config'], event?: Event) {
@@ -114,7 +130,7 @@ function showLogPage(page: number, filters: LogFilter['config'], event?: Event) 
   }
   const logFilter = { ...data.logFilters }
 
-  api.logFilter(logFilter)
+  api.ipc.send.logFilter(logFilter)
 }
 
 export function selectPage(page: PageId, info: PageInfo, event?: Event) {
@@ -167,15 +183,15 @@ export const i18n = new Proxy({} as any, {
   }
 }) as BaseTranslationFile
 
-api.ipc.onLoading((val) => {
+api.ipc.on.loading((val) => {
   data.loading.status = val.status
   data.loading.step = val.step
 })
-api.ipc.onBaseConfig(({ baseConfig }) => {
+api.ipc.on.baseConfig(({ baseConfig }) => {
   //console.log({ baseConfig })
   data.baseConfig = baseConfig
 })
-api.ipc.onAccounts(({ accounts }) => {
+api.ipc.on.accounts(({ accounts }) => {
   //console.log({ accounts })
   data.accounts = accounts.map((a: UiAccounts, index) => {
     a.color = colors[index % colors.length]
@@ -211,7 +227,7 @@ api.ipc.onAccounts(({ accounts }) => {
   }
   data.totalKps = totalKps
 })
-api.ipc.onLogs(({ logs, page, maxPages, stats }) => {
+api.ipc.on.logs(({ logs, page, maxPages, stats }) => {
   //console.log('onLogs', { logs, page, maxPages, stats })
   data.logs = logs
   data.logsPage = page
@@ -225,22 +241,22 @@ api.ipc.onLogs(({ logs, page, maxPages, stats }) => {
     selectLog(data.logs[0])
   }
 })
-api.ipc.onSelectPage(({ page, info }) => {
+api.ipc.on.selectPage(({ page, info }) => {
   selectPage(page, info)
 })
-api.ipc.onFriends(({ friends }) => {
+api.ipc.on.friends(({ friends }) => {
   //console.log({ friends })
   data.friends = friends
 })
-api.ipc.onKeyRules(({ keyRules }) => {
+api.ipc.on.keyRules(({ keyRules }) => {
   //console.log({ keyRules })
   data.keyRules = keyRules
 })
 
-api.ipc.onProgressConfig(({ progressConfig }) => {
+api.ipc.on.progressConfig(({ progressConfig }) => {
   console.log({ progressConfig })
   data.progressConfig = progressConfig
 })
-api.ipc.onMumbleLinkActive(({ mumbleLinkActive }) => {
+api.ipc.on.mumbleLinkActive(({ mumbleLinkActive }) => {
   data.mumbleLinkActive = mumbleLinkActive
 })

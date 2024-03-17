@@ -12,30 +12,30 @@ const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^
 function updateKeyRuleSpec(keyRule: UiBlockedKeyRules, event: ChangeOnSelectEvent) {
   preventDefault(event);
   keyRule.spec = event.target.value || "";
-  api.updateKeyRule({ keyRule });
+  api.ipc.send.updateKeyRule({ keyRule });
 }
 function updateKeyRuleSlot(keyRule: UiBlockedKeyRules, event: ChangeOnSelectEvent) {
   preventDefault(event);
   keyRule.slot = event.target.value || "";
-  api.updateKeyRule({ keyRule });
+  api.ipc.send.updateKeyRule({ keyRule });
 }
 function updateKeyRuleKeys(keyRule: UiBlockedKeyRules, event: ChangeOnInputEvent) {
   preventDefault(event);
   keyRule.keys = event.target.value || "";
-  api.updateKeyRule({ keyRule });
+  api.ipc.send.updateKeyRule({ keyRule });
 }
 function updateKeyRuleActive(keyRule: UiBlockedKeyRules, event: ChangeOnInputEvent) {
   preventDefault(event);
   keyRule.active = event.target.checked;
-  api.updateKeyRule({ keyRule });
+  api.ipc.send.updateKeyRule({ keyRule });
 }
 function deleteKeyRule(keyRule: UiBlockedKeyRules, event: ClickOnButtonEvent) {
   preventDefault(event);
-  api.deleteKeyRule({ keyRule });
+  api.ipc.send.deleteKeyRule({ keyRule });
 }
 function addKeyRule(event: ClickOnButtonEvent) {
   preventDefault(event);
-  api.addKeyRule({});
+  api.ipc.send.addKeyRule({});
 }
 </script>
 <template>
