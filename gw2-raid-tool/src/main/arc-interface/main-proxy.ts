@@ -3,8 +3,6 @@ import { BaseConfig, EventHubEmitter, NedbDatabase, ProgressConfigProxied } from
 
 let reqIdCount = 0
 
-const delayProgressConfig = {} as { [key: string]: NodeJS.Timeout }
-
 type Proxify<T> = {
   [P in keyof T]: T[P] extends object ? Proxify<T[P]> : Promise<T[P]>
 }
@@ -114,37 +112,14 @@ export const progressConfig = new Proxy({} as any, {
     // write only
   },
   set(_t, prop: string, value) {
-    if (prop.startsWith('$')) {
-      //console.log(`${prop}: ${value}`);
-      const realProp = prop.substring(1)
-      if (delayProgressConfig[realProp]) {
-        clearTimeout(delayProgressConfig[realProp])
-      }
-      delete delayProgressConfig[realProp]
-      reqIdCount++
-      const reqId = reqIdCount
-      process.send?.({
-        msg: 'setProgressConfig',
-        reqId,
-        prop: realProp,
-        value
-      })
-    } else {
-      if (delayProgressConfig[prop]) {
-        clearTimeout(delayProgressConfig[prop])
-      }
-      delayProgressConfig[prop] = setTimeout(() => {
-        delete delayProgressConfig[prop]
-        reqIdCount++
-        const reqId = reqIdCount
-        process.send?.({
-          msg: 'setProgressConfig',
-          reqId,
-          prop,
-          value
-        })
-      }, 1)
-    }
+    reqIdCount++
+    const reqId = reqIdCount
+    process.send?.({
+      msg: 'setProgressConfig',
+      reqId,
+      prop: prop,
+      value
+    })
     return true
   }
 }) as ProgressConfigProxied

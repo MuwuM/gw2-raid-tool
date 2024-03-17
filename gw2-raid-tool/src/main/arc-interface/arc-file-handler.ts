@@ -38,17 +38,17 @@ const arcFileHandlerInit = (
     const done = await singleton()
     try {
       console.info(`parsing: ${entry}`)
-      progressConfig.$currentLog = entry
+      progressConfig.currentLog = entry
       await updateLogEntry(logsPath, entry)
-      progressConfig.$currentLog = false
+      progressConfig.currentLog = false
       console.info(`parsed ${entry}`)
       counter.j++
-      progressConfig.$parsedLogs = counter.j
+      progressConfig.parsedLogs = counter.j
       if (counter.i === counter.j && counter.chokidarReady) {
         counter.i = 0
         counter.j = 0
-        progressConfig.$parsingLogs = counter.i
-        progressConfig.$parsedLogs = counter.j
+        progressConfig.parsingLogs = counter.i
+        progressConfig.parsedLogs = counter.j
       }
       done()
     } catch (error) {
@@ -61,16 +61,16 @@ const arcFileHandlerInit = (
     progressConfig.compressingLogs = counter.k
     const done = await singleton()
     try {
-      progressConfig.$currentLog = `zipping: ${entry}`
+      progressConfig.currentLog = `zipping: ${entry}`
       await handleCompress(logsPath, [entry])
-      progressConfig.$currentLog = false
+      progressConfig.currentLog = false
       counter.l++
-      progressConfig.$compressedLogs = counter.l
+      progressConfig.compressedLogs = counter.l
       if (counter.k === counter.l && counter.chokidarReady) {
         counter.k = 0
         counter.l = 0
-        progressConfig.$compressingLogs = counter.k
-        progressConfig.$compressedLogs = counter.l
+        progressConfig.compressingLogs = counter.k
+        progressConfig.compressedLogs = counter.l
       }
       done()
     } catch (error) {

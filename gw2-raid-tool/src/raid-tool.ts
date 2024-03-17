@@ -149,17 +149,19 @@ export type ProgressConfig = {
   compressedLogs: number
   currentLog: string | false
 }
+
+/* $ values will immediately update the UI, while the others will only update on the next tick */
 export type ProgressConfigProxied = {
-  parsingLogs: number
-  parsedLogs: number
-  compressingLogs: number
-  compressedLogs: number
-  currentLog: string | false
-  $parsingLogs: number
-  $parsedLogs: number
-  $compressingLogs: number
-  $compressedLogs: number
-  $currentLog: string | false
+  set parsingLogs(value: number)
+  set parsedLogs(value: number)
+  set compressingLogs(value: number)
+  set compressedLogs(value: number)
+  set currentLog(value: string | false)
+  get parsingLogs(): void
+  get parsedLogs(): void
+  get compressingLogs(): void
+  get compressedLogs(): void
+  get currentLog(): void
 }
 
 export interface NedbDocument {
@@ -549,9 +551,6 @@ export type PreloadApi = {
   ipc: ExposedIpc
   electronVersionUrl: string
   electronVersionString: string
-}
-export type PreloadApiData = {
-  loading: { status: InitStatusStatusCode; step: string }
 }
 
 export interface WingsResStep {

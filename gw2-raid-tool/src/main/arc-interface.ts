@@ -59,14 +59,14 @@ import arcFileHandlerInit from './arc-interface/arc-file-handler'
       counter.i = 0
       counter.j = 0
     }
-    progressConfig.$parsingLogs = counter.i
-    progressConfig.$parsedLogs = counter.j
+    progressConfig.parsingLogs = counter.i
+    progressConfig.parsedLogs = counter.j
     if (counter.k === counter.l && counter.chokidarReady) {
       counter.k = 0
       counter.l = 0
     }
-    progressConfig.$compressingLogs = counter.k
-    progressConfig.$compressedLogs = counter.l
+    progressConfig.compressingLogs = counter.k
+    progressConfig.compressedLogs = counter.l
     const end = Date.now()
     console.info(`All events added. in ${(end - start) / 1000} sec`)
   })
