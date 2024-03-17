@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { data, i18n, wings } from "@renderer/preload-api";
 
-import { WingsResStep, WingsRef, UiAccounts } from "../../../raid-tool";
-import { img } from "@renderer/util";
-const lang = data.baseConfig.lang;
+import { WingsResStep, WingsRef, UiAccounts, Kps } from "../../../raid-tool";
+import { img, localizeName } from "@renderer/util";
+
+function getTotalKps(kpName: keyof Kps): number {
+  if (typeof data.totalKps[kpName] !== "number") {
+    return 0;
+  }
+  return data.totalKps[kpName] as number;
+}
 
 function firstTrigger(step: WingsResStep) {
   if (!step.triggerID) {
@@ -227,11 +233,11 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
     <div class="wings">
       <div class="wing" v-for="wing in wings">
         <h3 v-if="!wing.w_img">W{{ wing.w }}</h3>
-        <h3 v-if="wing.w_img" :title="wing['name_' + lang]">
+        <h3 v-if="wing.w_img" :title="wing[localizeName(data.lang)]">
           <img
             class="li-display-img"
             :src="img('./img/' + wing.w_img)"
-            :alt="wing['name_' + lang]"
+            :alt="wing[localizeName(data.lang)]"
           /><span v-if="wing.w_img_text">{{ wing.w_img_text }}</span>
         </h3>
         <a
@@ -244,7 +250,7 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
           ><img
             class="wing-boss-icon"
             :src="img('./img/' + step.img)"
-            :alt="step['name_' + lang]"
+            :alt="step[localizeName(data.lang)]"
           />
           <svg class="wing-boss-border" viewBox="0 0 300 300">
             <path
@@ -255,7 +261,9 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
           </svg>
 
           <div class="wing-step-tooltip">
-            <div class="wing-step-tooltip-title">{{ step["name_" + lang] }}:</div>
+            <div class="wing-step-tooltip-title">
+              {{ step[localizeName(data.lang)] }}:
+            </div>
             <template v-if="!step.kpName && data.totalKps.raidBossKp?.[step.id] > 0">
               <div v-for="acc in data.accounts">
                 <span
@@ -301,13 +309,7 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
                 <span>{{ acc.kps.raidBossKp[step.id] || 0 }} KP</span>
               </div>
             </template>
-            <template
-              v-if="
-                step.kpName &&
-                data.totalKps[step.kpName] &&
-                data.totalKps[step.kpName] > 0
-              "
-            >
+            <template v-if="step.kpName && getTotalKps(step.kpName) > 0">
               <div v-for="acc in data.accounts">
                 <span
                   v-if="isDailyToday(wing, step, data.dayOfYear)"
@@ -358,12 +360,7 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
                   !step.kpName &&
                   data.totalKps.raidBossKp &&
                   data.totalKps.raidBossKp[step.id] > 0
-                ) &&
-                !(
-                  step.kpName &&
-                  data.totalKps[step.kpName] &&
-                  data.totalKps[step.kpName] > 0
-                )
+                ) && !(step.kpName && getTotalKps(step.kpName) > 0)
               "
             >
               <span class="li-display-number-details">{{ i18n.noKP }}</span>
@@ -528,7 +525,7 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
             <div class="li-display">
               <img class="li-display-img" :src="img('./img/1302747.png')" />
               <span class="li-display-number"
-                >{{ box.item.count }}x {{ step["name_" + lang] }}</span
+                >{{ box.item.count }}x {{ step[localizeName(data.lang)] }}</span
               >
               <span class="li-display-number-details"
                 >{{ box.item["@char"] || "" }}

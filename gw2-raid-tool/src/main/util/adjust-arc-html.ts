@@ -1,3 +1,5 @@
+import { NedbDocumentLogs } from '../../raid-tool'
+
 const customStyles = `
 .ei-container-big{
   min-width: 1600px;
@@ -41,7 +43,7 @@ input.form-control[readonly]{
   color: #ebebeb;
 }
 `
-export default function (log, fileContent, query: URLSearchParams) {
+export default function (log: NedbDocumentLogs, fileContent: string, query: URLSearchParams) {
   let file = fileContent
   file = file.replace(
     /<script>[\s\S]+?function\s+initTheme\(\)\s+\{[\s\S]+?<\/script>/g,

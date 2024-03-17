@@ -86,7 +86,7 @@ export const data = reactive({
 
 export const wings = reactive(wingsBase as WingsRes)
 
-export function selectLog(log, event?: Event) {
+export function selectLog(log: UiLogs, event?: Event) {
   preventDefault(event)
   if (log) {
     data.activeLog = log.hash
@@ -106,7 +106,7 @@ function showFriendsPage(event?: Event) {
   api.friendsFilter(friendsFilter)
 }
 
-function showLogPage(page: number, filters, event?) {
+function showLogPage(page: number, filters: LogFilter['config'], event?: Event) {
   preventDefault(event)
   data.logFilters.p = page
   if (typeof filters === 'object' && filters) {
@@ -161,14 +161,11 @@ setInterval(() => {
   data.currenttime = now.toMillis()
 }, 100)
 
-export const i18n = new Proxy(
-  {},
-  {
-    get(_target, p) {
-      return i18nLoader[data.baseConfig.lang][p]
-    }
+export const i18n = new Proxy({} as any, {
+  get(_target, p: keyof BaseTranslationFile) {
+    return i18nLoader[data.baseConfig.lang][p]
   }
-) as BaseTranslationFile
+}) as BaseTranslationFile
 
 api.ipc.onLoading((val) => {
   data.loading.status = val.status

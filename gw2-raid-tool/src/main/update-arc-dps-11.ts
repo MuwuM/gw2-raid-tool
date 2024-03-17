@@ -78,13 +78,15 @@ export default async ({
 
   let latestVersion = null
   try {
-    const versionRequest = await urllib.request(arcVersionUrl, {
+    const versionRequest = await urllib.request<string>(arcVersionUrl, {
       timeout: 30000,
       followRedirect: true
     })
     const rows = versionRequest.data
       .toString()
-      .split(/\r?\n/)
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .split(/\n/)
       .filter((r) => !r.match(/^\s*$/))
     for (const row of rows) {
       const [version, file] = row.split(/\s+/)

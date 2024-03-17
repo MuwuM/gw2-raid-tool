@@ -13,6 +13,7 @@
     "composite": true,
     "types": [
       "electron-vite/node"
-    ]
+    ],
+    "noImplicitAny": true
   }
 }

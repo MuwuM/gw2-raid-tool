@@ -7,6 +7,11 @@ export enum SupportedLanguages {
 }
 
 export type Lang = keyof typeof SupportedLanguages
+
+export type LocalizedName = keyof {
+  [key in Lang as `name_${key}`]: string
+}
+
 export type MumbleLinkDataIdentity = {
   name: string
   profession: number
@@ -283,13 +288,17 @@ export interface UnopenedBoxes {
   bossKp: number
 }
 
+export interface TriggerCompletedMap {
+  [triggerID: number]: true | undefined
+}
+
 export interface NedbDocumentAccounts extends NedbDocument {
   kps: Kps
   completedSteps: string[]
-  completedCMs: { [triggerID: number]: true | undefined }
-  completedStrikesDaily: { [triggerID: number]: true | undefined }
-  completedFractalsDaily: { [triggerID: number]: true | undefined }
-  completedStrikesWeekly: { [triggerID: number]: true | undefined }
+  completedCMs: TriggerCompletedMap
+  completedStrikesDaily: TriggerCompletedMap
+  completedFractalsDaily: TriggerCompletedMap
+  completedStrikesWeekly: TriggerCompletedMap
   token: string
   accountInfo?: GW2AccountInfo
 }
@@ -529,7 +538,7 @@ export interface WingsResStep {
   img: string
   hasCM: boolean
   dailyIndex?: number
-  kpName?: string
+  kpName?: keyof Kps
 }
 export interface WingsRef {
   w: number | string

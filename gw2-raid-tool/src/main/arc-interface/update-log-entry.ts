@@ -135,14 +135,12 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
         logsPath
       )
 
-      const htmlInnerFiles = await waitForHtml
+      const htmlInnerFile = await waitForHtml
       await waitForJson
       console.info(`JSON/HTML ready: ${entry}`)
 
       const htmlFile2 =
-        htmlInnerFiles &&
-        htmlInnerFiles[0] &&
-        path.join(logsPath, htmlInnerFiles[0].replace(/\.htmlz$/, '.html'))
+        htmlInnerFile && path.join(logsPath, htmlInnerFile.replace(/\.htmlz$/, '.html'))
       if (htmlFile2) {
         if (
           !(await checkLogs(logsPath, baseFile, dateName, entry, false).catch(

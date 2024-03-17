@@ -2,6 +2,7 @@
 import NodeIPC from '@fynnix/node-easy-ipc'
 import EventEmitter from 'events'
 import { MumbleLinkData, MumbleLinkDataIdentity, MumbleLinkDataStatus } from '../raid-tool'
+import entries from './entries'
 class MumbleLinkEmitter extends EventEmitter {}
 
 interface NodeIPCApi {
@@ -126,19 +127,19 @@ function MumbleLink(options: {
 
   const emitter = new MumbleLinkEmitter()
 
-  const activeMaps = {} as { [key: string]: NodeIPCApi }
-  const mumbleLinkStats = {} as { [key: string]: MumbleLinkDataStatus }
-  const processesMap = {} as { [processId: number]: string }
+  const activeMaps = {} as Record<string, NodeIPCApi>
+  const mumbleLinkStats = {} as Record<string, MumbleLinkDataStatus>
+  const processesMap = {} as Record<number, string>
 
   async function readMumbleLinkData() {
     try {
       const pids = await opts.gw2Pids()
 
-      for (const [pid, key] of Object.entries(processesMap)) {
-        if (!pids.find((i: any) => `${i}` === `${pid}`)) {
+      for (const [pid, key] of entries(processesMap)) {
+        if (!pids.find((i) => i === pid)) {
           if (activeMaps[key]) {
             try {
-              await activeMaps[key].closeMapping()
+              activeMaps[key].closeMapping()
             } catch (error) {
               emitter.emit('error', error)
             }
@@ -189,7 +190,7 @@ function MumbleLink(options: {
         }
       }
 
-      for (const [key, access] of Object.entries(activeMaps)) {
+      for (const [key, access] of entries(activeMaps)) {
         const data = Buffer.alloc(size)
         try {
           access.readInto(0, size, data)

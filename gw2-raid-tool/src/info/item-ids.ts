@@ -9,7 +9,7 @@ const legendaryArmor = {
   pre_heavy: [80387, 80236, 80648, 80673, 80427, 80127],
   pre_medium: [80634, 80366, 80607, 80658, 80177, 80675],
   pre_light: [80441, 80264, 80120, 80460, 80275, 80583]
-}
+} as { [kind: string]: number[] }
 
 const raidBossKpItems = {
   77705: 'vale_guardian',
@@ -38,7 +38,7 @@ const raidBossKpItems = {
   95982: 'xunlai_jade_junkyard',
   97451: 'kaineng_overlook',
   97132: 'harvest_temple'
-}
+} as { [id: number]: string }
 
 const raidBossCofferItems = {
   91203: 'vale_guardian',
@@ -64,7 +64,8 @@ const raidBossCofferItems = {
   91241: 'sabir',
   91260: 'qadim_the_peerless',
   91184: 'bandit_trio'
-}
+} as { [id: number]: string }
+
 const legendaryInsight = 77302
 const legendaryDivination = 88485
 const legendaryInsightWallet = 70
@@ -85,7 +86,7 @@ const strikeCofferCM = {
   96638: 'xunlai_jade_junkyard',
   96419: 'kaineng_overlook',
   95986: 'harvest_temple'
-}
+} as { [id: number]: string }
 
 export default {
   legendaryArmor,

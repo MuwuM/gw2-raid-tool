@@ -1,4 +1,5 @@
 import ahkApi, { AHKManager } from '../ahk-manager'
+// @ts-ignore-next-line
 import { path as ahkPath } from 'ahk.exe'
 import { BrowserWindow, app, screen } from 'electron'
 

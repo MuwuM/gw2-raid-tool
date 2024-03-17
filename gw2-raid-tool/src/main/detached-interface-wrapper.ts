@@ -13,8 +13,8 @@ const wrapper = async (
     eventHub
   }: {
     db: RaidToolDef.NedbDatabase
-    baseConfig: RaidToolDef.BaseConfig
-    progressConfig: RaidToolDef.ProgressConfig
+    baseConfig: RaidToolDef.BaseConfig | any
+    progressConfig: RaidToolDef.ProgressConfig | any
     eventHub: RaidToolDef.EventHub
   },
   memoryModificator: number
@@ -90,8 +90,8 @@ const wrapper = async (
     }: {
       msg: string
       reqId: number
-      database: string
-      method: string
+      database: keyof RaidToolDef.NedbDatabase
+      method: keyof RaidToolDef.NedbDatabase[keyof RaidToolDef.NedbDatabase]
       options: any[]
       prop: string
       value: any
@@ -99,7 +99,7 @@ const wrapper = async (
       try {
         if (msg === 'db') {
           try {
-            const res = await db[database][method](...options)
+            const res = await (db[database][method] as any)(...options)
             child.send({
               msg: 'dbres',
               dbres: res,
@@ -119,10 +119,14 @@ const wrapper = async (
         } else if (msg === 'getBaseConfig') {
           child.send({
             msg: 'cfgRes',
-            cfgRes: baseConfig[prop],
+            cfgRes: baseConfig[prop as keyof RaidToolDef.BaseConfig],
             reqId
           })
         } else if (msg === 'setBaseConfig') {
+          if (typeof baseConfig[prop] === 'undefined') {
+            console.error(`baseConfig[${prop}] is undefined`)
+            return
+          }
           baseConfig[prop] = value
           eventHub.emit('baseConfig', { baseConfig })
         } else if (msg === 'getProgessConfig') {
@@ -132,6 +136,10 @@ const wrapper = async (
             reqId
           })
         } else if (msg === 'setProgressConfig') {
+          if (typeof progressConfig[prop] === 'undefined') {
+            console.error(`progressConfig[${prop}] is undefined`)
+            return
+          }
           progressConfig[prop] = value
           eventHub.emit('progressConfig', { progressConfig })
         } else if (msg === 'emitEventHub') {

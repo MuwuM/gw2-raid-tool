@@ -7,6 +7,7 @@ import {
   KnownNedbDocument,
   NedbDatabase,
   NedbDocumentAccounts,
+  TriggerCompletedMap,
   UnopenedBoxes
 } from '../../raid-tool'
 import { GW2ApiClient, GW2ApiResponseInventoryItem } from '../gw2-api-with-types'
@@ -280,7 +281,7 @@ export const localUpdates = async ({
   }
 
   if (account.accountInfo && account.accountInfo.name) {
-    const completedCMs = {}
+    const completedCMs = {} as TriggerCompletedMap
     const startOfRaidReset = startOfWeek
     const endOfRaidReset = startOfRaidReset.plus({ days: 7 })
     const cms = await db.logs.find({
@@ -305,8 +306,8 @@ export const localUpdates = async ({
     }
   }
   if (account.accountInfo && account.accountInfo.name) {
-    const completedStrikesDaily = {}
-    const completedFractalsDaily = {}
+    const completedStrikesDaily = {} as TriggerCompletedMap
+    const completedFractalsDaily = {} as TriggerCompletedMap
     const startOfStrikeDailyReset = DateTime.utc().startOf('day')
     const endOfStrikeDailyReset = startOfStrikeDailyReset.plus({ days: 1 })
 
@@ -353,7 +354,7 @@ export const localUpdates = async ({
     }
   }
   if (account.accountInfo && account.accountInfo.name) {
-    const completedStrikesWeekly = {}
+    const completedStrikesWeekly = {} as TriggerCompletedMap
     const startOfStrikeWeeklyReset = startOfWeek
     const endOfStrikeWeeklyReset = startOfStrikeWeeklyReset.plus({ days: 7 })
     const strikes = await db.logs.find({

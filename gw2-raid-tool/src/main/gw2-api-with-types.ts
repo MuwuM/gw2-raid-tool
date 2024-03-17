@@ -1,3 +1,4 @@
+// @ts-ignore-next-line
 import originalGw2apiClient from 'gw2api-client'
 import { GW2AccountInfo, InventoryItem } from '../raid-tool'
 

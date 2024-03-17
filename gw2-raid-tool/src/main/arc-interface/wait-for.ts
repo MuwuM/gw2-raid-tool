@@ -2,7 +2,7 @@ import chokidar from 'chokidar'
 
 export default function waitFor(glob: string[], cwd: string) {
   const { stack } = new Error('')
-  return new Promise((res, rej) => {
+  return new Promise<string>((res, rej) => {
     const tooLate = setTimeout(() => {
       rej(new Error(`wait for file Timed out\n${stack}`))
       watcher.close()
@@ -17,7 +17,7 @@ export default function waitFor(glob: string[], cwd: string) {
     })
     watcher.once('add', (chokiPath) => {
       clearTimeout(tooLate)
-      res([chokiPath])
+      res(chokiPath)
       watcher.close()
     })
     watcher.once('error', (err) => {

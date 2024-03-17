@@ -5,9 +5,11 @@ import { db } from './main-proxy'
 import { LogJsonData, readLogJsonFiltered } from './read-json'
 import { DateTime } from 'luxon'
 import hashLog from '../hash-log'
-import fightIconMap from '../../info/fight-icon-map'
+import fightIconMapSrc from '../../info/fight-icon-map'
 import ErrorWithStack from '../error-with-stack'
 import { LogEntryRef } from '../../raid-tool'
+
+const fightIconMap: { [key: number]: string } = fightIconMapSrc
 
 export default async function assignLog(logsPath: string, htmlFile: string, entry: LogEntryRef) {
   const known = await db.logs.findOne({ htmlFile })
@@ -55,7 +57,8 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
         fightIconMap[json.triggerID] ||
         (json.fightIcon &&
           json.fightIcon.startsWith('https://wiki.guildwars2.com/images/') &&
-          json.fightIcon),
+          json.fightIcon) ||
+        '',
       eliteInsightsVersion: json.eliteInsightsVersion,
       eiEncounterID: json.eiEncounterID,
       triggerID: json.triggerID,

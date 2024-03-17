@@ -2,7 +2,7 @@
 import { data, i18n } from "@renderer/preload-api";
 import LogList from "./LogList.vue";
 import LogView from "./LogView.vue";
-import { img } from "@renderer/util";
+import { img, localizeName } from "@renderer/util";
 </script>
 <template>
   <main id="boss" class="arc-log-display-wrapper">
@@ -13,8 +13,8 @@ import { img } from "@renderer/util";
             v-if="data.stats.bossIcon"
             class="li-display-img"
             :src="img(data.stats.bossIcon)"
-            :alt="data.stats.bossInfo['name_' + data.lang]"
-          />{{ data.stats.bossInfo["name_" + data.lang] }}
+            :alt="data.stats.bossInfo[localizeName(data.lang)]"
+          />{{ data.stats.bossInfo[localizeName(data.lang)] }}
         </h2>
         <div>
           <template v-if="data.stats.cmOnly">

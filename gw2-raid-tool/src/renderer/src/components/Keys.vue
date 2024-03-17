@@ -5,30 +5,31 @@ import {
   ChangeOnInputEvent,
   ChangeOnSelectEvent,
   ClickOnButtonEvent,
+  UiBlockedKeyRules,
 } from "src/raid-tool";
 const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
 
-function updateKeyRuleSpec(keyRule, event: ChangeOnSelectEvent) {
+function updateKeyRuleSpec(keyRule: UiBlockedKeyRules, event: ChangeOnSelectEvent) {
   preventDefault(event);
   keyRule.spec = event.target.value || "";
   api.updateKeyRule({ keyRule });
 }
-function updateKeyRuleSlot(keyRule, event: ChangeOnSelectEvent) {
+function updateKeyRuleSlot(keyRule: UiBlockedKeyRules, event: ChangeOnSelectEvent) {
   preventDefault(event);
   keyRule.slot = event.target.value || "";
   api.updateKeyRule({ keyRule });
 }
-function updateKeyRuleKeys(keyRule, event: ChangeOnInputEvent) {
+function updateKeyRuleKeys(keyRule: UiBlockedKeyRules, event: ChangeOnInputEvent) {
   preventDefault(event);
   keyRule.keys = event.target.value || "";
   api.updateKeyRule({ keyRule });
 }
-function updateKeyRuleActive(keyRule, event: ChangeOnInputEvent) {
+function updateKeyRuleActive(keyRule: UiBlockedKeyRules, event: ChangeOnInputEvent) {
   preventDefault(event);
   keyRule.active = event.target.checked;
   api.updateKeyRule({ keyRule });
 }
-function deleteKeyRule(keyRule, event: ClickOnButtonEvent) {
+function deleteKeyRule(keyRule: UiBlockedKeyRules, event: ClickOnButtonEvent) {
   preventDefault(event);
   api.deleteKeyRule({ keyRule });
 }

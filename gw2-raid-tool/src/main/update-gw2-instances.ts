@@ -1,14 +1,8 @@
+// @ts-ignore-next-line
 import processlist from 'node-processlist'
+import { BaseConfig, EventHub } from '../raid-tool'
 
-import * as RaidToolDef from '../raid-tool'
-
-export default async ({
-  eventHub,
-  baseConfig
-}: {
-  baseConfig: RaidToolDef.BaseConfig
-  eventHub: RaidToolDef.EventHub
-}) => {
+export default async ({ eventHub, baseConfig }: { baseConfig: BaseConfig; eventHub: EventHub }) => {
   baseConfig.gw2Instances = {
     running: [],
     lauchbuddy: [],

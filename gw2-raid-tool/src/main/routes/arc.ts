@@ -7,7 +7,8 @@ const zip = promisify(zlib.deflate)
 const unzip = promisify(zlib.unzip)
 
 import adjustArcHtml from '../util/adjust-arc-html'
-import fightIconMap from '../../info/fight-icon-map'
+import fightIconMapSrc from '../../info/fight-icon-map'
+const fightIconMap = fightIconMapSrc as Record<number, string>
 import hashLog from '../hash-log'
 
 import wings from '../../info/wings'
@@ -49,7 +50,7 @@ protocol.registerSchemesAsPrivileged([
   }
 ])
 
-const logsUploading = {}
+const logsUploading = {} as Record<string, boolean>
 
 function enhanceLogs(logs: NedbDocumentLogs[]) {
   const copyLogs = structuredClone(logs.filter((l) => l)) as UiLogs[]
