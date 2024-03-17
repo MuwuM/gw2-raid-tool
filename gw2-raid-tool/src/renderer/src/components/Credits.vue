@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { data, i18n } from '@renderer/preload-api'
+import { api, data, i18n } from '@renderer/preload-api'
 </script>
 <template>
   <main id="credits" :class="{ 'with-bg': !data.baseConfig?.boringBg }">
@@ -16,8 +16,11 @@ import { data, i18n } from '@renderer/preload-api'
       <h3 class="credits-name">Electron</h3>
       <div>
         {{ i18n.creditsElectronPart1 }}
-        <a href="https://www.electronjs.org/">Electron</a>
+        <a :href="api.electronVersionUrl || 'https://www.electronjs.org/'">Electron</a>
         {{ i18n.creditsElectronPart2 }}
+      </div>
+      <div v-if="api.electronVersionString" class="li-display-number-details">
+        {{ api.electronVersionString }}
       </div>
       <span class="li-display-number-details">{{ i18n.licenseMit }}</span>
 

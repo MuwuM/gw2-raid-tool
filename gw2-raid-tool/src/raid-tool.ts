@@ -547,6 +547,8 @@ export type ExposedIpc = {
 
 export type PreloadApi = {
   ipc: ExposedIpc
+  electronVersionUrl: string
+  electronVersionString: string
 }
 export type PreloadApiData = {
   loading: { status: InitStatusStatusCode; step: string }

@@ -41,7 +41,11 @@ for (const channel of exposedSenders) {
 
 // Custom APIs for renderer
 const api: PreloadApi = {
-  ipc
+  ipc,
+  electronVersionUrl:
+    process.versions.electron &&
+    `https://releases.electronjs.org/release/v${process.versions.electron}`,
+  electronVersionString: `electron: ${process.versions.electron}, chrome: ${process.versions.chrome}, node: ${process.versions.node}`
 }
 
 try {
