@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { data } from "@renderer/preload-api";
 import { img } from "@renderer/util";
+import { TODO } from "src/raid-tool";
 
-function logPath(activeLog, logs) {
+function logPath(activeLog: string | null, logs: TODO[]) {
   const log = logs.find((l) => l.hash === activeLog);
   if (log?.isUploading) {
     return `gw2-log:${activeLog}?is=uploading`;

@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { data, i18n, api, selectPage } from "@renderer/preload-api";
 import { preventDefault, img } from "../util";
-import specs from "../../../info/specs.json";
+import specsSrc from "../../../info/specs.json";
 import Overview from "./Overview.vue";
 import Settings from "./Settings.vue";
 import Logs from "./Logs.vue";
 import Boss from "./Boss.vue";
-import { TODO } from "../../../raid-tool";
+import { ClickEvent, SpecsJson, TODO } from "../../../raid-tool";
 import { onUpdated } from "vue";
 import Friends from "./Friends.vue";
 import Credits from "./Credits.vue";
 import Friend from "./Friend.vue";
 import Keys from "./Keys.vue";
 
-function startGame(event?) {
+const specs = specsSrc as SpecsJson;
+
+function startGame(event?: ClickEvent) {
   preventDefault(event);
   api.startGame({});
 }
@@ -178,9 +180,13 @@ onUpdated(() => {
           data.baseConfig.gw2Instances.lauchbuddy.length < 1
         "
       >
-        <a class="btn btn-success" href="#" @click="startGame($event)" tabindex="-1">{{
-          i18n.startLaunchBuddy
-        }}</a>
+        <a
+          class="btn btn-success"
+          href="#"
+          @click="startGame($event as ClickEvent)"
+          tabindex="-1"
+          >{{ i18n.startLaunchBuddy }}</a
+        >
       </li>
       <li
         class="nav-item active"
@@ -191,9 +197,13 @@ onUpdated(() => {
           data.baseConfig.gw2Instances.running.length < 1
         "
       >
-        <a class="btn btn-success" href="#" @click="startGame($event)" tabindex="-1">{{
-          i18n.startGame
-        }}</a>
+        <a
+          class="btn btn-success"
+          href="#"
+          @click="startGame($event as ClickEvent)"
+          tabindex="-1"
+          >{{ i18n.startGame }}</a
+        >
       </li>
       <li class="nav-item" v-if="data.mumbleLinkActive?.identity">
         <a class="btn btn-dark" tabindex="-1">

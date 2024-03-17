@@ -1,51 +1,52 @@
 <script setup lang="ts">
 import { data, i18n, api } from "@renderer/preload-api";
 import { preventDefault } from "../util";
+import { ClickEvent, ClickOnButtonEvent, Lang } from "src/raid-tool";
 
-function removeAccount(token, event) {
+function removeAccount(token: string, event: ClickEvent) {
   preventDefault(event);
   api.removeAccount({ token });
 }
-function addAccount(token, event) {
+function addAccount(token: string, event: ClickEvent) {
   preventDefault(event);
   //console.log({ token });
   api.addAccount({ token });
   data.token = "";
 }
-function changeLang(lang, event?) {
+function changeLang(lang: Lang, event?: ClickEvent) {
   preventDefault(event);
   api.changeLang({ lang });
 }
-function selectGw2Dir(event) {
+function selectGw2Dir(event: ClickEvent) {
   preventDefault(event);
   api.selectGw2Dir({});
 }
-function selectLaunchBuddyDir(event) {
+function selectLaunchBuddyDir(event: ClickEvent) {
   preventDefault(event);
   api.selectLaunchBuddyDir({});
 }
-function removeLaunchBuddyDir(event) {
+function removeLaunchBuddyDir(event: ClickEvent) {
   preventDefault(event);
   api.removeLaunchBuddyDir({});
 }
-function resetAllLogs(confirmReset, event) {
+function resetAllLogs(confirmReset: string, event: ClickEvent) {
   preventDefault(event);
   api.resetAllLogs({ confirmReset });
   data.confirmReset = "";
 }
-function enableArcUpdates(event) {
+function enableArcUpdates(event: ClickEvent) {
   preventDefault(event);
   api.enableArcUpdates({});
 }
-function updateArcDps11(event) {
+function updateArcDps11(event: ClickEvent) {
   preventDefault(event);
   api.updateArcDps11({});
 }
-function checkArcUpdates(event) {
+function checkArcUpdates(event: ClickEvent) {
   preventDefault(event);
   api.checkArcUpdates({});
 }
-function disableArcUpdates(event) {
+function disableArcUpdates(event: ClickEvent) {
   preventDefault(event);
   api.disableArcUpdates({});
 }
@@ -69,7 +70,10 @@ function disableArcUpdates(event) {
             <td>{{ acc.token ? "*****" : "" }}</td>
             <!--<td>Column content</td>-->
             <td>
-              <button class="btn btn-danger" @click="removeAccount(acc.token, $event)">
+              <button
+                class="btn btn-danger"
+                @click="removeAccount(acc.token, $event as ClickOnButtonEvent)"
+              >
                 Löschen
               </button>
             </td>
@@ -92,12 +96,13 @@ function disableArcUpdates(event) {
             :placeholder="i18n.settingsAddTokenTokenPlaceholder"
             v-model="data.token"
           />
-          <input
+          <button
             class="btn btn-primary"
             type="submit"
-            :value="i18n.settingsAddTokenToken"
-            @click="addAccount(data.token, $event)"
-          />
+            @click="addAccount(data.token, $event as ClickOnButtonEvent)"
+          >
+            {{ i18n.settingsAddTokenToken }}
+          </button>
         </div>
       </div>
 
@@ -121,12 +126,13 @@ function disableArcUpdates(event) {
       <div class="form-group mt-5">
         <div>{{ i18n.settingsGw2Dir }}</div>
         <div>{{ data.baseConfig.gw2Dir }}\Gw2-64.exe</div>
-        <input
+        <button
           class="btn btn-primary"
           type="submit"
-          :value="i18n.settingsChangeButton"
-          @click="selectGw2Dir($event)"
-        />
+          @click="selectGw2Dir($event as ClickOnButtonEvent)"
+        >
+          {{ i18n.settingsChangeButton }}
+        </button>
         {{ i18n.settingsRequiresRestart }}
       </div>
 
@@ -146,17 +152,17 @@ function disableArcUpdates(event) {
         <div v-if="!data.baseConfig.launchBuddyDir" class="font-italic">
           {{ i18n.notInstalled }}
         </div>
-
-        <input
+        <button
           class="btn btn-primary"
           type="submit"
-          :value="i18n.settingsChangeButton"
-          @click="selectLaunchBuddyDir($event)"
-        />
+          @click="selectLaunchBuddyDir($event as ClickOnButtonEvent)"
+        >
+          {{ i18n.settingsChangeButton }}
+        </button>
         <button
           v-if="data.baseConfig.launchBuddyDir"
           class="btn btn-danger"
-          @click="removeLaunchBuddyDir($event)"
+          @click="removeLaunchBuddyDir($event as ClickOnButtonEvent)"
         >
           {{ i18n.settingsDeleteButton }}
         </button>
@@ -170,12 +176,13 @@ function disableArcUpdates(event) {
           v-model="data.confirmReset"
           :placeholder="i18n.settingsResetPlaceholder"
         />
-        <input
+        <button
           class="btn btn-primary"
           type="submit"
-          :value="i18n.settingsResetButton"
-          @click="resetAllLogs(data.confirmReset, $event)"
-        />
+          @click="resetAllLogs(data.confirmReset, $event as ClickOnButtonEvent)"
+        >
+          {{ i18n.settingsResetButton }}
+        </button>
         {{ i18n.settingsResetTakesLong }}
       </div>
 
@@ -184,9 +191,12 @@ function disableArcUpdates(event) {
 
         <template v-if="data.baseConfig.arcDisabled">
           <div class="font-italic">{{ i18n.settingsArcDpsSetDisabled }}</div>
-          <a class="btn btn-success" href="#" @click="enableArcUpdates($event)">{{
-            i18n.settingsEnableButton
-          }}</a>
+          <a
+            class="btn btn-success"
+            href="#"
+            @click="enableArcUpdates($event as ClickEvent)"
+            >{{ i18n.settingsEnableButton }}</a
+          >
         </template>
         <template v-if="!data.baseConfig.arcDisabled">
           <div>
@@ -195,17 +205,23 @@ function disableArcUpdates(event) {
               arcdps (Dx 11): {{ data.baseConfig.arcdps11VersionDate }}
               <a
                 v-if="data.baseConfig.arcdps11VersionHasUpdates"
-                @click="updateArcDps11($event)"
+                @click="updateArcDps11($event as ClickEvent)"
                 >Update verfügbar</a
               >
             </div>
           </div>
-          <a class="btn btn-success" href="#" @click="checkArcUpdates($event)">{{
-            i18n.settingsCheckUpdatesButton
-          }}</a>
-          <a class="btn btn-danger" href="#" @click="disableArcUpdates($event)">{{
-            i18n.settingsDisableButton
-          }}</a>
+          <a
+            class="btn btn-success"
+            href="#"
+            @click="checkArcUpdates($event as ClickEvent)"
+            >{{ i18n.settingsCheckUpdatesButton }}</a
+          >
+          <a
+            class="btn btn-danger"
+            href="#"
+            @click="disableArcUpdates($event as ClickEvent)"
+            >{{ i18n.settingsDisableButton }}</a
+          >
         </template>
       </div>
     </div>

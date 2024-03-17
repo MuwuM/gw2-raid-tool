@@ -7,6 +7,8 @@ import fightIconMap from '../info/fight-icon-map'
 
 import { db, baseConfig, progressConfig } from './arc-interface/main-proxy'
 import arcFileHandlerInit from './arc-interface/arc-file-handler'
+
+//
 ;(async () => {
   const logsPath = await baseConfig.logsPath
   for (const [triggerID, fightIcon] of Object.entries(fightIconMap)) {

@@ -39,7 +39,7 @@ const colors = [
   '#F68FD2'
 ]
 
-export const uniqueSpecs = uniqueSpecsSrc
+export const uniqueSpecs = uniqueSpecsSrc as string[]
 
 export interface CustomWindow extends Window {
   api: PreloadApi
@@ -78,7 +78,7 @@ export const data = reactive({
 
 export const wings = reactive(wingsBase as WingsRes)
 
-export function selectLog(log, event?) {
+export function selectLog(log, event?: Event) {
   preventDefault(event)
   if (log) {
     data.activeLog = log.hash
@@ -92,7 +92,7 @@ function uploadLog(logHash: string) {
   api.uploadLog({ hash: logHash })
 }
 
-function showFriendsPage(event?) {
+function showFriendsPage(event?: Event) {
   preventDefault(event)
   const friendsFilter = {}
   api.friendsFilter(friendsFilter)

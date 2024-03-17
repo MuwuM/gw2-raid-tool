@@ -1,26 +1,26 @@
 import fs from 'fs-extra'
 import path from 'path'
-import gw2apiClient from 'gw2api-client'
-const apiClient = gw2apiClient()
-
+import { gw2ApiClient } from './gw2-api-with-types'
+import { SpecsJson } from '../raid-tool'
 ;(async () => {
-  const target = path.join(__dirname, 'specs.json')
-  const targetUnique = path.join(__dirname, 'unique-specs.json')
+  const apiClient = gw2ApiClient()
 
-  const specs = [] as Array<{
-    id: string
-    name: string
-    profession: string
-    name_en: string
-    name_de: string
-    name_fr: string
-  }>
+  const rootDir = path.resolve(__dirname, '../../../')
+
+  const dataDir = path.resolve(rootDir, 'gw2-raid-tool')
+
+  const infoDir = path.resolve(dataDir, 'src/info')
+
+  const target = path.join(infoDir, 'specs.json')
+  const targetUnique = path.join(infoDir, 'unique-specs.json')
+
+  const specs = [] as SpecsJson
 
   for (let index = 1; index <= 72; index++) {
     const apiEn = await apiClient.language('en').specializations().get(index)
     //client.get(`specializations/${index}`, {lang: "en"});
-    const apiDe = await apiClient.language('de').specializations(index).get(index)
-    const apiFr = await apiClient.language('fr').specializations(index).get(index)
+    const apiDe = await apiClient.language('de').specializations().get(index)
+    const apiFr = await apiClient.language('fr').specializations().get(index)
     if (apiEn.elite) {
       specs.push({
         id: apiEn.id,

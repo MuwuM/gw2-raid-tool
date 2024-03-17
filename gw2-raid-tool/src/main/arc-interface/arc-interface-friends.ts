@@ -1,16 +1,17 @@
+import { NedbDocumentKnownFriends } from '../../raid-tool'
 import { baseConfig, db } from './main-proxy'
 import { LogJsonData, readLogJsonFiltered } from './read-json'
 
 export default async function updateKnownFriends({
-  knownFriendCache,
+  knownFriendCache: knownFriendCacheBefore,
   htmlFile,
   entry
 }: {
-  knownFriendCache
-  htmlFile
-  entry
+  knownFriendCache: NedbDocumentKnownFriends | null
+  htmlFile: string
+  entry: string
 }) {
-  const knownFriendCacheBefore = knownFriendCache
+  let knownFriendCache = knownFriendCacheBefore
   let json: LogJsonData | null = null
   try {
     json = await readLogJsonFiltered(htmlFile.replace(/\.html$/, '.json'))
@@ -31,6 +32,7 @@ export default async function updateKnownFriends({
       status: 'done',
       entry,
       ei_version: await baseConfig.ei_version,
+      msg: '',
       friends: []
     }
   } else {
@@ -90,14 +92,11 @@ export default async function updateKnownFriends({
         }
       }
     )
-    knownFriendCache.friends.push(knownFriend._id)
+    knownFriendCache.friends.push(knownFriend._id as string)
   }
 
   if (knownFriendCacheBefore) {
-    knownFriendCache = await db.known_friends.update(
-      { _id: knownFriendCacheBefore._id },
-      { $set: knownFriendCache }
-    )
+    await db.known_friends.update({ _id: knownFriendCacheBefore._id }, { $set: knownFriendCache })
   } else {
     knownFriendCache = await db.known_friends.insert(knownFriendCache)
   }

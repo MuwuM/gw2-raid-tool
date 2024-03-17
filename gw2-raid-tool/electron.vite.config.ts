@@ -11,6 +11,7 @@ const config = defineConfig({
           index: resolve('src/main/index.ts'),
           ['gw2-interface']: resolve('src/main/gw2-interface.ts'),
           ['arc-interface']: resolve('src/main/arc-interface.ts'),
+          ['fetch-specs']: resolve('src/main/fetch-specs.ts'),
           pack: resolve('src/main/pack.ts')
         },
         external: [

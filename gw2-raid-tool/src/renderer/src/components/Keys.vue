@@ -1,33 +1,38 @@
 <script setup lang="ts">
 import { api, data, i18n, uniqueSpecs } from "@renderer/preload-api";
 import { preventDefault, img } from "@renderer/util";
+import {
+  ChangeOnInputEvent,
+  ChangeOnSelectEvent,
+  ClickOnButtonEvent,
+} from "src/raid-tool";
 const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
 
-function updateKeyRuleSpec(keyRule, event) {
+function updateKeyRuleSpec(keyRule, event: ChangeOnSelectEvent) {
   preventDefault(event);
   keyRule.spec = event.target.value || "";
   api.updateKeyRule({ keyRule });
 }
-function updateKeyRuleSlot(keyRule, event) {
+function updateKeyRuleSlot(keyRule, event: ChangeOnSelectEvent) {
   preventDefault(event);
   keyRule.slot = event.target.value || "";
   api.updateKeyRule({ keyRule });
 }
-function updateKeyRuleKeys(keyRule, event) {
+function updateKeyRuleKeys(keyRule, event: ChangeOnInputEvent) {
   preventDefault(event);
   keyRule.keys = event.target.value || "";
   api.updateKeyRule({ keyRule });
 }
-function updateKeyRuleActive(keyRule, event) {
+function updateKeyRuleActive(keyRule, event: ChangeOnInputEvent) {
   preventDefault(event);
   keyRule.active = event.target.checked;
   api.updateKeyRule({ keyRule });
 }
-function deleteKeyRule(keyRule, event) {
+function deleteKeyRule(keyRule, event: ClickOnButtonEvent) {
   preventDefault(event);
   api.deleteKeyRule({ keyRule });
 }
-function addKeyRule(event) {
+function addKeyRule(event: ClickOnButtonEvent) {
   preventDefault(event);
   api.addKeyRule({});
 }
@@ -65,7 +70,7 @@ function addKeyRule(event) {
                 <select
                   class="form-control"
                   v-model="keyRule.spec"
-                  @change="updateKeyRuleSpec(keyRule, $event)"
+                  @change="updateKeyRuleSpec(keyRule, $event as ChangeOnSelectEvent)"
                 >
                   <option value="">{{ i18n.keyRuleAllSpecs }}</option>
                   <option v-for="spec in uniqueSpecs" :value="spec">
@@ -78,7 +83,7 @@ function addKeyRule(event) {
               <select
                 class="form-control"
                 v-model="keyRule.slot"
-                @change="updateKeyRuleSlot(keyRule, $event)"
+                @change="updateKeyRuleSlot(keyRule, $event as ChangeOnSelectEvent)"
               >
                 <option value="">{{ i18n.keyRuleNoSlot }}</option>
                 <option
@@ -94,7 +99,7 @@ function addKeyRule(event) {
                 class="form-control"
                 type="text"
                 v-model="keyRule.keys"
-                @change="updateKeyRuleKeys(keyRule, $event)"
+                @change="updateKeyRuleKeys(keyRule, $event as ChangeOnInputEvent)"
               />
               <div>
                 <span
@@ -112,12 +117,12 @@ function addKeyRule(event) {
                   class="form-check-input position-static"
                   type="checkbox"
                   :checked="keyRule.active"
-                  @change="updateKeyRuleActive(keyRule, $event)"
+                  @change="updateKeyRuleActive(keyRule, $event as ChangeOnInputEvent)"
                 />
                 <button
                   v-if="!keyRule.active"
                   class="btn btn-outline-danger ms-3"
-                  @click="deleteKeyRule(keyRule, $event)"
+                  @click="deleteKeyRule(keyRule, $event as ClickOnButtonEvent)"
                 >
                   {{ i18n.keyRuleDelete }}
                 </button>
@@ -126,7 +131,7 @@ function addKeyRule(event) {
           </tr>
         </tbody>
       </table>
-      <button class="btn btn-primary" @click="addKeyRule($event)">
+      <button class="btn btn-primary" @click="addKeyRule($event as ClickOnButtonEvent)">
         {{ i18n.addKeyRule }}
       </button>
     </div>

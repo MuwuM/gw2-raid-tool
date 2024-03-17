@@ -11,7 +11,7 @@ import fightIconMap from '../../info/fight-icon-map'
 import hashLog from '../hash-log'
 
 import wings from '../../info/wings'
-import { ServerRouteHandler, TODO } from '../../raid-tool'
+import { LogFilter, LogStats, ServerRouteHandler, TODO } from '../../raid-tool'
 import { app, net, protocol } from 'electron'
 import { pathToFileURL } from 'url'
 
@@ -138,9 +138,9 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   let lastFriendsLog = emptyLogFilter
   let nextTick
 
-  const logFilters = {
-    p: 0 as number,
-    config: {} as TODO
+  const logFilters: LogFilter = {
+    p: 0,
+    config: {}
   }
 
   eventHub.on('logFilter', async (data) => {
@@ -161,7 +161,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
   async function updateLogs() {
     try {
       //console.log('updateLogs...')
-      let stats = {} as TODO
+      let stats = {} as LogStats
       const conf = {} as TODO
       if (logFilters.config.bossId) {
         const bossId = parseInt(decodeURIComponent(logFilters.config.bossId), 10)
@@ -227,6 +227,9 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
         }
         if (stats.bossInfo && !stats.bossInfo.name_de) {
           stats.bossInfo.name_de = stats.bossInfo.name_en
+        }
+        if (stats.bossInfo && !stats.bossInfo.name_fr) {
+          stats.bossInfo.name_fr = stats.bossInfo.name_en
         }
       }
       const newLog = await hashLog(

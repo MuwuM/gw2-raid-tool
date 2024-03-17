@@ -3,8 +3,9 @@ import { path as ahkPath } from 'ahk.exe'
 import { BrowserWindow, app, screen } from 'electron'
 
 import path from 'path'
-import specs from '../../info/specs.json'
-import { MumbleLinkData, ServerRouteHandler, TODO } from '../../raid-tool'
+import specsSrc from '../../info/specs.json'
+const specs = specsSrc as SpecsJson
+import { MumbleLinkData, ServerRouteHandler, SpecsJson, TODO } from '../../raid-tool'
 
 const keyBlockedOpacity = 0.6
 const keyUnblockedOpacity = 0

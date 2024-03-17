@@ -1,15 +1,14 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { PreloadApi } from '../raid-tool'
+import { EventHandler, KnownEvents, PreloadApi } from '../raid-tool'
 
-function send(channel: string) {
-  return (data: any) => {
+function send<T extends keyof KnownEvents>(channel: T) {
+  return (data: KnownEvents[T]) => {
     ipcRenderer.send(channel, JSON.parse(JSON.stringify(data)))
   }
 }
-function on(channel: string) {
-  return (callback: (arg0: any) => void) =>
-    ipcRenderer.on(channel, (_event, value) => callback(value))
+function on<T extends keyof KnownEvents>(channel: T) {
+  return (callback: EventHandler<T>) => ipcRenderer.on(channel, (_event, value) => callback(value))
 }
 
 // Custom APIs for renderer

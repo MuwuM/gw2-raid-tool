@@ -2,7 +2,8 @@
 import { data, i18n, api, selectLog } from "@renderer/preload-api";
 import { preventDefault, img } from "../util";
 import { DateTime } from "luxon";
-function showLogPage(page, filters, event) {
+import { ClickEvent, TODO } from "src/raid-tool";
+function showLogPage(page: number, filters: TODO, event: ClickEvent) {
   preventDefault(event);
   data.logFilters.p = page;
   if (typeof filters === "object" && filters) {
@@ -12,7 +13,7 @@ function showLogPage(page, filters, event) {
   api.logFilter(logFilter);
 }
 
-function timeEndDiff(log, _currenttime) {
+function timeEndDiff(log: TODO, _currenttime: number) {
   return DateTime.fromMillis(log.timeEndMs).toRelative({ locale: "de" });
 }
 </script>
@@ -21,12 +22,12 @@ function timeEndDiff(log, _currenttime) {
     <nav style="position: sticky; top: 0; z-index: 10">
       <ul class="pagination justify-content-center">
         <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
-          <a class="page-link" @click="showLogPage(0, null, $event)">«</a>
+          <a class="page-link" @click="showLogPage(0, null, $event as ClickEvent)">«</a>
         </li>
         <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
           <a
             class="page-link"
-            @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event)"
+            @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event as ClickEvent)"
             >‹</a
           >
         </li>
@@ -42,7 +43,7 @@ function timeEndDiff(log, _currenttime) {
               showLogPage(
                 Math.min(data.logsMaxPages - 1, data.logsPage + 1),
                 null,
-                $event
+                $event as ClickEvent
               )
             "
             >›</a
@@ -51,7 +52,9 @@ function timeEndDiff(log, _currenttime) {
         <li
           :class="{ 'page-item': true, disabled: data.logsPage >= data.logsMaxPages - 1 }"
         >
-          <a class="page-link" @click="showLogPage(data.logsMaxPages - 1, null, $event)"
+          <a
+            class="page-link"
+            @click="showLogPage(data.logsMaxPages - 1, null, $event as ClickEvent)"
             >»</a
           >
         </li>
@@ -65,7 +68,7 @@ function timeEndDiff(log, _currenttime) {
         ><input
           type="checkbox"
           v-model="data.logFilters.config.cmOnly"
-          v-on:change="showLogPage(data.logsPage, null, $event)"
+          v-on:change="showLogPage(data.logsPage, null, $event as ClickEvent)"
         />
         {{ i18n.cmOnlyLabel }}</label
       >
@@ -144,12 +147,12 @@ function timeEndDiff(log, _currenttime) {
       <nav>
         <ul class="pagination justify-content-center">
           <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
-            <a class="page-link" @click="showLogPage(0, null, $event)">«</a>
+            <a class="page-link" @click="showLogPage(0, null, $event as ClickEvent)">«</a>
           </li>
           <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
             <a
               class="page-link"
-              @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event)"
+              @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event as ClickEvent)"
               >‹</a
             >
           </li>
@@ -168,7 +171,7 @@ function timeEndDiff(log, _currenttime) {
                 showLogPage(
                   Math.min(data.logsMaxPages - 1, data.logsPage + 1),
                   null,
-                  $event
+                  $event as ClickEvent
                 )
               "
               >›</a
@@ -180,7 +183,9 @@ function timeEndDiff(log, _currenttime) {
               disabled: data.logsPage >= data.logsMaxPages - 1,
             }"
           >
-            <a class="page-link" @click="showLogPage(data.logsMaxPages - 1, null, $event)"
+            <a
+              class="page-link"
+              @click="showLogPage(data.logsMaxPages - 1, null, $event as ClickEvent)"
               >»</a
             >
           </li>

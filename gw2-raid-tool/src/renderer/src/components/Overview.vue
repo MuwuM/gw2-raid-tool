@@ -21,7 +21,7 @@ function bossUrl(step: WingsResStep) {
   }
   return "gw2-log:logs/boss/" + encodeURIComponent(firstTrigger(step));
 }
-function overviewStatus(accounts, step: WingsResStep, wing: WingsRef) {
+function overviewStatus(accounts: TODO[], step: WingsResStep, wing: WingsRef) {
   let completed = false;
 
   if (
@@ -59,7 +59,7 @@ function svgBossBorder(
   const outline = width * 4;
   const innerWidth = width - 2 * border;
   const innerOutline = innerWidth * 4;
-  function formatX(x, w, offset) {
+  function formatX(x: number, w: number, offset: number) {
     let x1 = x % w;
     if (x >= w * 3) {
       x1 = 0;
@@ -70,7 +70,7 @@ function svgBossBorder(
     }
     return x1 + offset;
   }
-  function formatY(y, h, offset) {
+  function formatY(y: number, h: number, offset: number) {
     let x1 = y % h;
     if (y >= h * 3) {
       x1 = h - x1;

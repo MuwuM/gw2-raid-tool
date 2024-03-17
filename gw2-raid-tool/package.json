@@ -20,7 +20,8 @@
     "build:win": "npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
-    "pack": "npm run build && node ./out/main/pack.js"
+    "pack": "npm run build && node ./out/main/pack.js",
+    "fetch-specs": "npm run build && node ./out/main/fetch-specs.js"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^2.0.0",

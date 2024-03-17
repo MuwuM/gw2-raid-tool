@@ -11,7 +11,7 @@ export default async function loadConfig(
   baseConfig: BaseConfig,
   electronApp: ElectronApp
 ) {
-  let savedConfig: SavedConfig = await db.settings.findOne({
+  let savedConfig: SavedConfig | null = await db.settings.findOne({
     default: true
   })
   if (!savedConfig) {

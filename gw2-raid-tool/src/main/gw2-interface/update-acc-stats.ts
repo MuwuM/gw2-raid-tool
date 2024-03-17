@@ -1,19 +1,26 @@
 import { DateTime } from 'luxon'
 import itemIds from '../../info/item-ids'
 import wings from '../../info/wings'
-import { EventHubEmitter, NedbDatabase, TODO } from '../../raid-tool'
+import {
+  BossKpMap,
+  EventHubEmitter,
+  NedbDatabase,
+  NedbDocumentAccounts,
+  TODO
+} from '../../raid-tool'
+import { GW2ApiClient, GW2ApiResponseInventoryItem } from '../gw2-api-with-types'
 
-function ensureArray(arr) {
+function ensureArray<T>(arr: T | undefined | (T | undefined)[]): T[] {
   if (Array.isArray(arr)) {
-    return arr
+    return arr.filter((a) => typeof a !== 'undefined') as T[]
   }
-  return [arr]
+  return [arr].filter((a) => typeof a !== 'undefined') as T[]
 }
 
 const strikeWings = wings.filter((w) => w.isStrike)
 
-const strikeIds = [] as string[]
-const strikeIdsWeekly = [] as string[]
+const strikeIds = [] as number[]
+const strikeIdsWeekly = [] as number[]
 for (const w of strikeWings) {
   for (const step of w.steps) {
     for (const triggerID of ensureArray(step.triggerID)) {
@@ -27,7 +34,7 @@ for (const w of strikeWings) {
 
 const fractalWings = wings.filter((w) => w.isFractal)
 
-const fractalIds = [] as string[]
+const fractalIds = [] as number[]
 for (const w of fractalWings) {
   for (const step of w.steps) {
     for (const triggerID of ensureArray(step.triggerID)) {
@@ -43,8 +50,8 @@ export default async ({
   eventHub
 }: {
   db: NedbDatabase
-  apiClient
-  account
+  apiClient: GW2ApiClient
+  account: NedbDocumentAccounts | null
   eventHub: EventHubEmitter
 }) => {
   if (!account) {
@@ -60,7 +67,7 @@ export default async ({
     const materials = await apiClient.account().materials().get()
     const legendaryarmory = await apiClient.account().legendaryarmory().get()
     const wallet = await apiClient.account().wallet().get()
-    let inventary = []
+    let inventary: GW2ApiResponseInventoryItem[] = []
     const characters = await apiClient.characters().all()
 
     for (const character of characters) {
@@ -100,7 +107,7 @@ export default async ({
     let fractal = 0
     let boneSkinner = 0
     let zhaitaffy = 0
-    const raidBossKp = {} as TODO
+    const raidBossKp = {} as BossKpMap
     const unlockedLegyArmor = {} as TODO
     const items = sharedInventary
       .concat(bank)
@@ -258,7 +265,7 @@ export const localUpdates = async ({
   eventHub
 }: {
   db: NedbDatabase
-  account
+  account: NedbDocumentAccounts | null
   eventHub: EventHubEmitter
 }) => {
   if (!account) {

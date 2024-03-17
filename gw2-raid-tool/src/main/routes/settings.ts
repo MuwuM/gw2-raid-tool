@@ -1,5 +1,4 @@
 import { dialog, app } from 'electron'
-import gw2apiClient from 'gw2api-client'
 import path from 'path'
 import util from 'util'
 import fs from 'fs-extra'
@@ -13,6 +12,7 @@ import i18n from '../../i18n/i18n-loader'
 
 import { ChildProcess, spawn } from 'child_process'
 import { ServerRouteHandler } from '../../raid-tool'
+import { gw2ApiClient } from '../gw2-api-with-types'
 
 export default (async ({ db, baseConfig, eventHub }) => {
   eventHub.on('addAccount', async ({ token }) => {
@@ -20,8 +20,7 @@ export default (async ({ db, baseConfig, eventHub }) => {
     if (token) {
       const acc = await db.accounts.insert({ token })
       eventHub.emit('accounts', { accounts: await db.accounts.find({}) })
-      const apiClient = gw2apiClient()
-      apiClient.authenticate(acc.token)
+      const apiClient = gw2ApiClient(acc.token)
       const accountInfo = await apiClient.account().get()
       await db.accounts.update({ _id: acc._id }, { $set: { accountInfo } })
       eventHub.emit('accounts', { accounts: await db.accounts.find({}) })

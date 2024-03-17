@@ -1,6 +1,6 @@
 import updateAccStats, { localUpdates } from './gw2-interface/update-acc-stats'
-import gw2apiClient from 'gw2api-client'
 import { db, eventHub } from './arc-interface/main-proxy'
+import { gw2ApiClient } from './gw2-api-with-types'
 
 const remoteModificator = 100
 
@@ -14,8 +14,7 @@ const remoteModificator = 100
       try {
         if (apiCounter % remoteModificator === 0) {
           //console.log(`Update Account stats remote: ${acc && acc.accountInfo && acc.accountInfo.name}`);
-          const apiClient = gw2apiClient()
-          apiClient.authenticate(acc.token)
+          const apiClient = gw2ApiClient(acc.token)
           const accountInfo = await apiClient.account().get()
           if (!acc.accountInfo || JSON.stringify(accountInfo) !== JSON.stringify(acc.accountInfo)) {
             await db.accounts.update({ _id: acc._id }, { $set: { accountInfo } })

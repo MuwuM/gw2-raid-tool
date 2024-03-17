@@ -128,17 +128,10 @@ export type BaseConfig = {
   boringBg?: boolean
 }
 
-export type SavedConfig = {
-  _id: string
-  lang: Lang
-  gw2Dir: string
-  launchBuddyDir: string
-  arcDisabled: boolean
-  logsPath: string | false
-}
+export type SavedConfig = NedbDocumentSettings
 export type BackendConfig = {
   userDataDir: string
-  mumbleLinkActive: MumbleLinkData | false
+  mumbleLinkActive: MumbleLinkData | null
   mumbleLinkStats: { [pid: number]: MumbleLinkData }
   port: number
   appDomain: string
@@ -166,7 +159,132 @@ export type ProgressConfigProxied = {
   $currentLog: string | false
 }
 
-export type NedbDocument = any
+export interface NedbDocument {
+  _id?: string
+}
+
+export interface NedbDocumentLogs extends NedbDocument {
+  hash: string
+  htmlFile: string
+  fightIcon: string
+  eliteInsightsVersion: string
+  eiEncounterID: number
+  triggerID: number
+  fightName: string
+  arcVersion: string
+  gW2Build: number
+  language: string
+  languageID: number
+  recordedBy: string
+  timeStart: string
+  timeEnd: string
+  timeEndMs: number
+  duration: string
+  success: boolean
+  isCM: boolean
+  entry: string
+  players: Array<string>
+}
+
+export interface NedbDocumentKnownFriends extends NedbDocument {
+  status: 'done' | 'failed'
+  entry: string
+  ei_version: string | null
+  msg: string
+  friends: Array<string>
+}
+
+export interface NedbDocumentFriends extends NedbDocument {
+  account: string
+  chars: Array<{
+    name: string
+    profession: Array<{
+      name: string
+      sharedLogs: number
+    }>
+    sharedLogs: number
+  }>
+  sharedLogs: number
+}
+
+export interface GW2AccountInfo {
+  id: string
+  age: number
+  name: string
+  world: number
+  guilds: string[]
+  guild_leader: string[]
+  created: string
+  access: (
+    | 'None'
+    | 'PlayForFree'
+    | 'GuildWars2'
+    | 'HeartOfThorns'
+    | 'PathOfFire'
+    | 'EndOfDragons'
+  )[]
+  commander: boolean
+  fractal_level: number
+  daily_ap: number
+  monthly_ap: number
+  wvw_rank: number
+  last_modified: string
+  build_storage_slots: number
+}
+
+export interface BossKpMap {
+  [boss: string]: number
+}
+
+export interface InventoryItem {
+  id: number
+  count: number
+  charges?: number
+  skin?: number
+  upgrades?: number[]
+  infusions?: number[]
+  binding?: 'Account' | 'Character'
+  '@char'?: string
+}
+
+export interface UnopenedBoxes {
+  item: InventoryItem
+  boss: string
+  bossKp: number
+}
+
+export interface NedbDocumentAccounts extends NedbDocument {
+  kps: {
+    li: number
+    fractal: number
+    boneSkinner: number
+    zhaitaffy: number
+    raidBossKp: BossKpMap
+    unopenedBoxes: UnopenedBoxes[]
+  }
+  completedSteps: string[]
+  completedCMs: { [triggerID: number]: true | undefined }
+  completedStrikesDaily: { [triggerID: number]: true | undefined }
+  completedFractalsDaily: { [triggerID: number]: true | undefined }
+  completedStrikesWeekly: { [triggerID: number]: true | undefined }
+  token: string
+  accountInfo: GW2AccountInfo
+}
+
+export interface NedbDocumentBlockedKeyRules extends NedbDocument {
+  active: boolean
+  spec: string
+  slot: string
+}
+
+export interface NedbDocumentSettings extends NedbDocument {
+  _id: string
+  lang: Lang
+  gw2Dir: string
+  launchBuddyDir: string
+  arcDisabled: boolean
+  logsPath: string | false
+}
 
 export const NedbDatabaseEnabledTableNames = [
   'logs',
@@ -178,28 +296,75 @@ export const NedbDatabaseEnabledTableNames = [
 ] as const
 type NedbDatabaseTableNames = (typeof NedbDatabaseEnabledTableNames)[number]
 
-export type NedbDatabase = {
+type NedbDatabaseInternal = {
   [db_name in NedbDatabaseTableNames]: Datastore<NedbDocument>
+}
+
+export interface NedbDatabase extends NedbDatabaseInternal {
+  logs: Datastore<NedbDocumentLogs>
+  friends: Datastore<NedbDocumentFriends>
+  known_friends: Datastore<NedbDocumentKnownFriends>
+  accounts: Datastore<NedbDocumentAccounts>
+  blocked_key_rules: Datastore<NedbDocumentBlockedKeyRules>
+  settings: Datastore<NedbDocumentSettings>
 }
 
 export type ElectronApp = Electron.App
 
-export type EventHandler = (...args: any[]) => void
-export type EventHandlerStored = {
+export type EventHandler<T extends keyof KnownEvents> = (eventData: KnownEvents[T]) => void
+export type EventHandlerStored<T extends keyof KnownEvents> = {
   fn: 'on' | 'emit'
-  args: [evt: string, handler: EventHandler]
+  args: [evt: T, handler: EventHandler<T>]
+}
+
+export type KnownEvents = {
+  accounts: { accounts: Array<NedbDocumentAccounts> }
+  addAccount: { token: string }
+  removeAccount: { token: string }
+  changeLang: { lang: Lang }
+  baseConfig: { baseConfig: BaseConfig }
+  selectLogsPath: {}
+  selectGw2Dir: {}
+  selectLaunchBuddyDir: {}
+  removeLaunchBuddyDir: {}
+  resetAllLogs: { confirmReset: 'reset' | string }
+  updateArcDps11: {}
+  checkArcUpdates: {}
+  disableArcUpdates: {}
+  enableArcUpdates: {}
+  startGame: {}
+  loading: { status: InitStatusStatusCode; step: string }
+  progressConfig: { progressConfig: ProgressConfig }
+  mumbleLinkActive: { mumbleLinkActive: MumbleLinkData | null }
+  logs: {
+    logs: Array<NedbDocumentLogs>
+    page: number
+    maxPages: number
+    stats: LogStats
+  }
+  friends: { friends: Array<NedbDocumentFriends> }
+  uploadLog: { hash: string }
+  selectPage: { page: number; info: {} }
+  keyRules: { keyRules: NedbDocumentBlockedKeyRules[] }
+  logFilter: LogFilter
+  friendsFilter: {}
+  updateKeyRule: { keyRule: NedbDocumentBlockedKeyRules }
+  addKeyRule: {}
+  deleteKeyRule: { keyRule: NedbDocumentBlockedKeyRules }
+  getKeyRules: {}
+  builds: { builds: {}[] }
 }
 
 export interface EventHubEmitter {
-  emit: (evt: string, data: any) => void
+  emit<T extends keyof KnownEvents>(evt: T, data: KnownEvents[T]): void
 }
 
 export interface EventHub extends EventHubEmitter {
-  onHandler: Array<EventHandlerStored>
-  onLocalHandler: Array<EventHandlerStored>
+  onHandler: Array<EventHandlerStored<keyof KnownEvents>>
+  onLocalHandler: Array<EventHandlerStored<keyof KnownEvents>>
   sockets: Array<Electron.WebContents>
-  on: (evt: string, handler: EventHandler) => void
-  onLocal: (evt: string, handler: EventHandler) => void
+  on<T extends keyof KnownEvents>(evt: T, handler: EventHandler<T>): void
+  onLocal<T extends keyof KnownEvents>(evt: T, handler: EventHandler<T>): void
 }
 
 export enum InitStatusStatusCode {
@@ -209,11 +374,13 @@ export enum InitStatusStatusCode {
   Loaded = 3
 }
 
+export type InitStatusHandlerForStatusChange = (status: number, step?: string) => void
+
 export interface InitStatusUninitialized {
   status: InitStatusStatusCode
   step: string
-  onChange: (handler: EventHandler) => void
-  offChange: (handler: EventHandler) => void
+  onChange(handler: InitStatusHandlerForStatusChange): void
+  offChange(handler: InitStatusHandlerForStatusChange): void
   waitFor: (statusCode: InitStatusStatusCode) => Promise<InitStatusStatusCode>
   db?: NedbDatabase
   baseConfig?: BaseConfig
@@ -242,38 +409,38 @@ export interface RaidToolConfig {
   fullscreen: boolean
 }
 
-type SendViaIpc = (data: any) => void
+type SendViaIpc<T extends keyof KnownEvents> = (data: KnownEvents[T]) => void
 
 export type PreloadApi = {
   ipc: {
-    onLoading: (callback: EventHandler) => void
-    onBaseConfig: (callback: EventHandler) => void
-    onAccounts: (callback: EventHandler) => void
-    onProgressConfig: (callback: EventHandler) => void
-    onMumbleLinkActive: (callback: EventHandler) => void
-    onLogs: (callback: EventHandler) => void
-    onSelectPage: (callback: EventHandler) => void
-    onFriends: (callback: EventHandler) => void
-    onKeyRules: (callback: EventHandler) => void
+    onLoading: (callback: EventHandler<'loading'>) => void
+    onBaseConfig: (callback: EventHandler<'baseConfig'>) => void
+    onAccounts: (callback: EventHandler<'accounts'>) => void
+    onProgressConfig: (callback: EventHandler<'progressConfig'>) => void
+    onMumbleLinkActive: (callback: EventHandler<'mumbleLinkActive'>) => void
+    onLogs: (callback: EventHandler<'logs'>) => void
+    onSelectPage: (callback: EventHandler<'selectPage'>) => void
+    onFriends: (callback: EventHandler<'friends'>) => void
+    onKeyRules: (callback: EventHandler<'keyRules'>) => void
   }
-  uploadLog: SendViaIpc
-  logFilter: SendViaIpc
-  friendsFilter: SendViaIpc
-  startGame: SendViaIpc
-  removeAccount: SendViaIpc
-  addAccount: SendViaIpc
-  changeLang: SendViaIpc
-  selectGw2Dir: SendViaIpc
-  selectLaunchBuddyDir: SendViaIpc
-  removeLaunchBuddyDir: SendViaIpc
-  resetAllLogs: SendViaIpc
-  enableArcUpdates: SendViaIpc
-  updateArcDps11: SendViaIpc
-  checkArcUpdates: SendViaIpc
-  disableArcUpdates: SendViaIpc
-  updateKeyRule: SendViaIpc
-  deleteKeyRule: SendViaIpc
-  addKeyRule: SendViaIpc
+  uploadLog: SendViaIpc<'uploadLog'>
+  logFilter: SendViaIpc<'logFilter'>
+  friendsFilter: SendViaIpc<'friendsFilter'>
+  startGame: SendViaIpc<'startGame'>
+  removeAccount: SendViaIpc<'removeAccount'>
+  addAccount: SendViaIpc<'addAccount'>
+  changeLang: SendViaIpc<'changeLang'>
+  selectGw2Dir: SendViaIpc<'selectGw2Dir'>
+  selectLaunchBuddyDir: SendViaIpc<'selectLaunchBuddyDir'>
+  removeLaunchBuddyDir: SendViaIpc<'removeLaunchBuddyDir'>
+  resetAllLogs: SendViaIpc<'resetAllLogs'>
+  enableArcUpdates: SendViaIpc<'enableArcUpdates'>
+  updateArcDps11: SendViaIpc<'updateArcDps11'>
+  checkArcUpdates: SendViaIpc<'checkArcUpdates'>
+  disableArcUpdates: SendViaIpc<'disableArcUpdates'>
+  updateKeyRule: SendViaIpc<'updateKeyRule'>
+  deleteKeyRule: SendViaIpc<'deleteKeyRule'>
+  addKeyRule: SendViaIpc<'addKeyRule'>
 }
 export type PreloadApiData = {
   loading: { status: InitStatusStatusCode; step: string }
@@ -311,3 +478,46 @@ export interface WingsRef {
 }
 
 export type WingsRes = Array<WingsRef>
+
+export interface ClickEvent<T extends HTMLElement = HTMLElement> extends MouseEvent {
+  target: T
+}
+export interface ChangeEvent<T extends HTMLElement> extends Event {
+  target: T
+}
+
+export type ClickOnInputEvent = ClickEvent<HTMLInputElement>
+export type ClickOnButtonEvent = ClickEvent<HTMLButtonElement>
+
+export type ChangeOnSelectEvent = ChangeEvent<HTMLSelectElement>
+export type ChangeOnInputEvent = ChangeEvent<HTMLInputElement>
+
+export interface LogFilter {
+  p: number
+  config: {
+    bossId?: string
+    friend?: string
+    cmOnly?: boolean
+  }
+}
+
+export interface LogStats {
+  bossIcon?: string
+  bossInfo?: {
+    triggerID: number
+    name_en: string
+    name_de: string
+    name_fr: string
+  }
+  friend?: NedbDocumentFriends | null
+  cmOnly?: boolean
+}
+
+export type SpecsJson = Array<{
+  id: number
+  name: string
+  profession: string
+  name_en: string
+  name_de: string
+  name_fr: string
+}>

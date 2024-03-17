@@ -64,11 +64,11 @@ export default async ({
       stats.sort((a, b) => b.time - a.time)
       const active = stats[0]
 
-      let mumbleLinkActive: RaidToolDef.MumbleLinkData | false = false
+      let mumbleLinkActive: RaidToolDef.MumbleLinkData | null = null
       if (active) {
         mumbleLinkActive = active
       } else if (stats.length < 1) {
-        mumbleLinkActive = false
+        mumbleLinkActive = null
       }
       backendConfig.mumbleLinkActive = mumbleLinkActive
 
