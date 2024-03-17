@@ -3,10 +3,18 @@ import {
   BaseConfig,
   InitStatusStatusCode,
   Lang,
+  LogFilter,
+  LogStats,
   MumbleLinkData,
+  PageId,
+  PageInfo,
   PreloadApi,
   ProgressConfig,
-  TODO,
+  TotalKps,
+  UiAccounts,
+  UiBlockedKeyRules,
+  UiFriends,
+  UiLogs,
   WingsRes
 } from '../../raid-tool'
 import { reactive } from 'vue'
@@ -49,29 +57,29 @@ declare let window: CustomWindow
 
 export const api = window.api
 export const data = reactive({
-  page: 'overview',
+  page: 'overview' as PageId,
   logsPage: 0 as number,
   logsMaxPages: 0 as number,
-  pageConfig: {} as TODO,
-  stats: null as TODO,
+  pageConfig: {} as PageInfo,
+  stats: {} as LogStats,
   activeLog: null as null | string,
   loading: { status: InitStatusStatusCode.Starting, step: '' },
   baseConfig: {} as BaseConfig,
   progressConfig: {} as ProgressConfig,
-  accounts: [] as TODO[],
-  logs: [] as TODO[],
-  friends: [] as TODO[],
+  accounts: [] as UiAccounts[],
+  logs: [] as UiLogs[],
+  friends: [] as UiFriends[],
   mumbleLinkActive: null as MumbleLinkData | null,
-  logFilters: {} as TODO,
+  logFilters: {} as LogFilter,
   dayOfYear: DateTime.utc().ordinal,
-  totalKps: {} as TODO,
+  totalKps: {} as TotalKps,
   zhaitaffy: false,
   token: '' as string,
   confirmReset: '' as string,
   lang: 'de' as Lang,
   langs: i18nLoader.langs,
   deps: Object.keys(pkg.dependencies),
-  keyRules: [] as TODO[],
+  keyRules: [] as UiBlockedKeyRules[],
   currenttime: Date.now(),
   logIsLoading: null as null | string
 })
@@ -109,20 +117,20 @@ function showLogPage(page: number, filters, event?) {
   api.logFilter(logFilter)
 }
 
-export function selectPage(page, info, event?) {
+export function selectPage(page: PageId, info: PageInfo, event?: Event) {
   preventDefault(event)
   if (data.page !== page) {
     data.logIsLoading = null
   }
-  if (page === 'log' && info && info.id && info.action === 'upload') {
+  if (page === 'logs' && info && info.id && info.action === 'upload') {
     uploadLog(info.id)
     return
-  } else if (page === 'log') {
+  } else if (page === 'logs') {
     const log = info && data.logs.find((l) => l.hash === info.id)
     if (log) {
       selectLog(log, event)
+      return
     }
-    return
   }
 
   data.page = page
@@ -172,31 +180,35 @@ api.ipc.onBaseConfig(({ baseConfig }) => {
 })
 api.ipc.onAccounts(({ accounts }) => {
   //console.log({ accounts })
-  data.accounts = accounts
-  const accs = data.accounts.filter((a) => a.kps && a.accountInfo)
-  const totalKps = {}
-  for (const acc of accs) {
-    acc.color = colors[accs.indexOf(acc) % colors.length]
+  data.accounts = accounts.map((a: UiAccounts, index) => {
+    a.color = colors[index % colors.length]
+    return a
+  })
+  const totalKps: TotalKps = {
+    li: 0,
+    fractal: 0,
+    boneSkinner: 0,
+    zhaitaffy: 0,
+    raidBossKp: {},
+    unopenedBoxes: []
+  }
+  for (const acc of data.accounts) {
     if (!acc.kps) {
       continue
     }
-    for (const [key, value] of Object.entries(acc.kps)) {
-      if (typeof value === 'number' || typeof totalKps[key] === 'number') {
-        totalKps[key] = (totalKps[key] || 0) + value
-      } else if (Array.isArray(value) && (!totalKps[key] || Array.isArray(totalKps[key]))) {
-        totalKps[key] = (totalKps[key] || []).concat(value)
-      } else if (
-        typeof value === 'object' &&
-        (!totalKps[key] || typeof totalKps[key] === 'object')
-      ) {
-        if (!totalKps[key]) {
-          totalKps[key] = {}
-        }
-        for (const [sub, v] of Object.entries(totalKps[key] || {}).concat(
-          Object.entries(value as object)
-        )) {
-          totalKps[key][sub] = (totalKps[key][sub] || 0) + (v || 0)
-        }
+
+    totalKps.li += acc.kps.li || 0
+    totalKps.fractal += acc.kps.fractal || 0
+    totalKps.boneSkinner += acc.kps.boneSkinner || 0
+    totalKps.zhaitaffy += acc.kps.zhaitaffy || 0
+    if (acc.kps.raidBossKp) {
+      for (const [key, value] of Object.entries(acc.kps.raidBossKp)) {
+        totalKps.raidBossKp[key] = (totalKps.raidBossKp[key] || 0) + (value || 0)
+      }
+    }
+    if (acc.kps.unopenedBoxes) {
+      for (const box of acc.kps.unopenedBoxes) {
+        totalKps.unopenedBoxes.push(box)
       }
     }
   }
@@ -217,7 +229,6 @@ api.ipc.onLogs(({ logs, page, maxPages, stats }) => {
   }
 })
 api.ipc.onSelectPage(({ page, info }) => {
-  //console.log('onSelectPage', { page, info })
   selectPage(page, info)
 })
 api.ipc.onFriends(({ friends }) => {

@@ -56,38 +56,29 @@ export default async ({
   })
   let lastActive = null as null | string
 
-  mumbleLink.on(
-    'mumbleLink',
-    (mumbleLinkStats: { [s: string]: RaidToolDef.TODO } | ArrayLike<RaidToolDef.TODO>) => {
-      //baseConfig.mumbleLinkStats = mumbleLinkStats;
-      const stats = Object.values(mumbleLinkStats).filter((a) => a.name === 'Guild Wars 2')
-      stats.sort((a, b) => b.time - a.time)
-      const active = stats[0]
+  mumbleLink.on('mumbleLink', (mumbleLinkStats: { [key: string]: RaidToolDef.MumbleLinkData }) => {
+    //baseConfig.mumbleLinkStats = mumbleLinkStats;
+    const stats = Object.values(mumbleLinkStats).filter((a) => a.name === 'Guild Wars 2')
+    stats.sort((a, b) => (b.time || 0) - (a.time || 0))
 
-      let mumbleLinkActive: RaidToolDef.MumbleLinkData | null = null
-      if (active) {
-        mumbleLinkActive = active
-      } else if (stats.length < 1) {
-        mumbleLinkActive = null
-      }
-      backendConfig.mumbleLinkActive = mumbleLinkActive
+    const mumbleLinkActive: RaidToolDef.MumbleLinkData | null = stats[0] || null
 
-      const currentActive = JSON.stringify({
-        mumbleLinkStats: Object.keys(mumbleLinkStats),
-        mumbleLinkActive: !!mumbleLinkActive,
-        spec: (mumbleLinkActive as RaidToolDef.MumbleLinkData)?.identity?.spec,
-        TextboxHasFocus: (mumbleLinkActive as RaidToolDef.MumbleLinkData)?.uiStates
-          ?.TextboxHasFocus,
-        GameHasFocus: (mumbleLinkActive as RaidToolDef.MumbleLinkData)?.uiStates?.GameHasFocus,
-        IsMapOpen: (mumbleLinkActive as RaidToolDef.MumbleLinkData)?.uiStates?.IsMapOpen,
-        mountIndex: (mumbleLinkActive as RaidToolDef.MumbleLinkData)?.context?.mountIndex,
-        time: true
-      })
+    backendConfig.mumbleLinkActive = mumbleLinkActive
 
-      if (lastActive !== currentActive) {
-        eventHub.emit('mumbleLinkActive', { mumbleLinkActive })
-        lastActive = currentActive
-      }
+    const currentActive = JSON.stringify({
+      mumbleLinkStats: Object.keys(mumbleLinkStats),
+      mumbleLinkActive: !!mumbleLinkActive,
+      spec: mumbleLinkActive?.identity?.spec,
+      TextboxHasFocus: mumbleLinkActive?.uiStates?.TextboxHasFocus,
+      GameHasFocus: mumbleLinkActive?.uiStates?.GameHasFocus,
+      IsMapOpen: mumbleLinkActive?.uiStates?.IsMapOpen,
+      mountIndex: mumbleLinkActive?.context?.mountIndex,
+      time: true
+    })
+
+    if (lastActive !== currentActive) {
+      eventHub.emit('mumbleLinkActive', { mumbleLinkActive })
+      lastActive = currentActive
     }
-  )
+  })
 }

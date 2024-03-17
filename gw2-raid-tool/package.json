@@ -64,6 +64,8 @@
     "@types/node": "^18.17.5",
     "@types/node-windows": "^0.1.6",
     "@types/ssh2-sftp-client": "^9.0.3",
+    "@types/stream-chain": "^2.0.4",
+    "@types/stream-json": "^1.7.7",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^11.0.3",
     "electron": "^25.6.0",

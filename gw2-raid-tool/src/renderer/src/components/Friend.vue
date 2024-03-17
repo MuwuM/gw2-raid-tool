@@ -7,7 +7,7 @@ import LogView from "./LogView.vue";
 <template>
   <main id="friend" class="arc-log-display-wrapper">
     <div class="container">
-      <div class="jumbotron" v-if="data.stats">
+      <div class="jumbotron">
         <h2 v-if="data.stats.friend">{{ data.stats.friend.account }}</h2>
         <div v-if="data.stats.friend" class="friend-badges">
           <span v-for="n in data.stats.friend.chars || []" class="friend-badge"
@@ -22,10 +22,10 @@ import LogView from "./LogView.vue";
         <div v-if="data.stats.friend">
           {{ i18n.sharedLogsLabel }} {{ data.stats.friend.sharedLogs }}
         </div>
-        <div v-if="data.stats">
+        <div>
           <span
             >{{ i18n.killsLabel }} {{ data.stats.kills }}
-            {{ i18n.cmOfKills(data.stats.cmKills) }}</span
+            {{ i18n.cmOfKills(data.stats.cmKills || 0) }}</span
           >
           <span>{{ i18n.failsLabel }} {{ data.stats.fails }}</span>
         </div>

@@ -1,4 +1,4 @@
-import { KnownNedbDocument, NedbDocumentKnownFriends } from '../../raid-tool'
+import { KnownNedbDocument, LogEntryRef, NedbDocumentKnownFriends } from '../../raid-tool'
 import { baseConfig, db } from './main-proxy'
 import { LogJsonData, readLogJsonFiltered } from './read-json'
 
@@ -9,7 +9,7 @@ export default async function updateKnownFriends({
 }: {
   knownFriendCache: KnownNedbDocument<NedbDocumentKnownFriends>
   htmlFile: string
-  entry: string
+  entry: LogEntryRef
 }) {
   let knownFriendCache = knownFriendCacheBefore
   let json: LogJsonData | null = null

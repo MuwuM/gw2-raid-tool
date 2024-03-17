@@ -2,8 +2,12 @@
 import { data, i18n, api, selectLog } from "@renderer/preload-api";
 import { preventDefault, img } from "../util";
 import { DateTime } from "luxon";
-import { ClickEvent, TODO } from "src/raid-tool";
-function showLogPage(page: number, filters: TODO, event: ClickEvent) {
+import { ClickEvent, LogFilter, UiLogs } from "src/raid-tool";
+function showLogPage(
+  page: number,
+  filters: LogFilter["config"] | null,
+  event: ClickEvent
+) {
   preventDefault(event);
   data.logFilters.p = page;
   if (typeof filters === "object" && filters) {
@@ -13,7 +17,7 @@ function showLogPage(page: number, filters: TODO, event: ClickEvent) {
   api.logFilter(logFilter);
 }
 
-function timeEndDiff(log: TODO, _currenttime: number) {
+function timeEndDiff(log: UiLogs, _currenttime: number) {
   return DateTime.fromMillis(log.timeEndMs).toRelative({ locale: "de" });
 }
 </script>
@@ -60,10 +64,7 @@ function timeEndDiff(log: TODO, _currenttime: number) {
         </li>
       </ul>
     </nav>
-    <div
-      class="mt-0 mb-1"
-      v-if="!(data.stats && data.stats.bossInfo && !data.stats.bossInfo.hasCM)"
-    >
+    <div class="mt-0 mb-1" v-if="!(data.stats.bossInfo && !data.stats.bossInfo.hasCM)">
       <label
         ><input
           type="checkbox"

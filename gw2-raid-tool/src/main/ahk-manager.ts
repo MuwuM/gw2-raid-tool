@@ -28,7 +28,6 @@ SOFTWARE.
  */
 import { spawn } from 'child_process'
 import fs from 'fs/promises'
-import { TODO } from '../raid-tool'
 import { dirname } from 'path'
 
 type HotkeysListWithKeyAndModifiers = { key: string; modifiers?: string[]; noInterrupt?: boolean }
@@ -42,17 +41,7 @@ type HotkeyRunner = {
 export type AHKManager = {
   hotkeys: Record<string, HotkeyRunner>
   hotkeysPending: Array<HotkeyRunner>
-  setHotkey: (
-    key:
-      | string
-      | {
-          keys?: TODO
-          modifiers?: string[]
-          key?: string
-        },
-    run: HotkeyRunner,
-    instant: boolean
-  ) => void
+  setHotkey: (key: string, run: HotkeyRunner, instant: boolean) => void
   waitForInterrupt: () => Promise<void>
   stop: () => Promise<void>
 }
@@ -71,42 +60,7 @@ export default async function (
     hotkeys: {},
     hotkeysPending: [],
 
-    setHotkey(key, run, instant) {
-      let ahkKey: string
-      if (typeof key === 'string') {
-        ahkKey = key
-      } else {
-        if (key.keys) {
-          ahkKey = key.keys
-            .replace(/!/g, '{!}')
-            .replace(/#/g, '{#}')
-            .replace(/\+/g, '{+}')
-            .replace(/\^/g, '{^}')
-            .replace(/\\{/g, '{{}')
-            .replace(/\\}/g, '{}}')
-            .join(' ')
-        } else {
-          let mod = ''
-          if (key.modifiers) {
-            mod += key.modifiers
-              .join('')
-              .replace('win', '#')
-              .replace('alt', '!')
-              .replace('control', '^')
-              .replace('shift', '+')
-              .replace('any', '*')
-          }
-          ahkKey =
-            mod +
-            (key.key as string)
-              .replace(/!/g, '{!}')
-              .replace(/#/g, '{#}')
-              .replace(/\+/g, '{+}')
-              .replace(/\^/g, '{^}')
-              .replace(/\\{/g, '{{}')
-              .replace(/\\}/g, '{}}')
-        }
-      }
+    setHotkey(ahkKey, run, instant) {
       ahk.hotkeys[ahkKey] = run
       if (instant) {
         ahk.hotkeys[ahkKey].instant = true

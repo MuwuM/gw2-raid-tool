@@ -7,16 +7,10 @@ import {
   KnownNedbDocument,
   NedbDatabase,
   NedbDocumentAccounts,
-  TODO
+  UnopenedBoxes
 } from '../../raid-tool'
 import { GW2ApiClient, GW2ApiResponseInventoryItem } from '../gw2-api-with-types'
-
-function ensureArray<T>(arr: T | undefined | (T | undefined)[]): T[] {
-  if (Array.isArray(arr)) {
-    return arr.filter((a) => typeof a !== 'undefined') as T[]
-  }
-  return [arr].filter((a) => typeof a !== 'undefined') as T[]
-}
+import ensureArray from '../ensure-array'
 
 const strikeWings = wings.filter((w) => w.isStrike)
 
@@ -109,13 +103,17 @@ export default async ({
     let boneSkinner = 0
     let zhaitaffy = 0
     const raidBossKp = {} as BossKpMap
-    const unlockedLegyArmor = {} as TODO
+    const unlockedLegyArmor = {} as {
+      heavy?: number
+      medium?: number
+      light?: number
+    }
     const items = sharedInventary
       .concat(bank)
       .concat(inventary)
       .concat(materials)
       .concat(legendaryarmory)
-    const unopenedBoxes = [] as TODO[]
+    const unopenedBoxes = [] as UnopenedBoxes[]
     for (const item of items) {
       if (!item) {
         continue

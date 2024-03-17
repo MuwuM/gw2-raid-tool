@@ -15,9 +15,12 @@ import {
   KnownNedbDocument,
   LogFilter,
   LogStats,
+  NedbDatabase,
+  NedbDatabaseQuery,
   NedbDocumentLogs,
   ServerRouteHandler,
-  TODO
+  UiLogs,
+  WingsResStep
 } from '../../raid-tool'
 import { app, net, protocol } from 'electron'
 import { pathToFileURL } from 'url'
@@ -25,6 +28,7 @@ import { pathToFileURL } from 'url'
 import type { fileTypeFromBuffer as FileTypeFromBuffer } from 'file-type'
 import FastGlob from 'fast-glob'
 import ErrorWithStack from '../error-with-stack'
+import ensureArray from '../ensure-array'
 
 let _fileTypeFromBuffer: typeof FileTypeFromBuffer | undefined
 const fileTypeFromBuffer = async (buffer: Uint8Array | ArrayBuffer) => {
@@ -47,23 +51,11 @@ protocol.registerSchemesAsPrivileged([
 
 const logsUploading = {}
 
-function ensureArray(fightName) {
-  if (Array.isArray(fightName)) {
-    return fightName
-  }
-  return [fightName]
-}
+function enhanceLogs(logs: NedbDocumentLogs[]) {
+  const copyLogs = structuredClone(logs.filter((l) => l)) as UiLogs[]
 
-function structuredClonePolyfill(data) {
-  //structuredClone will be there with nodejs 17.X
-  return JSON.parse(JSON.stringify(data))
-}
-
-function enhanceLogs(logs) {
-  const copyLogs = structuredClonePolyfill(logs.filter((l) => l))
-
-  let fightName = null
-  let recordedByName = null
+  let fightName: string | null = null
+  let recordedByName: string | null = null
   let collapseNumber = 1
   for (const log of copyLogs) {
     if (logsUploading[log.hash]) {
@@ -91,8 +83,11 @@ function enhanceLogs(logs) {
 
 const kittyGolemTriggerIds = [16199, 19645, 19676]
 
-async function paginatedLogs(ctx, db, query) {
-  const page = parseInt(ctx.query.p, 10) || 0
+async function paginatedLogs(
+  page: number,
+  db: NedbDatabase,
+  query: NedbDatabaseQuery<NedbDocumentLogs>
+) {
   const maxPages = Math.ceil((await db.logs.count(query)) / 50)
   const logs = await db.logs
     .find(query)
@@ -143,7 +138,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
 
   let lastLog = emptyLogFilter
   let lastFriendsLog = emptyLogFilter
-  let nextTick
+  let nextTick: ReturnType<typeof setTimeout>
 
   const logFilters: LogFilter = {
     p: 0,
@@ -169,7 +164,11 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
     try {
       //console.log('updateLogs...')
       let stats = {} as LogStats
-      const conf = {} as TODO
+      const conf = {} as {
+        isCM?: boolean
+        players?: { $elemMatch: string }
+        triggerID?: { $in: number[] }
+      }
       if (logFilters.config.bossId) {
         const bossId = parseInt(decodeURIComponent(logFilters.config.bossId), 10)
 
@@ -177,10 +176,10 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
           let bossInfo = wings
             .map((ws) => ws.steps)
             .flat()
-            .find((s) => ensureArray(s.triggerID).includes(bossId)) as TODO
+            .find((s) => ensureArray(s.triggerID).includes(bossId))
 
           if (!bossInfo) {
-            bossInfo = { triggerID: bossId }
+            bossInfo = { triggerID: bossId } as WingsResStep
           }
 
           conf.triggerID = { $in: ensureArray(bossInfo.triggerID) }
@@ -203,12 +202,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
         stats = { ...stats, cmOnly: true }
       }
 
-      const {
-        page,
-        maxPages,
-        logs,
-        stats: readStats
-      } = await paginatedLogs({ query: { p: logFilters.p } }, db, conf)
+      const { page, maxPages, logs, stats: readStats } = await paginatedLogs(logFilters.p, db, conf)
 
       if (logFilters.config.friend) {
         const account = decodeURIComponent(logFilters.config.friend)

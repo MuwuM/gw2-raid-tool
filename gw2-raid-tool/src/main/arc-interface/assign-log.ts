@@ -7,9 +7,9 @@ import { DateTime } from 'luxon'
 import hashLog from '../hash-log'
 import fightIconMap from '../../info/fight-icon-map'
 import ErrorWithStack from '../error-with-stack'
-import { TODO } from '../../raid-tool'
+import { LogEntryRef } from '../../raid-tool'
 
-export default async function assignLog(logsPath: string, htmlFile: string, entry: string) {
+export default async function assignLog(logsPath: string, htmlFile: string, entry: LogEntryRef) {
   const known = await db.logs.findOne({ htmlFile })
   if (known) {
     await db.logs.update({ _id: known._id }, { $set: { entry } })
@@ -87,7 +87,12 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
   }
 }
 
-async function removeBrokenFiles(logsPath: string, htmlFile: string, entry: TODO, logFile: string) {
+async function removeBrokenFiles(
+  logsPath: string,
+  htmlFile: string,
+  entry: LogEntryRef,
+  logFile: string
+) {
   await removeFileIfExists(path.join(logsPath, entry))
   await removeFileIfExists(htmlFile)
   await removeFileIfExists(`${htmlFile}z`)

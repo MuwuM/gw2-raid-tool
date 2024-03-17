@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { data, i18n, wings } from "@renderer/preload-api";
 
-import { TODO, WingsResStep, WingsRef } from "../../../raid-tool";
+import { WingsResStep, WingsRef, UiAccounts } from "../../../raid-tool";
 import { img } from "@renderer/util";
 const lang = data.baseConfig.lang;
 
@@ -21,7 +21,7 @@ function bossUrl(step: WingsResStep) {
   }
   return "gw2-log:logs/boss/" + encodeURIComponent(firstTrigger(step));
 }
-function overviewStatus(accounts: TODO[], step: WingsResStep, wing: WingsRef) {
+function overviewStatus(accounts: UiAccounts[], step: WingsResStep, wing: WingsRef) {
   let completed = false;
 
   if (
@@ -47,12 +47,15 @@ function overviewStatus(accounts: TODO[], step: WingsResStep, wing: WingsRef) {
     completed,
   };
 }
-function svgBossBorder(
-  accounts: typeof data.accounts,
-  step: WingsResStep,
-  wing: WingsRef
-) {
-  const parts = [] as TODO[];
+
+type SvgPart = {
+  d: string;
+  fill: string;
+  opacity: number;
+};
+
+function svgBossBorder(accounts: UiAccounts[], step: WingsResStep, wing: WingsRef) {
+  const parts = [] as SvgPart[];
   let rot = 0;
   const border = 12;
   const width = 300;
@@ -170,15 +173,23 @@ function svgBossBorder(
     }
     parts.push({
       d: `M ${d.join(" L ")} Z`,
-      fill: acc.color,
+      fill: acc.color as string,
       opacity,
     });
   }
   return parts;
 }
-function overviewStatusAcc(step, wing, acc) {
+
+function firstTriggerId(step: WingsResStep) {
+  if (Array.isArray(step.triggerID)) {
+    return step.triggerID[0];
+  }
+  return step.triggerID || -1;
+}
+
+function overviewStatusAcc(step: WingsResStep, wing: WingsRef, acc: UiAccounts) {
   let completed = false;
-  let completedCM = acc.completedCMs?.[step.triggerID];
+  let completedCM = acc.completedCMs?.[firstTriggerId(step)] || false;
 
   if (wing.isFractal) {
     completedCM = false;
@@ -187,14 +198,14 @@ function overviewStatusAcc(step, wing, acc) {
   if (
     wing.isStrike &&
     wing.isStrikeWeekly &&
-    acc.completedStrikesWeekly?.[step.triggerID]
+    acc.completedStrikesWeekly?.[firstTriggerId(step)]
   ) {
     completed = true;
-  } else if (wing.isStrike && acc.completedStrikesDaily?.[step.triggerID]) {
+  } else if (wing.isStrike && acc.completedStrikesDaily?.[firstTriggerId(step)]) {
     completed = true;
-  } else if (wing.isFractal && acc.completedFractalsDaily?.[step.triggerID]) {
+  } else if (wing.isFractal && acc.completedFractalsDaily?.[firstTriggerId(step)]) {
     completed = true;
-    completedCM = acc.completedCMs?.[step.triggerID];
+    completedCM = acc.completedCMs?.[firstTriggerId(step)] || false;
   } else if (acc.completedSteps?.includes(step.id)) {
     completed = true;
   }
@@ -284,7 +295,9 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
                   class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open"
                   >CM🗙</span
                 >
-                <strong :style="{ color: acc.color }">{{ acc.accountInfo.name }}:</strong>
+                <strong :style="{ color: acc.color }" v-if="acc.accountInfo?.name"
+                  >{{ acc.accountInfo.name }}:</strong
+                >
                 <span>{{ acc.kps.raidBossKp[step.id] || 0 }} KP</span>
               </div>
             </template>
@@ -333,7 +346,9 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
                   class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open"
                   >CM🗙</span
                 >
-                <strong :style="{ color: acc.color }">{{ acc.accountInfo.name }}:</strong>
+                <strong :style="{ color: acc.color }" v-if="acc.accountInfo?.name"
+                  >{{ acc.accountInfo.name }}:</strong
+                >
                 <span>{{ acc.kps[step.kpName] || 0 }} KP</span>
               </div>
             </template>
@@ -389,7 +404,9 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
                   class="wing-step-tooltip-mark-cm wing-step-tooltip-mark-open"
                   >CM🗙</span
                 >
-                <strong :style="{ color: acc.color }">{{ acc.accountInfo.name }}</strong>
+                <strong :style="{ color: acc.color }" v-if="acc.accountInfo?.name">{{
+                  acc.accountInfo.name
+                }}</strong>
               </div>
             </template>
             <span
@@ -427,9 +444,11 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
         <span class="li-display-number">{{ data.totalKps.li }}</span>
         <span class="li-display-number-per-acc">
           <span class="li-display-acc" v-for="acc in data.accounts">
-            <span class="li-display-acc-name" :style="{ color: acc.color }">{{
-              acc.accountInfo.name
-            }}</span
+            <span
+              class="li-display-acc-name"
+              :style="{ color: acc.color }"
+              v-if="acc.accountInfo?.name"
+              >{{ acc.accountInfo.name }}</span
             >:
             <span class="li-display-acc-kp">{{ i18n.showLiLd(acc.kps.li || 0) }}</span>
           </span>
@@ -445,9 +464,11 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
 
         <span class="li-display-number-per-acc">
           <span class="li-display-acc" v-for="acc in data.accounts">
-            <span class="li-display-acc-name" :style="{ color: acc.color }">{{
-              acc.accountInfo.name
-            }}</span
+            <span
+              class="li-display-acc-name"
+              :style="{ color: acc.color }"
+              v-if="acc.accountInfo?.name"
+              >{{ acc.accountInfo.name }}</span
             >:
             <span class="li-display-acc-kp">{{ i18n.showKp(acc.kps.fractal || 0) }}</span>
           </span>
@@ -462,9 +483,11 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
         <span class="li-display-number">{{ data.totalKps.boneSkinner }}</span>
         <span class="li-display-number-per-acc">
           <span class="li-display-acc" v-for="acc in data.accounts">
-            <span class="li-display-acc-name" :style="{ color: acc.color }">{{
-              acc.accountInfo.name
-            }}</span
+            <span
+              class="li-display-acc-name"
+              :style="{ color: acc.color }"
+              v-if="acc.accountInfo?.name"
+              >{{ acc.accountInfo.name }}</span
             >:
             <span class="li-display-acc-kp">{{
               i18n.showKp(acc.kps.boneSkinner || 0)
@@ -509,7 +532,9 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
               >
               <span class="li-display-number-details"
                 >{{ box.item["@char"] || "" }}
-                {{ "(" + acc.accountInfo.name + ") " }}</span
+                <template v-if="acc.accountInfo?.name">{{
+                  "(" + acc.accountInfo.name + ") "
+                }}</template></span
               >
               <span v-if="box.bossKp > 0" class="li-display-number"
                 >{{ box.bossKp }}-{{ box.bossKp * 5 }}x

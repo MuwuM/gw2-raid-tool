@@ -1,8 +1,15 @@
-// @ts-ignore
+// @ts-ignore-next-line
 import NodeIPC from '@fynnix/node-easy-ipc'
 import EventEmitter from 'events'
-import { MumbleLinkData, MumbleLinkDataIdentity, MumbleLinkDataStatus, TODO } from '../raid-tool'
+import { MumbleLinkData, MumbleLinkDataIdentity, MumbleLinkDataStatus } from '../raid-tool'
 class MumbleLinkEmitter extends EventEmitter {}
+
+interface NodeIPCApi {
+  createMapping: (security: any, file: string, size: number) => void
+  openMapping: (file: string, size: number) => void
+  closeMapping: () => void
+  readInto: (start: number, length: number, buffer: Buffer) => void
+}
 
 const size = 5460
 
@@ -119,9 +126,9 @@ function MumbleLink(options: {
 
   const emitter = new MumbleLinkEmitter()
 
-  const activeMaps = {} as Map<string, TODO>
-  const mumbleLinkStats = {} as Map<string, TODO>
-  const processesMap = {} as Map<string, TODO>
+  const activeMaps = {} as { [key: string]: NodeIPCApi }
+  const mumbleLinkStats = {} as { [key: string]: MumbleLinkDataStatus }
+  const processesMap = {} as { [processId: number]: string }
 
   async function readMumbleLinkData() {
     try {
@@ -144,13 +151,13 @@ function MumbleLink(options: {
         }
       }
 
-      const missesMumbleLinkFiles = pids.find((i: string | number) => !processesMap[i])
+      const missesMumbleLinkFiles = pids.find((i) => !processesMap[i])
 
       if (missesMumbleLinkFiles) {
         const currentMumbleLinkIds = await opts.mumbleLinkIds()
         for (const file of currentMumbleLinkIds) {
           if (!activeMaps[file]) {
-            const map = new NodeIPC.FileMapping()
+            const map = new NodeIPC.FileMapping() as NodeIPCApi
             try {
               map.openMapping(file, size)
               activeMaps[file] = map
@@ -216,7 +223,7 @@ function MumbleLink(options: {
             stats.context.uiState > 0 &&
             (!mumbleLinkStats[key] ||
               !mumbleLinkStats[key].uiStates ||
-              mumbleLinkStats[key].uiStates.GameHasFocus !== stats.uiStates?.GameHasFocus)
+              mumbleLinkStats[key].uiStates?.GameHasFocus !== stats.uiStates?.GameHasFocus)
           ) {
             stats.time = Date.now()
           } else if (mumbleLinkStats[key]?.time) {

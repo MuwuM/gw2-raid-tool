@@ -8,7 +8,7 @@ import { img } from "@renderer/util";
   <main id="boss" class="arc-log-display-wrapper">
     <div class="container">
       <div class="jumbotron">
-        <h2 v-if="data.stats && data.stats.bossInfo" class="boss-info-title">
+        <h2 v-if="data.stats.bossInfo" class="boss-info-title">
           <img
             v-if="data.stats.bossIcon"
             class="li-display-img"
@@ -16,7 +16,7 @@ import { img } from "@renderer/util";
             :alt="data.stats.bossInfo['name_' + data.lang]"
           />{{ data.stats.bossInfo["name_" + data.lang] }}
         </h2>
-        <div v-if="data.stats">
+        <div>
           <template v-if="data.stats.cmOnly">
             <span class="me-1">CM {{ i18n.killsLabel }} {{ data.stats.kills }}</span>
             <span class="me-1">CM {{ i18n.failsLabel }} {{ data.stats.fails }}</span>
@@ -24,7 +24,7 @@ import { img } from "@renderer/util";
           <template v-else>
             <span class="me-1"
               >{{ i18n.killsLabel }} {{ data.stats.kills }}
-              {{ i18n.cmOfKills(data.stats.cmKills) }}</span
+              {{ i18n.cmOfKills(data.stats.cmKills || 0) }}</span
             >
             <span class="me-1">{{ i18n.failsLabel }} {{ data.stats.fails }}</span>
           </template>

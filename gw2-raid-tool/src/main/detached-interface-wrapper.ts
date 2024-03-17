@@ -79,7 +79,23 @@ const wrapper = async (
 
   child.on(
     'message',
-    async ({ msg, reqId, database, method, options, prop, value }: RaidToolDef.TODO) => {
+    async ({
+      msg,
+      reqId,
+      database,
+      method,
+      options,
+      prop,
+      value
+    }: {
+      msg: string
+      reqId: number
+      database: string
+      method: string
+      options: any[]
+      prop: string
+      value: any
+    }) => {
       try {
         if (msg === 'db') {
           try {
@@ -89,7 +105,7 @@ const wrapper = async (
               dbres: res,
               reqId
             })
-          } catch (error: RaidToolDef.TODO) {
+          } catch (error: any) {
             if (!child.killed) {
               child.send({
                 msg: 'error',
@@ -119,7 +135,7 @@ const wrapper = async (
           progressConfig[prop] = value
           eventHub.emit('progressConfig', { progressConfig })
         } else if (msg === 'emitEventHub') {
-          eventHub.emit(prop, value)
+          eventHub.emit(prop as keyof RaidToolDef.KnownEvents, value)
         }
       } catch (error) {
         console.error(error)

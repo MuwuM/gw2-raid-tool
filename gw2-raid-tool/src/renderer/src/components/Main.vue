@@ -6,7 +6,7 @@ import Overview from "./Overview.vue";
 import Settings from "./Settings.vue";
 import Logs from "./Logs.vue";
 import Boss from "./Boss.vue";
-import { ClickEvent, SpecsJson, TODO } from "../../../raid-tool";
+import { ClickEvent, SpecsJson } from "../../../raid-tool";
 import { onUpdated } from "vue";
 import Friends from "./Friends.vue";
 import Credits from "./Credits.vue";
@@ -21,8 +21,10 @@ function startGame(event?: ClickEvent) {
 }
 
 function handleScrollUpdate() {
-  const navBar = document.querySelector("nav.navbar") as TODO;
-  const tableHeader = document.querySelector("table thead tr.sticky-top") as TODO;
+  const navBar = document.querySelector("nav.navbar") as HTMLElement;
+  const tableHeader = document.querySelector(
+    "table thead tr.sticky-top"
+  ) as HTMLTableRowElement;
   if (navBar && tableHeader) {
     const rect = navBar.getBoundingClientRect();
     tableHeader.style.top = `${Math.floor(rect.bottom)}px`;
@@ -30,9 +32,14 @@ function handleScrollUpdate() {
 }
 
 function onResize() {
-  const logDisplays = document.querySelectorAll(".arc-log-display") as TODO;
+  const logDisplays = document.querySelectorAll(
+    ".arc-log-display"
+  ) as Iterable<HTMLElement>;
   for (const logDisplay of logDisplays) {
     const prev = logDisplay.previousElementSibling;
+    if (!prev) {
+      throw new Error("No previous element found");
+    }
     const rect = prev.getBoundingClientRect();
     logDisplay.style.height = `${window.innerHeight - rect.bottom}px`;
   }

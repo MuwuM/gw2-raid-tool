@@ -19,27 +19,6 @@ function openExternal(url: string) {
   }
 }
 
-function navigateFromLogsUrl(win, urlStr) {
-  const url = new URL(urlStr)
-
-  const path = url.pathname
-  const pathParts = path.split('/')
-  //console.log({ url, pathParts })
-  if (!pathParts[1]) {
-    //console.log('send selectPage', { page: 'overview', info: {} })
-    win.webContents.send('selectPage', { page: 'overview', info: {} })
-  } else {
-    /*console.log('send selectPage', {
-      page: pathParts[1],
-      info: { id: pathParts[2], action: pathParts[3] }
-    })*/
-    win.webContents.send('selectPage', {
-      page: pathParts[1],
-      info: { id: pathParts[2], action: pathParts[3] }
-    })
-  }
-}
-
 export default async ({
   electronApp,
   initStatus
@@ -135,6 +114,27 @@ export default async ({
     const { db, baseConfig, eventHub, backendConfig, progressConfig } =
       initStatus as RaidToolDef.InitStatus
 
+    function navigateFromLogsUrl(urlStr: string) {
+      const url = new URL(urlStr)
+
+      const path = url.pathname
+      const pathParts = path.split('/')
+      //console.log({ url, pathParts })
+      if (!pathParts[1]) {
+        //console.log('send selectPage', { page: 'overview', info: {} })
+        eventHub.emit('selectPage', { page: 'overview', info: {} })
+      } else {
+        console.log('send selectPage', {
+          page: pathParts[1],
+          info: { id: pathParts[2], action: pathParts[3] }
+        })
+        eventHub.emit('selectPage', {
+          page: pathParts[1] as RaidToolDef.PageId,
+          info: { id: pathParts[2], action: pathParts[3] as RaidToolDef.PageAction }
+        })
+      }
+    }
+
     const socket = win.webContents
     eventHub.sockets.push(win.webContents)
 
@@ -166,7 +166,7 @@ export default async ({
       }
       if (url.startsWith('gw2-log:')) {
         event.preventDefault()
-        navigateFromLogsUrl(win, url)
+        navigateFromLogsUrl(url)
         return false
       }
       return
@@ -176,7 +176,7 @@ export default async ({
         openExternal(details.url)
         return { action: 'deny' }
       }
-      navigateFromLogsUrl(win, details.url)
+      navigateFromLogsUrl(details.url)
       return { action: 'deny' }
     })
     win.webContents.on('before-input-event', (event, input) => {

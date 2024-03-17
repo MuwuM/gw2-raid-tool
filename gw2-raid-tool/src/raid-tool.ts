@@ -172,6 +172,7 @@ export type NedbDatabaseQuery<T extends NedbDocument> = {
         $lt?: T[prop]
         $lte?: T[prop]
         $in?: T[prop][]
+        $nin?: T[prop][]
         $elemMatch?: T[prop] extends Array<any> ? T[prop][0] : never
       }
 } & {
@@ -198,15 +199,26 @@ export interface NedbDocumentLogs extends NedbDocument {
   duration: string
   success: boolean
   isCM: boolean
-  entry: string
+  entry: LogEntryRef
   players: Array<string>
   permalink?: string
   permalinkFailed?: boolean
 }
 
+export interface UiLogs extends NedbDocumentLogs {
+  isUploading?: true
+  displayCollapse?: number
+  displayNameCollapse?: boolean
+}
+export interface UiAccounts extends NedbDocumentAccounts {
+  color?: string
+}
+export interface UiFriends extends NedbDocumentFriends {}
+export interface UiBlockedKeyRules extends NedbDocumentBlockedKeyRules {}
+
 export interface NedbDocumentKnownFriends extends NedbDocument {
   status: 'done' | 'failed'
-  entry: string
+  entry: LogEntryRef
   ei_version: string | null
   msg: string
   friends: Array<string>
@@ -272,14 +284,7 @@ export interface UnopenedBoxes {
 }
 
 export interface NedbDocumentAccounts extends NedbDocument {
-  kps: {
-    li: number
-    fractal: number
-    boneSkinner: number
-    zhaitaffy: number
-    raidBossKp: BossKpMap
-    unopenedBoxes: UnopenedBoxes[]
-  }
+  kps: Kps
   completedSteps: string[]
   completedCMs: { [triggerID: number]: true | undefined }
   completedStrikesDaily: { [triggerID: number]: true | undefined }
@@ -288,6 +293,17 @@ export interface NedbDocumentAccounts extends NedbDocument {
   token: string
   accountInfo?: GW2AccountInfo
 }
+
+export interface Kps {
+  li: number
+  fractal: number
+  boneSkinner: number
+  zhaitaffy: number
+  raidBossKp: BossKpMap
+  unopenedBoxes: UnopenedBoxes[]
+}
+
+export interface TotalKps extends Kps {}
 
 export interface NedbDocumentBlockedKeyRules extends NedbDocument {
   active: boolean
@@ -317,7 +333,9 @@ type NedbDatabaseTableNames = (typeof NedbDatabaseEnabledTableNames)[number]
 
 interface NedbDatastoreFindWithSort<T extends NedbDocument, R extends (T | null) | T[]>
   extends Promise<R> {
-  sort(sort: { [key in keyof Partial<T>]: 1 | -1 }): Promise<R>
+  sort(sort: { [key in keyof Partial<T>]: 1 | -1 }): NedbDatastoreFindWithSort<T, R>
+  skip(skip: number): NedbDatastoreFindWithSort<T, R>
+  limit(limit: number): NedbDatastoreFindWithSort<T, R>
 }
 
 export type KnownNedbDocument<T extends NedbDocument> = OptionalId<T> | null
@@ -334,6 +352,7 @@ export interface NedbDatastore<T extends NedbDocument> {
     updateOps?: { multi?: true }
   ): Promise<number>
   remove(query: NedbDatabaseQuery<T>, options?: { multi: boolean }): Promise<number>
+  count(query: NedbDatabaseQuery<T>): Promise<number>
 }
 type NedbDatabaseInternal = {
   [db_name in NedbDatabaseTableNames]: NedbDatastore<NedbDocument>
@@ -383,7 +402,7 @@ export type KnownEvents = {
   }
   friends: { friends: Array<NedbDocumentFriends> }
   uploadLog: { hash: string }
-  selectPage: { page: number; info: {} }
+  selectPage: { page: PageId; info: PageInfo }
   keyRules: { keyRules: NedbDocumentBlockedKeyRules[] }
   logFilter: LogFilter
   friendsFilter: {}
@@ -392,6 +411,22 @@ export type KnownEvents = {
   deleteKeyRule: { keyRule: NedbDocumentBlockedKeyRules }
   getKeyRules: {}
   builds: { builds: {}[] }
+}
+
+export type PageAction = 'upload' | undefined
+export type PageId =
+  | 'overview'
+  | 'logs'
+  | 'friends'
+  | 'settings'
+  | 'credits'
+  | 'boss'
+  | 'friend'
+  | 'keys'
+
+export interface PageInfo {
+  id?: string
+  action?: PageAction
 }
 
 export interface EventHubEmitter {
@@ -541,14 +576,12 @@ export interface LogFilter {
 
 export interface LogStats {
   bossIcon?: string
-  bossInfo?: {
-    triggerID: number
-    name_en: string
-    name_de: string
-    name_fr: string
-  }
+  bossInfo?: WingsResStep
   friend?: KnownNedbDocument<NedbDocumentFriends>
   cmOnly?: boolean
+  kills?: number
+  fails?: number
+  cmKills?: number
 }
 
 export type SpecsJson = Array<{
@@ -559,3 +592,5 @@ export type SpecsJson = Array<{
   name_de: string
   name_fr: string
 }>
+
+export type LogEntryRef = string

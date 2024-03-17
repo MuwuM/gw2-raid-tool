@@ -1,12 +1,12 @@
 import path from 'path'
 import fs from 'fs-extra'
-import { TODO } from '../../raid-tool'
+import { LogEntryRef } from '../../raid-tool'
 
 export default async function checkLogs(
   logsPath: string,
   baseFile: string,
   dateName: string,
-  entry: TODO,
+  entry: LogEntryRef,
   parseFailed?: boolean
 ) {
   const logFiles = [] as string[]

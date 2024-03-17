@@ -7,7 +7,12 @@ import { parser } from 'stream-json'
 import { ignore } from 'stream-json/filters/Ignore'
 //import { streamObject } from 'stream-json/streamers/StreamObject'
 import { streamValues } from 'stream-json/streamers/StreamValues'
-import { TODO } from '../../raid-tool'
+
+import type { Duplex, Readable, Transform, Writable } from 'stream'
+
+type TransformFunction = (chunk: any, encoding?: string) => any
+type Stream = Readable | Writable | Duplex | Transform
+type StreamItem = Stream | TransformFunction
 
 export default async function readJSON(file: string) {
   try {
@@ -299,14 +304,14 @@ export type LogJsonData = {
 }
 
 export async function readLogJsonFiltered(file: string): Promise<LogJsonData> {
-  const chainSteps: TODO[] = [fs.createReadStream(file)]
+  const chainSteps: StreamItem[] = [fs.createReadStream(file)]
   if (file.endsWith('.jsonz')) {
     chainSteps.push(zlib.createUnzip())
   }
   chainSteps.push(parser())
   chainSteps.push(
     ignore({
-      filter(val: Array<TODO>) {
+      filter(val: ReadonlyArray<number | string | null>) {
         if (val.length === 0) {
           return false
         }

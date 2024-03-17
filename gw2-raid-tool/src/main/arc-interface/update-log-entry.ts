@@ -9,6 +9,7 @@ import waitFor from './wait-for'
 import updateKnownFriends from './arc-interface-friends'
 import execDetached from './exec-detached'
 import ErrorWithStack from '../error-with-stack'
+import { LogEntryRef } from '../../raid-tool'
 
 /*function logHeap(msg) {
   const mem = process.memoryUsage();
@@ -17,7 +18,7 @@ import ErrorWithStack from '../error-with-stack'
 }*/
 function logHeap(_msg: string) {}
 
-export default async function updateLogEntry(logsPath: string, entry: string) {
+export default async function updateLogEntry(logsPath: string, entry: LogEntryRef) {
   try {
     if (entry.match(/[()]/)) {
       console.info(`rename: ${path.resolve(logsPath, entry)}`)
