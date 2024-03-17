@@ -7,7 +7,7 @@ export default async ({ backendConfig }: { backendConfig: RaidToolDef.BackendCon
   for (const enabledDB of RaidToolDef.NedbDatabaseEnabledTableNames) {
     db[enabledDB] = Datastore.create({
       filename: path.resolve(backendConfig.dbBaseDir, `${enabledDB}.nedb`)
-    })
+    }) as any
   }
   await db.known_friends
     .ensureIndex({

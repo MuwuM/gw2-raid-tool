@@ -18,7 +18,22 @@ export default (async ({ db, baseConfig, eventHub }) => {
   eventHub.on('addAccount', async ({ token }) => {
     //console.log({ addAccount: { token } })
     if (token) {
-      const acc = await db.accounts.insert({ token })
+      const acc = await db.accounts.insert({
+        token,
+        kps: {
+          li: 0,
+          fractal: 0,
+          boneSkinner: 0,
+          zhaitaffy: 0,
+          raidBossKp: {},
+          unopenedBoxes: []
+        },
+        completedSteps: [],
+        completedCMs: {},
+        completedStrikesDaily: {},
+        completedFractalsDaily: {},
+        completedStrikesWeekly: {}
+      })
       eventHub.emit('accounts', { accounts: await db.accounts.find({}) })
       const apiClient = gw2ApiClient(acc.token)
       const accountInfo = await apiClient.account().get()

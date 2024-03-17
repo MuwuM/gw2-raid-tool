@@ -1,4 +1,4 @@
-import { NedbDocumentKnownFriends } from '../../raid-tool'
+import { KnownNedbDocument, NedbDocumentKnownFriends } from '../../raid-tool'
 import { baseConfig, db } from './main-proxy'
 import { LogJsonData, readLogJsonFiltered } from './read-json'
 
@@ -7,7 +7,7 @@ export default async function updateKnownFriends({
   htmlFile,
   entry
 }: {
-  knownFriendCache: NedbDocumentKnownFriends | null
+  knownFriendCache: KnownNedbDocument<NedbDocumentKnownFriends>
   htmlFile: string
   entry: string
 }) {
@@ -21,7 +21,8 @@ export default async function updateKnownFriends({
         status: 'failed',
         entry,
         ei_version: await baseConfig.ei_version,
-        msg: (error as any).message || error
+        msg: (error as any).message || error,
+        friends: []
       })
     }
     return

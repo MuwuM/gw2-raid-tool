@@ -133,11 +133,9 @@ electronHandler({
     setTimeout(updateBuilds, 500)
   }
 
-  const router = { get() {} } as RaidToolDef.TODO
-
-  await settings({ router, db, baseConfig, backendConfig, eventHub })
-  await arc({ router, db, baseConfig, backendConfig, eventHub })
-  await keys({ router, db, baseConfig, backendConfig, eventHub })
+  await settings({ db, baseConfig, backendConfig, eventHub })
+  await arc({ db, baseConfig, backendConfig, eventHub })
+  await keys({ db, baseConfig, backendConfig, eventHub })
 
   initStatus.status = RaidToolDef.InitStatusStatusCode.Loaded
 })().catch((err) => {

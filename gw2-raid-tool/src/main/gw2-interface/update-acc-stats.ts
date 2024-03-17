@@ -4,6 +4,7 @@ import wings from '../../info/wings'
 import {
   BossKpMap,
   EventHubEmitter,
+  KnownNedbDocument,
   NedbDatabase,
   NedbDocumentAccounts,
   TODO
@@ -51,7 +52,7 @@ export default async ({
 }: {
   db: NedbDatabase
   apiClient: GW2ApiClient
-  account: NedbDocumentAccounts | null
+  account: KnownNedbDocument<NedbDocumentAccounts>
   eventHub: EventHubEmitter
 }) => {
   if (!account) {
@@ -265,7 +266,7 @@ export const localUpdates = async ({
   eventHub
 }: {
   db: NedbDatabase
-  account: NedbDocumentAccounts | null
+  account: KnownNedbDocument<NedbDocumentAccounts>
   eventHub: EventHubEmitter
 }) => {
   if (!account) {

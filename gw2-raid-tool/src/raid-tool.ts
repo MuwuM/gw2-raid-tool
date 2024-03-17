@@ -1,5 +1,3 @@
-import Datastore from 'nedb-promises'
-
 export type TODO = any
 
 export enum SupportedLanguages {
@@ -160,7 +158,25 @@ export type ProgressConfigProxied = {
 }
 
 export interface NedbDocument {
-  _id?: string
+  _id: string
+}
+
+export type NedbDatabaseQuery<T extends NedbDocument> = {
+  [prop in keyof Partial<T>]:
+    | T[prop]
+    | undefined
+    | {
+        $ne?: T[prop]
+        $gt?: T[prop]
+        $gte?: T[prop]
+        $lt?: T[prop]
+        $lte?: T[prop]
+        $in?: T[prop][]
+        $elemMatch?: T[prop] extends Array<any> ? T[prop][0] : never
+      }
+} & {
+  $or?: Array<NedbDatabaseQuery<T>>
+  $and?: Array<NedbDatabaseQuery<T>>
 }
 
 export interface NedbDocumentLogs extends NedbDocument {
@@ -184,6 +200,8 @@ export interface NedbDocumentLogs extends NedbDocument {
   isCM: boolean
   entry: string
   players: Array<string>
+  permalink?: string
+  permalinkFailed?: boolean
 }
 
 export interface NedbDocumentKnownFriends extends NedbDocument {
@@ -268,20 +286,21 @@ export interface NedbDocumentAccounts extends NedbDocument {
   completedFractalsDaily: { [triggerID: number]: true | undefined }
   completedStrikesWeekly: { [triggerID: number]: true | undefined }
   token: string
-  accountInfo: GW2AccountInfo
+  accountInfo?: GW2AccountInfo
 }
 
 export interface NedbDocumentBlockedKeyRules extends NedbDocument {
   active: boolean
   spec: string
   slot: string
+  keys: string
 }
 
 export interface NedbDocumentSettings extends NedbDocument {
-  _id: string
+  default: true
   lang: Lang
   gw2Dir: string
-  launchBuddyDir: string
+  launchBuddyDir: string | null
   arcDisabled: boolean
   logsPath: string | false
 }
@@ -296,17 +315,37 @@ export const NedbDatabaseEnabledTableNames = [
 ] as const
 type NedbDatabaseTableNames = (typeof NedbDatabaseEnabledTableNames)[number]
 
+interface NedbDatastoreFindWithSort<T extends NedbDocument, R extends (T | null) | T[]>
+  extends Promise<R> {
+  sort(sort: { [key in keyof Partial<T>]: 1 | -1 }): Promise<R>
+}
+
+export type KnownNedbDocument<T extends NedbDocument> = OptionalId<T> | null
+export type OptionalId<T extends NedbDocument> = Omit<T, '_id'> & { _id?: T['_id'] }
+
+export interface NedbDatastore<T extends NedbDocument> {
+  ensureIndex(index: { fieldName: keyof T; unique?: boolean; sparse?: boolean }): Promise<void>
+  find(query: NedbDatabaseQuery<T>): NedbDatastoreFindWithSort<T, T[]>
+  findOne(query: NedbDatabaseQuery<T>): NedbDatastoreFindWithSort<T, T | null>
+  insert(doc: OptionalId<T>): Promise<T>
+  update(
+    query: NedbDatabaseQuery<T>,
+    update: OptionalId<T> | { $set: Partial<T> },
+    updateOps?: { multi?: true }
+  ): Promise<number>
+  remove(query: NedbDatabaseQuery<T>, options?: { multi: boolean }): Promise<number>
+}
 type NedbDatabaseInternal = {
-  [db_name in NedbDatabaseTableNames]: Datastore<NedbDocument>
+  [db_name in NedbDatabaseTableNames]: NedbDatastore<NedbDocument>
 }
 
 export interface NedbDatabase extends NedbDatabaseInternal {
-  logs: Datastore<NedbDocumentLogs>
-  friends: Datastore<NedbDocumentFriends>
-  known_friends: Datastore<NedbDocumentKnownFriends>
-  accounts: Datastore<NedbDocumentAccounts>
-  blocked_key_rules: Datastore<NedbDocumentBlockedKeyRules>
-  settings: Datastore<NedbDocumentSettings>
+  logs: NedbDatastore<NedbDocumentLogs>
+  friends: NedbDatastore<NedbDocumentFriends>
+  known_friends: NedbDatastore<NedbDocumentKnownFriends>
+  accounts: NedbDatastore<NedbDocumentAccounts>
+  blocked_key_rules: NedbDatastore<NedbDocumentBlockedKeyRules>
+  settings: NedbDatastore<NedbDocumentSettings>
 }
 
 export type ElectronApp = Electron.App
@@ -396,8 +435,7 @@ export interface InitStatus extends InitStatusUninitialized {
   eventHub: EventHub
 }
 
-export type ServerRouteHandler = (param0: {
-  router: TODO
+export type ServerRouteHandler = (params: {
   db: NedbDatabase
   baseConfig: BaseConfig
   backendConfig: BackendConfig
@@ -509,7 +547,7 @@ export interface LogStats {
     name_de: string
     name_fr: string
   }
-  friend?: NedbDocumentFriends | null
+  friend?: KnownNedbDocument<NedbDocumentFriends>
   cmOnly?: boolean
 }
 

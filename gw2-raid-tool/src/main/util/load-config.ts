@@ -15,7 +15,14 @@ export default async function loadConfig(
     default: true
   })
   if (!savedConfig) {
-    savedConfig = await db.settings.insert({ default: true })
+    savedConfig = await db.settings.insert({
+      default: true,
+      lang: 'en',
+      gw2Dir: '',
+      launchBuddyDir: null,
+      arcDisabled: false,
+      logsPath: false
+    })
   }
   baseConfig.savedConfigId = savedConfig._id
 

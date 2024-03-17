@@ -11,7 +11,14 @@ import fightIconMap from '../../info/fight-icon-map'
 import hashLog from '../hash-log'
 
 import wings from '../../info/wings'
-import { LogFilter, LogStats, ServerRouteHandler, TODO } from '../../raid-tool'
+import {
+  KnownNedbDocument,
+  LogFilter,
+  LogStats,
+  NedbDocumentLogs,
+  ServerRouteHandler,
+  TODO
+} from '../../raid-tool'
 import { app, net, protocol } from 'electron'
 import { pathToFileURL } from 'url'
 
@@ -355,7 +362,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
     })
   })
 
-  async function uploadLog(log) {
+  async function uploadLog(log: KnownNedbDocument<NedbDocumentLogs>) {
     if (log && log.entry && !log.permalink) {
       logsUploading[log.hash] = true
       log.permalinkFailed = false
