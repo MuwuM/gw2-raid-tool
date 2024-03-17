@@ -194,7 +194,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
       }
       if (logFilters.config.friend) {
         const account = decodeURIComponent(logFilters.config.friend)
-        let friend = await db.friends.findOne({ account })
+        const friend = await db.friends.findOne({ account })
         conf.players = { $elemMatch: account }
         stats = { ...stats, friend }
       }

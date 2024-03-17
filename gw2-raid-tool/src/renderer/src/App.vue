@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { data } from "@renderer/preload-api";
-import { InitStatusStatusCode } from "../../raid-tool";
-import Updating from "./components/Updating.vue";
-import Main from "./components/Main.vue";
+import { data } from '@renderer/preload-api'
+import { InitStatusStatusCode } from '../../raid-tool'
+import Updating from './components/Updating.vue'
+import Main from './components/Main.vue'
 </script>
 
 <template>
@@ -11,6 +11,6 @@ import Main from "./components/Main.vue";
 </template>
 
 <style lang="less">
-@import "../../../node_modules/bootswatch/dist/darkly/bootstrap.min.css";
-@import "./assets/css/styles.less";
+@import '../../../node_modules/bootswatch/dist/darkly/bootstrap.min.css';
+@import './assets/css/styles.less';
 </style>

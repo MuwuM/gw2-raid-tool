@@ -38,6 +38,10 @@ type HotkeyRunner = {
   instant?: boolean
 }
 
+function doNothing() {
+  // do nothing
+}
+
 export type AHKManager = {
   hotkeys: Record<string, HotkeyRunner>
   hotkeysPending: Array<HotkeyRunner>
@@ -89,7 +93,7 @@ export default async function (
       return Promise.resolve()
     }
   }
-  var hotkeysString = `#NoTrayIcon
+  let hotkeysString = `#NoTrayIcon
 #SingleInstance Force
 stdout := FileOpen("*", "w \`n")
 
@@ -108,7 +112,7 @@ write(x) {
 `
     } else {
       if ((x as HotkeysListWithKeys).keys) {
-        ahk.hotkeys[(x as HotkeysListWithKeys).keys.join(' ')] = function () {}
+        ahk.hotkeys[(x as HotkeysListWithKeys).keys.join(' ')] = doNothing
         hotkeysString += `${(x as HotkeysListWithKeys).keys.join(' & ')}::write("${(x as HotkeysListWithKeys).keys.join(' ')}")
 `
       } else {
@@ -125,7 +129,7 @@ write(x) {
         const key = (x as HotkeysListWithKeyAndModifiers).key
           .replace(/\\{/g, '{{}')
           .replace(/\\}/g, '{}}')
-        ahk.hotkeys[mod + key] = function () {}
+        ahk.hotkeys[mod + key] = doNothing
         hotkeysString += `${mod + key}::write("${mod + key}")
 `
       }

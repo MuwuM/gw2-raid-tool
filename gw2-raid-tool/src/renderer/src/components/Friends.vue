@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { data, i18n } from "@renderer/preload-api";
-import { img } from "../util";
+import { data, i18n } from '@renderer/preload-api'
+import { img } from '../util'
 </script>
 <template>
   <main id="friends">
@@ -16,14 +16,14 @@ import { img } from "../util";
         </tr>
       </thead>
       <tbody>
-        <tr v-for="friend in data.friends">
+        <tr v-for="friend in data.friends" :key="friend._id">
           <th scope="row">
             <a :href="'gw2-log:logs/friends/' + encodeURIComponent(friend.account)">{{
               friend.account
             }}</a>
           </th>
           <td class="friend-badges">
-            <span v-for="n in friend.chars || []" class="friend-badge">
+            <span v-for="n in friend.chars || []" :key="n.name" class="friend-badge">
               <img
                 class="friend-icon"
                 :src="img('/img/profession/' + n.profession[0].name + '.png')"

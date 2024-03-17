@@ -1,41 +1,42 @@
 <script setup lang="ts">
-import { api, data, i18n, uniqueSpecs } from "@renderer/preload-api";
-import { preventDefault, img } from "@renderer/util";
+import { api, data, i18n, uniqueSpecs } from '@renderer/preload-api'
+import { preventDefault, img } from '@renderer/util'
 import {
   ChangeOnInputEvent,
   ChangeOnSelectEvent,
   ClickOnButtonEvent,
-  UiBlockedKeyRules,
-} from "src/raid-tool";
-const validAhkKeys = /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/;
+  UiBlockedKeyRules
+} from 'src/raid-tool'
+const validAhkKeys =
+  /(^\S$)|(^F\d$)|(^F\d\d$)|(^CapsLock$)|(^Space$)|(^Tab$)|(^Enter$)|(^Escape$)|(^Esc$)|(^Backspace$)|(^ScrollLock$)|(^Delete$)|(^Del$)|(^Insert$)|(^Ins$)|(^Home$)|(^End$)|(^PgUp$)|(^PgDn$)|(^Up$)|(^Down$)|(^Left$)|(^Right$)|(^Numpad\d$)|(^NumpadDot$)|(^NumLock$)|(^NumpadDiv$)|(^NumpadMult$)|(^NumpadAdd$)|(^NumpadSub$)|(^NumpadEnter$)|(^[LR]Win$)|(^[LR]?Control$)|(^[LR]?Ctrl$)|(^[LR]?Alt$)|(^[LR]?Shift$)/
 
 function updateKeyRuleSpec(keyRule: UiBlockedKeyRules, event: ChangeOnSelectEvent) {
-  preventDefault(event);
-  keyRule.spec = event.target.value || "";
-  api.ipc.send.updateKeyRule({ keyRule });
+  preventDefault(event)
+  keyRule.spec = event.target.value || ''
+  api.ipc.send.updateKeyRule({ keyRule })
 }
 function updateKeyRuleSlot(keyRule: UiBlockedKeyRules, event: ChangeOnSelectEvent) {
-  preventDefault(event);
-  keyRule.slot = event.target.value || "";
-  api.ipc.send.updateKeyRule({ keyRule });
+  preventDefault(event)
+  keyRule.slot = event.target.value || ''
+  api.ipc.send.updateKeyRule({ keyRule })
 }
 function updateKeyRuleKeys(keyRule: UiBlockedKeyRules, event: ChangeOnInputEvent) {
-  preventDefault(event);
-  keyRule.keys = event.target.value || "";
-  api.ipc.send.updateKeyRule({ keyRule });
+  preventDefault(event)
+  keyRule.keys = event.target.value || ''
+  api.ipc.send.updateKeyRule({ keyRule })
 }
 function updateKeyRuleActive(keyRule: UiBlockedKeyRules, event: ChangeOnInputEvent) {
-  preventDefault(event);
-  keyRule.active = event.target.checked;
-  api.ipc.send.updateKeyRule({ keyRule });
+  preventDefault(event)
+  keyRule.active = event.target.checked
+  api.ipc.send.updateKeyRule({ keyRule })
 }
 function deleteKeyRule(keyRule: UiBlockedKeyRules, event: ClickOnButtonEvent) {
-  preventDefault(event);
-  api.ipc.send.deleteKeyRule({ keyRule });
+  preventDefault(event)
+  api.ipc.send.deleteKeyRule({ keyRule })
 }
 function addKeyRule(event: ClickOnButtonEvent) {
-  preventDefault(event);
-  api.ipc.send.addKeyRule({});
+  preventDefault(event)
+  api.ipc.send.addKeyRule({})
 }
 </script>
 <template>
@@ -69,12 +70,12 @@ function addKeyRule(event: ClickOnButtonEvent) {
                 />
 
                 <select
-                  class="form-control"
                   v-model="keyRule.spec"
+                  class="form-control"
                   @change="updateKeyRuleSpec(keyRule, $event as ChangeOnSelectEvent)"
                 >
                   <option value="">{{ i18n.keyRuleAllSpecs }}</option>
-                  <option v-for="spec in uniqueSpecs" :value="spec">
+                  <option v-for="spec in uniqueSpecs" :key="spec" :value="spec">
                     {{ spec }}
                   </option>
                 </select>
@@ -82,13 +83,14 @@ function addKeyRule(event: ClickOnButtonEvent) {
             </td>
             <td>
               <select
-                class="form-control"
                 v-model="keyRule.slot"
+                class="form-control"
                 @change="updateKeyRuleSlot(keyRule, $event as ChangeOnSelectEvent)"
               >
                 <option value="">{{ i18n.keyRuleNoSlot }}</option>
                 <option
                   v-for="option in data.baseConfig.possibleSlots"
+                  :key="option.slot"
                   :value="option.slot"
                 >
                   {{ option.slot }}
@@ -97,18 +99,17 @@ function addKeyRule(event: ClickOnButtonEvent) {
             </td>
             <td>
               <input
+                v-model="keyRule.keys"
                 class="form-control"
                 type="text"
-                v-model="keyRule.keys"
                 @change="updateKeyRuleKeys(keyRule, $event as ChangeOnInputEvent)"
               />
               <div>
                 <span
-                  class="m-1"
                   v-for="key in (keyRule.keys || '').split(' ').filter((s) => s)"
-                  ><kbd :class="{ 'bg-danger': !key.match(validAhkKeys) }">{{
-                    key
-                  }}</kbd></span
+                  :key="key"
+                  class="m-1"
+                  ><kbd :class="{ 'bg-danger': !key.match(validAhkKeys) }">{{ key }}</kbd></span
                 >
               </div>
             </td>

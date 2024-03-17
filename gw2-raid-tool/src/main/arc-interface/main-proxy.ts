@@ -1,3 +1,4 @@
+import EventEmitter from 'events'
 import { BaseConfig, EventHubEmitter, NedbDatabase, ProgressConfigProxied } from '../../raid-tool'
 
 let reqIdCount = 0
@@ -28,6 +29,14 @@ type ResponseHandler = (
     | undefined
 ) => void
 
+function registerMessage(handler: ResponseHandler): void {
+  ;(process as EventEmitter).on('message', handler)
+}
+
+function unregisterMessage(handler: ResponseHandler): void {
+  ;(process as EventEmitter).off('message', handler)
+}
+
 export const db = new Proxy({} as any, {
   get(t, database: keyof NedbDatabase) {
     if (!t[database]) {
@@ -41,17 +50,17 @@ export const db = new Proxy({} as any, {
                 const reqId = reqIdCount
                 const respHandler: ResponseHandler = (resp) => {
                   if (resp && resp.msg === 'error' && resp.reqId === reqId) {
-                    process.off('message', respHandler)
+                    unregisterMessage(respHandler)
                     rej(resp.err)
                     return
                   }
                   if (!resp || resp.msg !== 'dbres' || resp.reqId !== reqId) {
                     return
                   }
-                  process.off('message', respHandler)
+                  unregisterMessage(respHandler)
                   res(resp.dbres)
                 }
-                process.on('message', respHandler)
+                registerMessage(respHandler)
                 process.send?.({
                   msg: 'db',
                   reqId,
@@ -75,18 +84,18 @@ export const baseConfig = new Proxy({} as any, {
         const reqId = reqIdCount
         const respHandler: ResponseHandler = (resp) => {
           if (resp && resp.msg === 'error' && resp.reqId === reqId) {
-            process.off('message', respHandler)
+            unregisterMessage(respHandler)
             rej(resp.err)
             return
           }
           if (!resp || resp.msg !== 'cfgRes' || resp.reqId !== reqId) {
             return
           }
-          process.off('message', respHandler)
+          unregisterMessage(respHandler)
           res(resp.cfgRes)
           delete t[`get-${prop}`]
         }
-        process.on('message', respHandler)
+        registerMessage(respHandler)
         process.send?.({
           msg: 'getBaseConfig',
           reqId,
@@ -101,7 +110,9 @@ export const baseConfig = new Proxy({} as any, {
   }
 }) as Readonly<Proxify<BaseConfig>>
 export const progressConfig = new Proxy({} as any, {
-  get() {},
+  get() {
+    // write only
+  },
   set(_t, prop: string, value) {
     if (prop.startsWith('$')) {
       //console.log(`${prop}: ${value}`);

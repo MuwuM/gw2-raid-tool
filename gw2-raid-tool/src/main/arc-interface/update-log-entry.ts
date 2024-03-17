@@ -11,12 +11,18 @@ import execDetached from './exec-detached'
 import ErrorWithStack from '../error-with-stack'
 import { LogEntryRef } from '../../raid-tool'
 
-/*function logHeap(msg) {
-  const mem = process.memoryUsage();
+const logHeapActive = false
 
-  //console.log(`heap: ${(mem.heapUsed / mem.heapTotal * 100).toFixed(2)}% (${(mem.heapTotal / 1048576).toFixed(3)} MB) -> ${msg}`);
-}*/
-function logHeap(_msg: string) {}
+function logHeap(msg: string) {
+  if (!logHeapActive) {
+    return
+  }
+  const mem = process.memoryUsage()
+
+  console.log(
+    `heap: ${((mem.heapUsed / mem.heapTotal) * 100).toFixed(2)}% (${(mem.heapTotal / 1048576).toFixed(3)} MB) -> ${msg}`
+  )
+}
 
 export default async function updateLogEntry(logsPath: string, entry: LogEntryRef) {
   try {

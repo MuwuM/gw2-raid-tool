@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { data, i18n } from "@renderer/preload-api";
-import LogList from "./LogList.vue";
-import LogView from "./LogView.vue";
-import { img, localizeName } from "@renderer/util";
+import { data, i18n } from '@renderer/preload-api'
+import LogList from './LogList.vue'
+import LogView from './LogView.vue'
+import { img, localizeName } from '@renderer/util'
 </script>
 <template>
   <main id="boss" class="arc-log-display-wrapper">

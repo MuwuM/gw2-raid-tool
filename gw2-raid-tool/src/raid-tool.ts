@@ -390,16 +390,16 @@ export type KnownEvents = {
   removeAccount: { token: string }
   changeLang: { lang: Lang }
   baseConfig: { baseConfig: BaseConfig }
-  selectLogsPath: {}
-  selectGw2Dir: {}
-  selectLaunchBuddyDir: {}
-  removeLaunchBuddyDir: {}
+  selectLogsPath: NonNullable<unknown>
+  selectGw2Dir: NonNullable<unknown>
+  selectLaunchBuddyDir: NonNullable<unknown>
+  removeLaunchBuddyDir: NonNullable<unknown>
   resetAllLogs: { confirmReset: 'reset' | string }
-  updateArcDps11: {}
-  checkArcUpdates: {}
-  disableArcUpdates: {}
-  enableArcUpdates: {}
-  startGame: {}
+  updateArcDps11: NonNullable<unknown>
+  checkArcUpdates: NonNullable<unknown>
+  disableArcUpdates: NonNullable<unknown>
+  enableArcUpdates: NonNullable<unknown>
+  startGame: NonNullable<unknown>
   loading: { status: InitStatusStatusCode; step: string }
   progressConfig: { progressConfig: ProgressConfig }
   mumbleLinkActive: { mumbleLinkActive: MumbleLinkData | null }
@@ -414,13 +414,15 @@ export type KnownEvents = {
   selectPage: { page: PageId; info: PageInfo }
   keyRules: { keyRules: NedbDocumentBlockedKeyRules[] }
   logFilter: LogFilter
-  friendsFilter: {}
+  friendsFilter: NonNullable<unknown>
   updateKeyRule: { keyRule: NedbDocumentBlockedKeyRules }
-  addKeyRule: {}
+  addKeyRule: NonNullable<unknown>
   deleteKeyRule: { keyRule: NedbDocumentBlockedKeyRules }
-  getKeyRules: {}
-  builds: { builds: {}[] }
+  getKeyRules: NonNullable<unknown>
+  builds: { builds: Build[] }
 }
+
+export type Build = TODO
 
 export type PageAction = 'upload' | undefined
 export type PageId =

@@ -144,7 +144,9 @@ import { Stats } from 'fs'
           console.info(`Skipping: ${fileToUpload}`)
           continue
         }
-      } catch (error) {}
+      } catch (error) {
+        // cannot skip uploading
+      }
 
       console.info(`Uploading: ${fileToUpload}`)
 

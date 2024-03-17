@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { data, i18n } from "@renderer/preload-api";
-import { img } from "@renderer/util";
-import LogList from "./LogList.vue";
-import LogView from "./LogView.vue";
+import { data, i18n } from '@renderer/preload-api'
+import { img } from '@renderer/util'
+import LogList from './LogList.vue'
+import LogView from './LogView.vue'
 </script>
 <template>
   <main id="friend" class="arc-log-display-wrapper">
@@ -10,7 +10,7 @@ import LogView from "./LogView.vue";
       <div class="jumbotron">
         <h2 v-if="data.stats.friend">{{ data.stats.friend.account }}</h2>
         <div v-if="data.stats.friend" class="friend-badges">
-          <span v-for="n in data.stats.friend.chars || []" class="friend-badge"
+          <span v-for="n in data.stats.friend.chars || []" :key="n.name" class="friend-badge"
             ><img
               class="friend-icon"
               :src="img('/img/profession/' + n.profession[0].name + '.png')"

@@ -86,12 +86,6 @@ export interface GW2ApiResponseInventory {
   inventory: GW2ApiResponseInventoryItem[]
 }
 
-export interface GW2ApiResponseBank {}
-
-export interface GW2ApiResponseMaterials {}
-
-export interface GW2ApiResponseLegendaryArmory {}
-
 export interface GW2ApiResponseWalletItem {
   id: number
   value?: number

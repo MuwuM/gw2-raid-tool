@@ -11,7 +11,7 @@ import updater from './updater'
 import updateGw2Instances from './update-gw2-instances'
 import updateMumbleLinkData from './update-mumble-links'
 import util from 'util'
-const execSync = require('child_process').exec
+import { exec as execSync } from 'child_process'
 const execAsync = util.promisify(execSync)
 
 import eventHub from './event-hub'
@@ -23,6 +23,7 @@ import loadArcdpsConfig from './util/load-arcdps-config'
 import settings from './routes/settings'
 import arc from './routes/arc'
 import keys from './routes/keys'
+
 const isAdmin = async () => {
   const { stdout } = await execAsync('whoami /groups')
   const isAdmin = stdout.indexOf('12288') > -1
