@@ -1,10 +1,24 @@
-import EventEmitter from 'events'
-
 import { progressConfig } from './main-proxy'
 import updateLogEntry from './update-log-entry'
 import handleCompress from './handle-compress'
 
-type DoneFunction = () => void
+type QueueParam = { mode: 'log' | 'compress'; entry: string }
+
+type ArrayQueue = {
+  queue: QueueParam[]
+  active: boolean
+}
+
+const arrayQueue: ArrayQueue = {
+  queue: [],
+  active: false
+}
+
+function preventBlocking() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 1)
+  })
+}
 
 const arcFileHandlerInit = (
   logsPath: string,
@@ -16,72 +30,74 @@ const arcFileHandlerInit = (
     l: number
   }
 ) => {
-  let queue = Promise.resolve() as Promise<void>
-  function singleton() {
-    return new Promise<DoneFunction>((res) => {
-      let next: DoneFunction
-      const done = new Promise<void>((innerRes) => (next = innerRes))
-      queue
-        .then(() => res(next))
-        .catch((err) => {
-          console.error(err)
-          next()
-        })
-      queue = done
-    })
+  async function handleQueue(add: QueueParam) {
+    if (add.mode === 'log') {
+      const entry = add.entry
+      console.info(`adding: ${entry}`)
+      counter.i++
+      progressConfig.parsingLogs = counter.i
+    } else if (add.mode === 'compress') {
+      counter.k++
+      progressConfig.compressingLogs = counter.k
+    }
+    arrayQueue.queue.push(add)
+    if (arrayQueue.active) {
+      return
+    }
+    arrayQueue.active = true
+    while (arrayQueue.queue.length > 0) {
+      const next = arrayQueue.queue.shift()
+      if (!next) {
+        continue
+      }
+      if (next.mode === 'log') {
+        const entry = next.entry
+        console.info(`parsing: ${entry}`)
+        progressConfig.currentLog = entry
+        try {
+          await updateLogEntry(logsPath, entry)
+          progressConfig.currentLog = false
+          console.info(`parsed ${entry}`)
+          counter.j++
+          progressConfig.parsedLogs = counter.j
+          if (counter.i === counter.j && counter.chokidarReady) {
+            counter.i = 0
+            counter.j = 0
+            progressConfig.parsingLogs = counter.i
+            progressConfig.parsedLogs = counter.j
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      } else if (next.mode === 'compress') {
+        const compress = next.entry
+        console.info(`zipping: ${compress}`)
+        progressConfig.currentLog = `zipping: ${compress}`
+        try {
+          await handleCompress(logsPath, [compress])
+          progressConfig.currentLog = false
+          console.info(`zipped ${compress}`)
+          counter.l++
+          progressConfig.compressedLogs = counter.l
+          if (counter.k === counter.l && counter.chokidarReady) {
+            counter.k = 0
+            counter.l = 0
+            progressConfig.compressingLogs = counter.k
+            progressConfig.compressedLogs = counter.l
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
+      await preventBlocking()
+    }
+    arrayQueue.active = false
   }
-  const arcFileHandler = new EventEmitter({ captureRejections: true })
-  arcFileHandler.on('log', async (entry) => {
-    console.info(`adding: ${entry}`)
-    counter.i++
-    progressConfig.parsingLogs = counter.i
-    const done = await singleton()
-    try {
-      console.info(`parsing: ${entry}`)
-      progressConfig.currentLog = entry
-      await updateLogEntry(logsPath, entry)
-      progressConfig.currentLog = false
-      console.info(`parsed ${entry}`)
-      counter.j++
-      progressConfig.parsedLogs = counter.j
-      if (counter.i === counter.j && counter.chokidarReady) {
-        counter.i = 0
-        counter.j = 0
-        progressConfig.parsingLogs = counter.i
-        progressConfig.parsedLogs = counter.j
-      }
-      done()
-    } catch (error) {
-      done()
-      throw error
-    }
-  })
-  arcFileHandler.on('compress', async (entry) => {
-    counter.k++
-    progressConfig.compressingLogs = counter.k
-    const done = await singleton()
-    try {
-      progressConfig.currentLog = `zipping: ${entry}`
-      await handleCompress(logsPath, [entry])
-      progressConfig.currentLog = false
-      counter.l++
-      progressConfig.compressedLogs = counter.l
-      if (counter.k === counter.l && counter.chokidarReady) {
-        counter.k = 0
-        counter.l = 0
-        progressConfig.compressingLogs = counter.k
-        progressConfig.compressedLogs = counter.l
-      }
-      done()
-    } catch (error) {
-      done()
-      throw error
-    }
-  })
 
-  arcFileHandler.on('error', (err) => {
-    console.error(err)
-  })
-  return arcFileHandler
+  return {
+    emit(mode: 'log' | 'compress', entry: string) {
+      handleQueue({ mode, entry })
+    }
+  }
 }
 export default arcFileHandlerInit

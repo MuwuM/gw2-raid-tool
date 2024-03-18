@@ -3,8 +3,8 @@ import { BaseConfig, EventHubEmitter, NedbDatabase, ProgressConfigProxied } from
 
 let reqIdCount = 0
 
-type Proxify<T> = {
-  [P in keyof T]: T[P] extends object ? Proxify<T[P]> : Promise<T[P]>
+type ProxifyReadAccess<T> = {
+  [P in keyof T]: Promise<T[P]>
 }
 
 type ResponseHandler = (
@@ -106,7 +106,7 @@ export const baseConfig = new Proxy({} as any, {
   set() {
     return false
   }
-}) as Readonly<Proxify<BaseConfig>>
+}) as Readonly<ProxifyReadAccess<BaseConfig>>
 export const progressConfig = new Proxy({} as any, {
   get() {
     // write only

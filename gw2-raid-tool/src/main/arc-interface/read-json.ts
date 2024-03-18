@@ -304,8 +304,15 @@ export type LogJsonData = {
 }
 
 export async function readLogJsonFiltered(file: string): Promise<LogJsonData> {
-  const chainSteps: StreamItem[] = [fs.createReadStream(file)]
-  if (file.endsWith('.jsonz')) {
+  let filePath = file
+  if (filePath.endsWith('.json') && (await fs.pathExists(`${filePath}z`))) {
+    filePath = `${file}z`
+  } else if (!(await fs.pathExists(file))) {
+    throw new Error(`File not found: ${file}`)
+  }
+
+  const chainSteps: StreamItem[] = [fs.createReadStream(filePath)]
+  if (filePath.endsWith('.jsonz')) {
     chainSteps.push(zlib.createUnzip())
   }
   chainSteps.push(parser())

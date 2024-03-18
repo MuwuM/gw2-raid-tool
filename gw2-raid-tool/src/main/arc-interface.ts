@@ -44,15 +44,13 @@ import arcFileHandlerInit from './arc-interface/arc-file-handler'
   )
   watcher.on('add', async (chokPath) => {
     const entry = chokPath.replace(/\\/g, '/')
-    //console.log({entry});
     if (entry.match(/\.z?evtc$/)) {
       arcFileHandler.emit('log', entry)
-    }
-    if (entry.match(/\.(json|html)$/)) {
-      const uncompressedJSON = chokPath.replace(/\\/g, '/')
-      arcFileHandler.emit('compress', uncompressedJSON)
+    } else if (entry.match(/\.(json|html)$/)) {
+      arcFileHandler.emit('compress', entry)
     }
   })
+
   watcher.on('ready', () => {
     counter.chokidarReady = true
     if (counter.i === counter.j && counter.chokidarReady) {
