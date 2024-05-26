@@ -309,8 +309,32 @@ const wings: WingsRes = [
     ]
   },
   {
+    w: 'StrikeS1',
+    w_img: 'Mastery_point_Central_Tyria.png',
+    isStrike: true,
+    isStrikeWeekly: true,
+    name_en: 'Strike Mission: Season 1',
+    name_de: 'Angriffsmission: Staffel 1',
+    name_fr: "Mission d'attaque: Saison 1",
+    id: 'strikes_core_s1',
+    hasDailies: 5,
+    steps: [
+      {
+        id: 'old_lions_court',
+        type: 'Boss',
+        name_en: "Old Lion's Court",
+        name_de: 'Alter Löwenhof',
+        name_fr: 'Cour du vieux lion',
+        triggerID: [25413, 25414, 25415, 25416, 25419, 25423],
+        img: 'Mini_Vermilion_Assault_Knight.png',
+        hasCM: true,
+        dailyIndex: 0
+      }
+    ]
+  },
+  {
     w: 'StrikeIce',
-    w_img: '2270830-t.png',
+    w_img: 'Mastery_point_Icebrood_Saga.png',
     isStrike: true,
     name_en: 'Strike Mission: The Icebrood Saga',
     name_de: 'Angriffsmission: Eisbrut-Saga',
@@ -327,7 +351,7 @@ const wings: WingsRes = [
         triggerID: 22154,
         img: 'Icebrood_Construct.png',
         hasCM: false,
-        dailyIndex: 2
+        dailyIndex: 3
       },
       {
         id: 'voice_and_claw',
@@ -338,7 +362,7 @@ const wings: WingsRes = [
         triggerID: 22343,
         img: 'KodanVoiceAndClaw.png',
         hasCM: false,
-        dailyIndex: 3
+        dailyIndex: 4
       },
       {
         id: 'fraenir',
@@ -349,7 +373,7 @@ const wings: WingsRes = [
         triggerID: 22492,
         img: 'Fraenir_of_Jormag.png',
         hasCM: false,
-        dailyIndex: 1
+        dailyIndex: 2
       },
       {
         id: 'boneskinner',
@@ -361,7 +385,7 @@ const wings: WingsRes = [
         img: 'Boneskinner.png',
         hasCM: false,
         kpName: 'boneSkinner',
-        dailyIndex: 5
+        dailyIndex: 0
       },
       {
         id: 'whisper_of_jormag',
@@ -372,20 +396,20 @@ const wings: WingsRes = [
         triggerID: 22711,
         img: 'Whisper_of_Jormag.png',
         hasCM: false,
-        dailyIndex: 4
+        dailyIndex: 5
       }
     ]
   },
   {
     w: 'StrikeEoD',
-    w_img: '2270831-t.png',
+    w_img: 'Mastery_point_End_of_Dragons.png',
     isStrike: true,
     isStrikeWeekly: true,
     name_en: 'Strike Mission: End of Dragons',
     name_de: 'Angriffsmission: End of Dragons',
     name_fr: "Mission d'attaque: End of Dragons",
     id: 'strikes_end_of_dragons',
-    hasDailies: 4,
+    hasDailies: 5,
     steps: [
       {
         id: 'aetherblade_hideout',
@@ -396,7 +420,7 @@ const wings: WingsRes = [
         triggerID: 24033,
         img: 'MaiTrin.png',
         hasCM: true,
-        dailyIndex: 0
+        dailyIndex: 1
       },
       {
         id: 'xunlai_jade_junkyard',
@@ -407,7 +431,7 @@ const wings: WingsRes = [
         triggerID: 23957,
         img: 'Ankka.png',
         hasCM: true,
-        dailyIndex: 1
+        dailyIndex: 2
       },
       {
         id: 'kaineng_overlook',
@@ -418,7 +442,7 @@ const wings: WingsRes = [
         triggerID: [24485, 24266],
         img: 'MinisterLi.png',
         hasCM: true,
-        dailyIndex: 2
+        dailyIndex: 3
       },
       {
         id: 'harvest_temple',
@@ -429,7 +453,42 @@ const wings: WingsRes = [
         triggerID: [43488, 1378],
         img: 'DragonVoid.png',
         hasCM: true,
-        dailyIndex: 3
+        dailyIndex: 4
+      }
+    ]
+  },
+  {
+    w: 'StrikeSotO',
+    w_img: 'Mastery_point_Secrets_of_the_Obscure.png',
+    isStrike: true,
+    isStrikeWeekly: true,
+    name_en: 'Strike Mission: Secrets of the Obscure',
+    name_de: 'Angriffsmission: Secrets of the Obscure',
+    name_fr: "Mission d'attaque: Secrets of the Obscure",
+    id: 'strikes_secrets_of_the_obscure',
+    hasDailies: 2,
+    steps: [
+      {
+        id: 'dagda',
+        type: 'Boss',
+        name_en: 'Strike Mission: Cosmic Observatory',
+        name_de: 'Angriffsmission "Kosmisches Observatorium"',
+        name_fr: "Mission d'attaque : Observatoire cosmique",
+        triggerID: 25705,
+        img: 'Mini_Dagda.png',
+        hasCM: true,
+        dailyIndex: 1
+      },
+      {
+        id: 'cerus',
+        type: 'Boss',
+        name_en: 'Strike Mission: Temple of Febe',
+        name_de: 'Angriffsmission "Tempel von Febe"',
+        name_fr: "Mission d'attaque : Temple de Febe",
+        triggerID: 25989,
+        img: 'Mini_Cerus.png',
+        hasCM: true,
+        dailyIndex: 0
       }
     ]
   },
