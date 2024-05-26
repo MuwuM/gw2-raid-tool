@@ -426,7 +426,7 @@ const wings: WingsRes = [
         name_en: 'Harvest Temple',
         name_de: 'Harvest Temple',
         name_fr: 'Harvest Temple',
-        triggerID: 43488 /*1378, /*24375, /*43488*/,
+        triggerID: [43488, 1378],
         img: 'DragonVoid.png',
         hasCM: true,
         dailyIndex: 3
@@ -436,7 +436,7 @@ const wings: WingsRes = [
   {
     w: 'FractalCMs',
     w_img: 'Fraktal-Relikt_Icon.png',
-    w_img_text: '98',
+    w_img_text: '96',
     isFractal: true,
     name_en: 'Fractals of the Mists CM',
     name_de: 'Fraktale der Nebel CM',
@@ -481,7 +481,7 @@ const wings: WingsRes = [
   {
     w: 'FractalCMs',
     w_img: 'Fraktal-Relikt_Icon.png',
-    w_img_text: '99',
+    w_img_text: '97',
     isFractal: true,
     name_en: 'Fractals of the Mists CM',
     name_de: 'Fraktale der Nebel CM',
@@ -526,7 +526,7 @@ const wings: WingsRes = [
   {
     w: 'FractalCMs',
     w_img: 'Fraktal-Relikt_Icon.png',
-    w_img_text: '100',
+    w_img_text: '98',
     isFractal: true,
     name_en: 'Fractals of the Mists CM',
     name_de: 'Fraktale der Nebel CM',
@@ -541,6 +541,62 @@ const wings: WingsRes = [
         name_fr: 'Fractale du Pic de Sunqua',
         triggerID: 23254,
         img: 'Ai.png',
+        hasCM: true,
+        dailyIndex: 0
+      }
+    ]
+  },
+  {
+    w: 'FractalCMs',
+    w_img: 'Fraktal-Relikt_Icon.png',
+    w_img_text: '99',
+    isFractal: true,
+    name_en: 'Fractals of the Mists CM',
+    name_de: 'Fraktale der Nebel CM',
+    name_fr: 'Fractales des Brumes CM',
+    id: 'fractal_cms_silent_surf',
+    steps: [
+      {
+        id: 'silent_surf_fractal',
+        type: 'Boss',
+        name_en: 'Silent Surf Fractal',
+        name_de: 'Fraktal "Stumme Brandung"',
+        name_fr: 'Fractale du Ressac silencieux',
+        triggerID: [25572, 25577],
+        img: 'Mini_Kanaxai.png',
+        hasCM: true,
+        dailyIndex: 0
+      }
+    ]
+  },
+  {
+    w: 'FractalCMs',
+    w_img: 'Fraktal-Relikt_Icon.png',
+    w_img_text: '100',
+    isFractal: true,
+    name_en: 'Fractals of the Mists CM',
+    name_de: 'Fraktale der Nebel CM',
+    name_fr: 'Fractales des Brumes CM',
+    id: 'fractal_cms_lonely_tower',
+    steps: [
+      {
+        id: 'lonely_tower_fractal_deimos_cerus',
+        type: 'Boss',
+        name_en: 'Lonely Tower Fractal: Deimos & Cerus',
+        name_de: 'Fraktal "Einsamer Turm": Deimos & Cerus',
+        name_fr: 'Fractale de la Tour solitaire: Deimos & Cerus',
+        img: 'Cerus-Deimos.png',
+        hasCM: true,
+        dailyIndex: 0
+      },
+      {
+        id: 'lonely_tower_fractal_eparch',
+        type: 'Boss',
+        name_en: 'Lonely Tower Fractal: Eparch',
+        name_de: 'Fraktal "Einsamer Turm": Eparch',
+        name_fr: 'Fractale de la Tour solitaire: Eparch',
+        triggerID: 26231,
+        img: 'Mini_Eparch.png',
         hasCM: true,
         dailyIndex: 0
       }
