@@ -37,7 +37,10 @@ const raidBossKpItems = {
   95638: 'aetherblade_hideout',
   95982: 'xunlai_jade_junkyard',
   97451: 'kaineng_overlook',
-  97132: 'harvest_temple'
+  97132: 'harvest_temple',
+  99165: 'old_lions_court',
+  100068: 'dagda',
+  100858: 'cerus'
 } as { [id: number]: string }
 
 const raidBossCofferItems = {
@@ -85,7 +88,10 @@ const strikeCofferCM = {
   97269: 'aetherblade_hideout',
   96638: 'xunlai_jade_junkyard',
   96419: 'kaineng_overlook',
-  95986: 'harvest_temple'
+  95986: 'harvest_temple',
+  99204: 'old_lions_court',
+  101172: 'dagda',
+  101542: 'cerus'
 } as { [id: number]: string }
 
 export default {
