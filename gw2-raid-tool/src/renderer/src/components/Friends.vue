@@ -26,7 +26,7 @@ const filteredFriends = computed<OptionalFuseSearchResult>(() => {
     return data.friends.map((f) => ({ item: f }))
   }
   if (data.searchFriends.match(AccountNameRegex)) {
-    const cleanSearch = data.searchFriends.replace(/\s/g, '')
+    const cleanSearch = data.searchFriends.trim()
     const friendsById = data.friends.filter((f) => f.account === cleanSearch)
     if (friendsById.length > 0) {
       return friendsById.map(() => ({ item: friendsById[0] }))

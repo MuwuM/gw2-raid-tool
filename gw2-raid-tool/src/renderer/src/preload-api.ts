@@ -284,15 +284,16 @@ const killproofMeCache = reactive(
 )
 
 export const killproofMeStats = (accountName: string) => {
-  setTimeout(() => checkKillproofMe(accountName), 1)
-  const stats = killproofMeCache[accountName]
+  const cleanName = accountName.trim()
+  setTimeout(() => checkKillproofMe(cleanName), 1)
+  const stats = killproofMeCache[cleanName]
   if (!stats) {
     return []
   }
   return [stats]
 }
 
-export const AccountNameRegex = /^\s*[a-zA-Z]+\.\d\d\d\d\s*$/
+export const AccountNameRegex = /^\s*[a-zA-Z ]+\.\d\d\d\d\s*$/
 
 async function checkKillproofMe(accountName: string) {
   if (!accountName || typeof accountName !== 'string' || !accountName.match(AccountNameRegex)) {
