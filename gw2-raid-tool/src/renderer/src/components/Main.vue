@@ -22,10 +22,17 @@ function startGame(event?: ClickEvent) {
 
 function handleScrollUpdate() {
   const navBar = document.querySelector('nav.navbar') as HTMLElement
-  const tableHeader = document.querySelector('table thead tr.sticky-top') as HTMLTableRowElement
-  if (navBar && tableHeader) {
-    const rect = navBar.getBoundingClientRect()
-    tableHeader.style.top = `${Math.floor(rect.bottom)}px`
+  const stickyElements = document.querySelectorAll('.sticky-top') as NodeListOf<HTMLElement>
+  let prev = navBar
+  for (const stickyElement of stickyElements) {
+    if (stickyElement === prev) {
+      continue
+    }
+    if (prev) {
+      const rect = prev.getBoundingClientRect()
+      stickyElement.style.top = `${rect.bottom}px`
+      prev = stickyElement
+    }
   }
 }
 

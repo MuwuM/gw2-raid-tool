@@ -24,11 +24,12 @@ const lang = {
   creditsGameIconsPart2: "sont utilisées pour afficher l'outil Raid.",
   licenseLabel: 'Licence',
   creditsMorePackages: 'Autres logiciels utilisés',
-  sharedLogsLabel: 'Kills partagés:',
+  sharedLogsLabel: 'Kill-Score',
+  sharedLogsLabelInfo:
+    'Le score de kill est calculé sur la base de : Normal Kills * 1 + CM Kills * 5',
   friendsHeaderAccount: 'Account',
   friendsHeaderNames: 'Noms',
   friendsHeaderKills: 'Kills',
-  friendsHeaderSharedKills: 'Boss Kills partagés',
   noKP: 'Non KPS',
   dailyResetInfo: 'Quotidien',
   weeklyResetInfo: 'Hebdomadaire',
@@ -110,7 +111,14 @@ const lang = {
   addKeyRule: 'Ajouter une règle',
   keyRuleRequireAdmin:
     "L'outil de raid doit être lancé en tant qu'administrateur pour pouvoir bloquer les clés.",
-  cmOnlyLabel: "n'affiche que le CM"
+  cmOnlyLabel: "n'affiche que le CM",
+  friendsSearch: 'Recherchez les amis',
+  friendsPerfectMatchButton: 'Afficher',
+  killproofButton: 'Vérifier sur killproof.me',
+  killproofLoading: 'Chargement...',
+  killproofNotFound: 'Non trouvé',
+  killproofHeader: 'Killproof.me',
+  unknownFriend: 'Inconnu'
 } as const
 
 export default lang as TranslationFile<typeof lang>

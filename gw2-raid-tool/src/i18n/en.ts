@@ -23,11 +23,11 @@ const lang = {
   creditsGameIconsPart2: 'are used to display the Raid Tool.',
   licenseLabel: 'Licence',
   creditsMorePackages: 'Other software packages used',
-  sharedLogsLabel: 'Shared Kills:',
+  sharedLogsLabel: 'Kill-Score',
+  sharedLogsLabelInfo: 'The kill score is calculated based on: Normal Kills * 1 + CM Kills * 5',
   friendsHeaderAccount: 'Account',
   friendsHeaderNames: 'Names',
   friendsHeaderKills: 'Kills',
-  friendsHeaderSharedKills: 'Shared Boss Kills',
   noKP: 'No KPS',
   dailyResetInfo: 'Daily',
   weeklyResetInfo: 'Weekly',
@@ -108,7 +108,14 @@ const lang = {
   keyRuleDelete: 'Delete',
   addKeyRule: 'Add rule',
   keyRuleRequireAdmin: 'The raid tool must be started as admin to be able to lock keys.',
-  cmOnlyLabel: 'only show CM'
+  cmOnlyLabel: 'only show CM',
+  friendsSearch: 'Search for friends',
+  friendsPerfectMatchButton: 'Show',
+  killproofButton: 'Check on killproof.me',
+  killproofLoading: 'Loading...',
+  killproofNotFound: 'Not found',
+  killproofHeader: 'Killproof.me',
+  unknownFriend: 'Unknown'
 } as const
 
 export default lang as TranslationFile<typeof lang>

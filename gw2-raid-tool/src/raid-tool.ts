@@ -1,3 +1,5 @@
+import type ItemIds from './info/item-ids'
+
 export type TODO = any
 
 export enum SupportedLanguages {
@@ -315,6 +317,9 @@ export interface Kps {
 }
 
 export interface TotalKps extends Kps {}
+export interface KpsOfAccount extends Kps {
+  account: string
+}
 
 export interface NedbDocumentBlockedKeyRules extends NedbDocument {
   active: boolean
@@ -628,3 +633,53 @@ export type SpecsJson = Array<{
 }>
 
 export type LogEntryRef = string
+
+export type KpMeApiResponseError = { error: string }
+interface KpMeApiResponseItem {
+  name: string
+  id: keyof (typeof ItemIds)['raidBossKpItems'] | keyof (typeof ItemIds)['raidBossCofferItems']
+  amount: number
+}
+interface KpMeApiResponseKillproof {
+  name: string
+  amount: number
+  id:
+    | (typeof ItemIds)['legendaryInsight']
+    | (typeof ItemIds)['legendaryDivination']
+    | (typeof ItemIds)['fractalUCE']
+    | (typeof ItemIds)['fractalUFE']
+    | (typeof ItemIds)['boneskinnerKp']
+}
+
+interface KpMeApiResponseAccount {
+  coffers: KpMeApiResponseItem[]
+  tokens: KpMeApiResponseItem[]
+  original_uce: { amount: number; at_date: string }
+  next_refresh: string
+  next_refresh_seconds: 0
+  titles: KpMeApiResponseTitle[]
+  proof_url: string
+  account_name: string
+  killproofs: KpMeApiResponseKillproof[]
+  valid_api_key: boolean
+  last_refresh: string
+  kpid: string
+}
+
+interface KpMeApiResponseTitle {
+  name: string
+  mode: 'raid' | 'fractal'
+  id: number
+}
+
+export interface KpMeApiResponseSuccess extends KpMeApiResponseAccount {
+  linked_totals?: {
+    titles: KpMeApiResponseTitle[]
+    coffers: KpMeApiResponseItem[]
+    tokens: KpMeApiResponseItem[]
+    killproofs: KpMeApiResponseKillproof[]
+  }
+  linked?: KpMeApiResponseAccount[]
+}
+
+export type KpMeApiResponse = KpMeApiResponseError | KpMeApiResponseSuccess

@@ -3,6 +3,8 @@ import {
   BaseConfig,
   ExposedIpc,
   InitStatusStatusCode,
+  KpMeApiResponse,
+  KpsOfAccount,
   Lang,
   LogFilter,
   LogStats,
@@ -20,7 +22,7 @@ import {
   exposedListeners,
   exposedSenders
 } from '../../raid-tool'
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 
 import i18nLoader from '../../i18n/i18n-loader'
 import { BaseTranslationFile, EnglishTranslationFile } from 'src/i18n/type'
@@ -30,6 +32,7 @@ import uniqueSpecsSrc from '../../info/unique-specs.json'
 import { preventDefault } from './util'
 
 import pkg from '../../../package.json'
+import itemIds from '../../info/item-ids'
 
 const colors = [
   '#77ff77',
@@ -97,7 +100,8 @@ export const data = reactive({
   deps: Object.keys(pkg.dependencies),
   keyRules: [] as UiBlockedKeyRules[],
   currenttime: Date.now(),
-  logIsLoading: null as null | string
+  logIsLoading: null as null | string,
+  searchFriends: '' as string
 })
 
 export const wings = reactive(wingsBase as WingsRes)
@@ -108,7 +112,7 @@ export function selectLog(log: UiLogs, event?: Event) {
     data.activeLog = log.hash
   } else {
     data.activeLog = null
-    data.logIsLoading = null
+    //data.logIsLoading = null
   }
 }
 
@@ -133,9 +137,11 @@ function showLogPage(page: number, filters: LogFilter['config'], event?: Event) 
   api.ipc.send.logFilter(logFilter)
 }
 
+const logPages = ['logs', 'friends', 'boss'] as const as PageId[]
+
 export function selectPage(page: PageId, info: PageInfo, event?: Event) {
   preventDefault(event)
-  if (data.page !== page) {
+  if (!logPages.includes(page)) {
     data.logIsLoading = null
   }
   if (page === 'logs' && info && info.id && info.action === 'upload') {
@@ -147,6 +153,10 @@ export function selectPage(page: PageId, info: PageInfo, event?: Event) {
       selectLog(log, event)
       return
     }
+  }
+
+  if (page === 'friends') {
+    data.searchFriends = ''
   }
 
   data.page = page
@@ -177,11 +187,16 @@ setInterval(() => {
   data.currenttime = now.toMillis()
 }, 100)
 
-export const i18n = new Proxy({} as any, {
-  get(_target, p: keyof BaseTranslationFile) {
-    return i18nLoader[data.baseConfig.lang][p]
-  }
-}) as BaseTranslationFile as EnglishTranslationFile
+export const i18n = computed(() => {
+  return new Proxy(i18nLoader[data.baseConfig.lang || 'en'], {
+    get(_target, p: keyof BaseTranslationFile) {
+      return i18nLoader[data.baseConfig.lang || 'en'][p] || `[[...${p}...]]`
+    },
+    has() {
+      return true
+    }
+  }) as BaseTranslationFile as EnglishTranslationFile
+})
 
 api.ipc.on.loading((val) => {
   data.loading.status = val.status
@@ -260,3 +275,93 @@ api.ipc.on.progressConfig(({ progressConfig }) => {
 api.ipc.on.mumbleLinkActive(({ mumbleLinkActive }) => {
   data.mumbleLinkActive = mumbleLinkActive
 })
+
+const killproofMeCache = reactive(
+  {} as Record<
+    string,
+    { lastCheck: number; totalKps: TotalKps | null | false; linkedAccounts: KpsOfAccount[] }
+  >
+)
+
+export const killproofMeStats = (accountName: string) => {
+  setTimeout(() => checkKillproofMe(accountName), 1)
+  const stats = killproofMeCache[accountName]
+  if (!stats) {
+    return []
+  }
+  return [stats]
+}
+
+export const AccountNameRegex = /^\s*[a-zA-Z]+\.\d\d\d\d\s*$/
+
+async function checkKillproofMe(accountName: string) {
+  if (!accountName || typeof accountName !== 'string' || !accountName.match(AccountNameRegex)) {
+    return
+  }
+  if (
+    killproofMeCache[accountName] &&
+    killproofMeCache[accountName].lastCheck + 1000 * 60 * 60 > Date.now()
+  ) {
+    return
+  }
+  try {
+    killproofMeCache[accountName] = { lastCheck: Date.now(), totalKps: null, linkedAccounts: [] }
+    const res = await fetch(
+      `https://killproof.me/api/kp/${encodeURIComponent(accountName)}?lang=en`
+    )
+    const stats = (await res.json()) as KpMeApiResponse
+    if ('error' in stats) {
+      console.error(`Error while checking killproof.me for ${accountName}: ${stats.error}`)
+      killproofMeCache[accountName] = { lastCheck: Date.now(), totalKps: false, linkedAccounts: [] }
+      return
+    }
+    const totalKps: TotalKps = {
+      li: 0,
+      fractal: 0,
+      boneSkinner: 0,
+      zhaitaffy: 0,
+      raidBossKp: {},
+      unopenedBoxes: []
+    }
+
+    for (const kp of stats.linked_totals?.killproofs || stats.killproofs) {
+      if (kp.id === itemIds.legendaryInsight || kp.id === itemIds.legendaryDivination) {
+        totalKps.li += kp.amount
+      } else if (kp.id === itemIds.fractalUFE) {
+        totalKps.fractal += kp.amount
+      } else if (kp.id === itemIds.boneskinnerKp) {
+        totalKps.boneSkinner += kp.amount
+      }
+    }
+
+    const linkedAccounts: KpsOfAccount[] = []
+    for (const linked of [stats].concat(stats.linked || [])) {
+      const linkedStats: KpsOfAccount = {
+        li: 0,
+        fractal: 0,
+        boneSkinner: 0,
+        zhaitaffy: 0,
+        raidBossKp: {},
+        unopenedBoxes: [],
+        account: linked.account_name
+      }
+
+      for (const kp of linked.killproofs) {
+        if (kp.id === itemIds.legendaryInsight || kp.id === itemIds.legendaryDivination) {
+          linkedStats.li += kp.amount
+        } else if (kp.id === itemIds.fractalUFE) {
+          linkedStats.fractal += kp.amount
+        } else if (kp.id === itemIds.boneskinnerKp) {
+          linkedStats.boneSkinner += kp.amount
+        }
+      }
+      linkedAccounts.push(linkedStats)
+    }
+
+    killproofMeCache[accountName] = { lastCheck: Date.now(), totalKps: totalKps, linkedAccounts }
+  } catch (error) {
+    console.error(error)
+  }
+
+  return
+}

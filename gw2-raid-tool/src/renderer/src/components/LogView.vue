@@ -2,6 +2,7 @@
 import { data } from '@renderer/preload-api'
 import { img } from '@renderer/util'
 import { UiLogs } from 'src/raid-tool'
+import { computed } from 'vue'
 
 function logPath(activeLog: string | null, logs: UiLogs[]) {
   const log = logs.find((l) => l.hash === activeLog)
@@ -10,6 +11,10 @@ function logPath(activeLog: string | null, logs: UiLogs[]) {
   }
   return `gw2-log:${activeLog}`
 }
+
+const log = computed(() => {
+  return data.logs.find((l) => l.hash === data.activeLog)
+})
 </script>
 <template>
   <iframe
@@ -23,12 +28,8 @@ function logPath(activeLog: string | null, logs: UiLogs[]) {
     @error="data.logIsLoading = data.activeLog"
   ></iframe>
   <div v-if="data.logIsLoading !== data.activeLog" class="arc-log-display-loading">
-    <div
-      v-for="log in data.logs.filter((log) => log.hash === data.activeLog)"
-      :key="log.hash"
-      class="center-big-splash-blur"
-    >
-      <div class="center-big-splash">
+    <div class="center-big-splash-blur">
+      <div v-if="log" class="center-big-splash">
         <img
           v-if="log.fightIcon"
           class="arc-list-preview-icon"

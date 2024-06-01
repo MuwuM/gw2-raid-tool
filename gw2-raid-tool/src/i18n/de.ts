@@ -23,11 +23,11 @@ const lang = {
   creditsGameIconsPart2: 'verwendet.',
   licenseLabel: 'Lizenz',
   creditsMorePackages: 'Weitere verwendete Software-Pakete',
-  sharedLogsLabel: 'Gemeinsame Kills:',
+  sharedLogsLabel: 'Kill-Score',
+  sharedLogsLabelInfo: 'Der Kill-Score wird berechnet aus: Normal Kills * 1 + CM Kills * 5',
   friendsHeaderAccount: 'Account',
   friendsHeaderNames: 'Namen',
   friendsHeaderKills: 'Kills',
-  friendsHeaderSharedKills: 'Gemeinsame Boss-Kills',
   noKP: 'Keine KPS',
   dailyResetInfo: 'Täglich',
   weeklyResetInfo: 'Wöchentlich',
@@ -109,7 +109,14 @@ const lang = {
   addKeyRule: 'Regel hinzufügen',
   keyRuleRequireAdmin:
     'Das Raid-Tool muss als Adminitrator gestartet werden, um Tasten sperren zu können.',
-  cmOnlyLabel: 'nur CM anzeigen'
+  cmOnlyLabel: 'nur CM anzeigen',
+  friendsSearch: 'nach Freunden suchen',
+  friendsPerfectMatchButton: 'Anzeigen',
+  killproofButton: 'Check auf killproof.me',
+  killproofLoading: 'Lade...',
+  killproofNotFound: 'Nicht gefunden',
+  killproofHeader: 'Killproof.me',
+  unknownFriend: 'Unbekannt'
 } as const
 
 export default lang as TranslationFile<typeof lang>

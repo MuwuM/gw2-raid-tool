@@ -3,6 +3,7 @@ import { data, i18n } from '@renderer/preload-api'
 import { img } from '@renderer/util'
 import LogList from './LogList.vue'
 import LogView from './LogView.vue'
+import KpMeDisplay from './KpMeDisplay.vue'
 </script>
 <template>
   <main id="friend" class="arc-log-display-wrapper">
@@ -18,16 +19,29 @@ import LogView from './LogView.vue'
             <span class="friend-name">{{ n.name }}</span></span
           >
         </div>
-        <hr />
-        <div v-if="data.stats.friend">
-          {{ i18n.sharedLogsLabel }} {{ data.stats.friend.sharedLogs }}
-        </div>
-        <div>
-          <span
-            >{{ i18n.killsLabel }} {{ data.stats.kills }}
-            {{ i18n.cmOfKills(data.stats.cmKills || 0) }}</span
-          >
-          <span>{{ i18n.failsLabel }} {{ data.stats.fails }}</span>
+        <div class="row">
+          <div class="col-sm-6">
+            <div v-if="data.stats.friend">
+              <span class="text-with-info-tooltip" :title="i18n.sharedLogsLabelInfo">{{
+                i18n.sharedLogsLabel
+              }}</span
+              >:
+              {{ data.stats.friend.sharedLogs }}
+            </div>
+            <div>
+              <span
+                >{{ i18n.killsLabel }} {{ data.stats.kills }}
+                {{ i18n.cmOfKills(data.stats.cmKills || 0) }}</span
+              >
+              <span>{{ i18n.failsLabel }} {{ data.stats.fails }}</span>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <KpMeDisplay
+              v-if="data.stats.friend"
+              :account="data.stats.friend.account"
+            ></KpMeDisplay>
+          </div>
         </div>
       </div>
     </div>

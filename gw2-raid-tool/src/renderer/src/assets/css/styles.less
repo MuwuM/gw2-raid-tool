@@ -164,7 +164,7 @@ nav + main.arc-log-display.arc-log-display-friend {
   flex: 1 1 100%;
 }
 
-.arc-log-display-loading{
+.arc-log-display-loading {
   position: absolute;
   inset: 0;
   left: 15rem;
@@ -173,13 +173,13 @@ nav + main.arc-log-display.arc-log-display-friend {
   justify-content: center;
   align-items: center;
 }
-.arc-log-display-loading .center-big-splash-blur{
+.arc-log-display-loading .center-big-splash-blur {
   margin-top: 0;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center
+  align-items: center;
 }
 .arc-log-display-loading .center-big-splash {
   display: flex;
@@ -198,8 +198,36 @@ nav + main.arc-log-display.arc-log-display-friend {
 }
 
 .li-section {
+  position: relative;
   margin-top: 2rem;
+  min-width: 40rem;
 }
+.li-section:has(.wing-step-tooltip){
+  cursor: pointer;
+}
+.li-section:hover .wing-step-tooltip:has(.li-section-grid) {
+  width: 40rem;
+  z-index: 1030;
+  padding: 0;
+}
+.li-section:hover .wing-step-tooltip:has(.li-section-grid)>* {
+  padding: 0.5rem;
+}
+
+.li-section.li-section-inline {
+  display: inline-flex;
+  margin-top: 0;
+}
+.li-section.li-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 8rem 8rem 8rem;
+  margin-top: 0;
+}
+
+.li-section.li-section-grid:nth-of-type(2n) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .li-display {
   padding: 0.5rem;
   display: flex;
@@ -214,6 +242,10 @@ nav + main.arc-log-display.arc-log-display-friend {
 .li-display-number {
   margin-left: 0.15rem;
   font-size: 1.25rem;
+  line-height: 1.25rem;
+}
+.li-section-grid .li-display-number {
+  font-size: 1rem;
 }
 .li-display-number-details {
   margin-left: 0.5rem;
@@ -258,7 +290,8 @@ nav + main.arc-log-display.arc-log-display-friend {
 .wing-step:hover {
   z-index: 50;
 }
-.wing-step:hover .wing-step-tooltip {
+.wing-step:hover .wing-step-tooltip,
+.li-section:hover .wing-step-tooltip {
   display: block;
   width: 18rem;
   position: absolute;
@@ -298,7 +331,7 @@ nav + main.arc-log-display.arc-log-display-friend {
     color: transparent;
     text-stroke-color: transparent;
     text-shadow:
-      3px 3px 0 transparent,
+      3px 3px 3px transparent,
       -1px -1px 0 transparent,
       1px -1px 0 transparent,
       -1px 1px 0 transparent,
@@ -334,10 +367,8 @@ nav + main.arc-log-display.arc-log-display-friend {
   z-index: 10;
   position: relative;
   user-select: none;
-  text-stroke-color: #222222;
-  text-stroke-width: 2px;
   text-shadow:
-    3px 3px 0 #000,
+    3px 3px 3px #000,
     -1px -1px 0 #000,
     1px -1px 0 #000,
     -1px 1px 0 #000,
@@ -348,23 +379,31 @@ main.with-bg {
   isolation: isolate;
   z-index: 10;
   position: relative;
-  text-stroke-color: #222222;
-  text-stroke-width: 1px;
   padding-bottom: 2rem;
+  text-shadow:
+    3px 3px 3px #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .friend-badges,
 .table td.friend-badges {
   display: flex;
   flex-wrap: wrap;
-  padding-right: 0.35rem;
-  padding-bottom: 0.35rem;
+  align-items: center;
+  justify-content: start;
+  padding: 0.4rem;
+  padding-bottom: 0;
 }
 
 .friend-badge {
   margin-right: 0.4rem;
   margin-bottom: 0.4rem;
   flex: 0 0 auto;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
   border: solid 1px #292929;
   border-radius: 0.4rem;
   padding: 0.2rem 0.4rem;
@@ -437,7 +476,12 @@ main.with-bg {
   height: 100%;
   text-align: center;
   line-height: 1rem;
-  text-shadow: 1px 1px 2px #000;
+  text-shadow:
+  3px 3px 3px #000,
+  -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+  1px 1px 0 #000;
 }
 .arc-list-row {
   flex-wrap: wrap;
@@ -638,4 +682,61 @@ main.with-bg {
 }
 .table > :not(caption) > * > * {
   color: inherit;
+}
+
+.text-with-info-tooltip::after {
+  content: '🛈';
+  display: inline-block;
+  line-height: 0.5rem;
+  color: var(--bs-info);
+  font-size: 0.8rem;
+  transform: translate(0px, -0.3rem);
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+}
+
+/* define table as grid with first column as max(10%, 15rem), second take what is available and third sufficient space for 6 digit number  */
+.friends-table {
+  display: grid;
+  grid-template-columns: minmax(10%, 15rem) 1fr 6rem;
+}
+.friends-table > .friends-table-header,
+.friends-table > .friends-table-row {
+  display: grid;
+  grid-column: auto / span 3;
+  grid-template-columns: subgrid;
+  align-items: center;
+  justify-content: start;
+  padding: 0.4rem;
+  box-sizing: border-box;
+}
+.friends-table > .friends-table-header {
+  font-weight: bold;
+}
+.friends-table > .friends-table-row {
+  border-top: solid 1px #292929;
+}
+.friends-table > .friends-table-row:nth-of-type(2n) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.friends-table > .friends-table-header > .friends-table-cell,
+.friends-table > .friends-table-row > .friends-table-cell {
+  padding: 0.4rem;
+  margin: -0.4rem;
+}
+
+img.killproof-icon {
+  height: 1em;
+}
+
+.btn:has(.killproof-icon) {
+  color: #fff;
+  background-color: #7f0106;
+  border-color: #7f0106;
+}
+.btn:has(.killproof-icon):hover {
+  color: #fff;
+  background-color: #be292f;
+  border-color: #be292f;
 }
