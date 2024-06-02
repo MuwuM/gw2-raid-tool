@@ -120,6 +120,10 @@ function uploadLog(logHash: string) {
   api.ipc.send.uploadLog({ hash: logHash })
 }
 
+function setFavoriteLog(logHash: string, favorite: boolean) {
+  api.ipc.send.setFavoriteLog({ hash: logHash, favorite })
+}
+
 function showFriendsPage(event?: Event) {
   preventDefault(event)
   const friendsFilter = {}
@@ -146,6 +150,12 @@ export function selectPage(page: PageId, info: PageInfo, event?: Event) {
   }
   if (page === 'logs' && info && info.id && info.action === 'upload') {
     uploadLog(info.id)
+    return
+  } else if (page === 'logs' && info && info.id && info.action === 'favourite') {
+    setFavoriteLog(info.id, true)
+    return
+  } else if (page === 'logs' && info && info.id && info.action === 'unfavourite') {
+    setFavoriteLog(info.id, false)
     return
   } else if (page === 'logs') {
     const log = info && data.logs.find((l) => l.hash === info.id)

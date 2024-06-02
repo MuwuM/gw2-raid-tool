@@ -25,7 +25,7 @@ function bossUrl(step: WingsResStep) {
   if (!step.triggerID) {
     return ''
   }
-  return 'gw2-log:logs/boss/' + encodeURIComponent(firstTrigger(step))
+  return 'gw2-log://logs/boss/' + encodeURIComponent(firstTrigger(step))
 }
 function overviewStatus(accounts: UiAccounts[], step: WingsResStep, wing: WingsRef) {
   let completed = false

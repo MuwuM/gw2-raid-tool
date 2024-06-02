@@ -109,6 +109,7 @@ const lang = {
   addKeyRule: 'Add rule',
   keyRuleRequireAdmin: 'The raid tool must be started as admin to be able to lock keys.',
   cmOnlyLabel: 'only show CM',
+  favOnlyLabel: 'only show favorites',
   friendsSearch: 'Search for friends',
   friendsPerfectMatchButton: 'Show',
   killproofButton: 'Check on killproof.me',

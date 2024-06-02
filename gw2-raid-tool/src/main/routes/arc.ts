@@ -9,14 +9,12 @@ const unzip = promisify(zlib.unzip)
 import adjustArcHtml from '../util/adjust-arc-html'
 import fightIconMapSrc from '../../info/fight-icon-map'
 const fightIconMap = fightIconMapSrc as Record<number, string>
-import hashLog from '../hash-log'
 
-import wings from '../../info/wings'
+import wings, { kittyGolemTriggerIds } from '../../info/wings'
 import {
   KnownNedbDocument,
   LogFilter,
   LogStats,
-  NedbDatabase,
   NedbDatabaseQuery,
   NedbDocumentLogs,
   ServerRouteHandler,
@@ -30,6 +28,7 @@ import type { fileTypeFromBuffer as FileTypeFromBuffer } from 'file-type'
 import FastGlob from 'fast-glob'
 import ErrorWithStack from '../error-with-stack'
 import ensureArray from '../ensure-array'
+import { computed, reactive, toRaw, watchSyncEffect } from 'vue'
 
 let _fileTypeFromBuffer: typeof FileTypeFromBuffer | undefined
 const fileTypeFromBuffer = async (buffer: Uint8Array | ArrayBuffer) => {
@@ -50,7 +49,16 @@ protocol.registerSchemesAsPrivileged([
   }
 ])
 
-const logsUploading = {} as Record<string, boolean>
+const logData = reactive({
+  logsUploading: {} as Record<string, boolean>,
+  maxPages: 0 as number,
+  logFilters: {
+    p: 0,
+    config: {}
+  } as LogFilter,
+  logChange: 0 as number,
+  friendsChange: 0 as number
+})
 
 function enhanceLogs(logs: NedbDocumentLogs[]) {
   const copyLogs = structuredClone(logs.filter((l) => l)) as UiLogs[]
@@ -59,7 +67,7 @@ function enhanceLogs(logs: NedbDocumentLogs[]) {
   let recordedByName: string | null = null
   let collapseNumber = 1
   for (const log of copyLogs) {
-    if (logsUploading[log.hash]) {
+    if (logData.logsUploading[log.hash]) {
       log.isUploading = true
     }
     const cleanFightName = (log.fightName || '').replace(/\s+/g, '')
@@ -82,196 +90,230 @@ function enhanceLogs(logs: NedbDocumentLogs[]) {
   return copyLogs
 }
 
-const kittyGolemTriggerIds = [16199, 19645, 19676]
+export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
+  db.logs.on('update', async () => {
+    const maxPages = Math.ceil((await db.logs.count({})) / 50)
+    logData.logChange += 1
+    logData.maxPages = maxPages
+  })
+  db.logs.on('insert', async () => {
+    const maxPages = Math.ceil((await db.logs.count({})) / 50)
+    logData.logChange += 1
+    logData.maxPages = maxPages
+  })
+  db.friends.on('update', async () => {
+    logData.friendsChange += 1
+  })
+  db.friends.on('insert', async () => {
+    logData.friendsChange += 1
+  })
 
-async function paginatedLogs(
-  page: number,
-  db: NedbDatabase,
-  query: NedbDatabaseQuery<NedbDocumentLogs>
-) {
-  const maxPages = Math.ceil((await db.logs.count(query)) / 50)
-  const logs = await db.logs
-    .find(query)
-    .sort({ timeEndMs: -1 })
-    .skip(page * 50)
-    .limit(50)
+  eventHub.on('logFilter', async (data) => {
+    logData.logFilters.p = data.p || 0
+    logData.logFilters.config = data.config || {}
+  })
+  eventHub.on('friendsFilter', async () => {
+    logData.friendsChange += 1
+  })
 
-  const stats = {
-    kills: await db.logs.count({
+  function findBossInfoFromTriggerId(triggerId: number) {
+    for (const wing of wings) {
+      for (const step of wing.steps) {
+        if (ensureArray(step.triggerID).includes(triggerId)) {
+          return step
+        }
+      }
+    }
+    return null
+  }
+
+  const activeBossInfo = computed(() => {
+    if (logData.logFilters.config.bossId) {
+      const bossId = parseInt(decodeURIComponent(logData.logFilters.config.bossId), 10)
+
+      if (Number.isInteger(bossId)) {
+        let bossInfo = findBossInfoFromTriggerId(bossId)
+
+        if (!bossInfo) {
+          bossInfo = { triggerID: bossId } as WingsResStep
+        }
+        return bossInfo
+      }
+    }
+    return null
+  })
+
+  const activePlayerAccount = computed(() => {
+    if (logData.logFilters.config.friend) {
+      return decodeURIComponent(logData.logFilters.config.friend)
+    }
+    return null
+  })
+
+  const activeQueryConfig = computed(() => {
+    const query = {} as NedbDatabaseQuery<NedbDocumentLogs>
+
+    if (activeBossInfo.value) {
+      query.triggerID = { $in: ensureArray(activeBossInfo.value.triggerID) }
+    }
+
+    if (activePlayerAccount.value) {
+      query.players = { $elemMatch: activePlayerAccount.value }
+    }
+
+    if (logData.logFilters.config.cmOnly) {
+      query.isCM = true
+    }
+
+    if (logData.logFilters.config.favOnly) {
+      query.favourite = true
+    }
+
+    return query
+  })
+
+  const baseStats = computed(() => {
+    if (logData.logChange < 0) {
+      return Promise.resolve({
+        kills: 0,
+        cmKills: 0,
+        fails: 0
+      }) // required to effectively update the logs when db.logs is updated
+    }
+
+    const killsQuery = {
       $and: [
-        query,
+        activeQueryConfig.value,
         {
           triggerID: { $nin: kittyGolemTriggerIds },
           success: true
         }
       ]
-    }),
-    cmKills: await db.logs.count({
+    }
+
+    const cmKillsQuery = {
       $and: [
-        query,
+        activeQueryConfig.value,
         {
           triggerID: { $nin: kittyGolemTriggerIds },
           success: true,
           isCM: true
         }
       ]
-    }),
-    fails: await db.logs.count({
+    }
+
+    const failsQuery = {
       $and: [
-        query,
+        activeQueryConfig.value,
         {
           triggerID: { $nin: kittyGolemTriggerIds },
           success: { $ne: true }
         }
       ]
-    })
-  }
-  return {
-    logs: enhanceLogs(logs),
-    maxPages,
-    page,
-    stats
-  }
-}
-
-export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
-  const emptyLogFilter = await hashLog(JSON.stringify({}))
-
-  let lastLog = emptyLogFilter
-  let lastFriendsLog = emptyLogFilter
-  let nextTick: ReturnType<typeof setTimeout>
-
-  const logFilters: LogFilter = {
-    p: 0,
-    config: {}
-  }
-
-  eventHub.on('logFilter', async (data) => {
-    //console.log('logFilter changed', data)
-    clearTimeout(nextTick)
-    logFilters.p = data.p || 0
-    logFilters.config = data.config || {}
-    lastLog = emptyLogFilter
-    nextTick = setTimeout(updateLogs, 1)
-  })
-  eventHub.on('friendsFilter', async (/*data*/) => {
-    //console.log("friendsFilter changed", data);
-    clearTimeout(nextTick)
-    lastFriendsLog = emptyLogFilter
-    nextTick = setTimeout(updateLogs, 1)
-  })
-
-  async function updateLogs() {
-    try {
-      //console.log('updateLogs...')
-      let stats = {} as LogStats
-      const conf = {} as {
-        isCM?: boolean
-        players?: { $elemMatch: string }
-        triggerID?: { $in: number[] }
-      }
-      if (logFilters.config.bossId) {
-        const bossId = parseInt(decodeURIComponent(logFilters.config.bossId), 10)
-
-        if (Number.isInteger(bossId)) {
-          let bossInfo = wings
-            .map((ws) => ws.steps)
-            .flat()
-            .find((s) => ensureArray(s.triggerID).includes(bossId))
-
-          if (!bossInfo) {
-            bossInfo = { triggerID: bossId } as WingsResStep
-          }
-
-          conf.triggerID = { $in: ensureArray(bossInfo.triggerID) }
-          const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]]
-          stats = {
-            ...stats,
-            bossIcon,
-            bossInfo
-          }
-        }
-      }
-      if (logFilters.config.friend) {
-        const account = decodeURIComponent(logFilters.config.friend)
-        const friend = await db.friends.findOne({ account })
-        conf.players = { $elemMatch: account }
-        stats = { ...stats, friend }
-      }
-      if (logFilters.config.cmOnly) {
-        conf.isCM = true
-        stats = { ...stats, cmOnly: true }
-      }
-
-      const { page, maxPages, logs, stats: readStats } = await paginatedLogs(logFilters.p, db, conf)
-
-      if (logFilters.config.friend) {
-        const account = decodeURIComponent(logFilters.config.friend)
-        let friend = await db.friends.findOne({ account })
-        if (!friend && logs.length > 0) {
-          friend = await db.friends.insert({
-            account,
-            chars: [],
-            sharedLogs: 0
-          })
-          stats = { ...stats, friend }
-        }
-      }
-
-      if (stats) {
-        stats = {
-          ...stats,
-          ...readStats
-        }
-        if (stats.bossInfo && !stats.bossInfo.name_en) {
-          stats.bossInfo.name_en =
-            (logs?.[0]?.fightName && logs[0].fightName.replace(/\s+CM\s*$/, '')) || '???'
-        }
-        if (stats.bossInfo && !stats.bossInfo.name_de) {
-          stats.bossInfo.name_de = stats.bossInfo.name_en
-        }
-        if (stats.bossInfo && !stats.bossInfo.name_fr) {
-          stats.bossInfo.name_fr = stats.bossInfo.name_en
-        }
-      }
-      const newLog = await hashLog(
-        JSON.stringify({
-          page,
-          maxPages,
-          logs: logs.map((l) => l.hash),
-          stats
-        })
-      )
-      if (lastLog !== newLog) {
-        /*console.log("Log changed", {
-        lastLog,
-        newLog
-      });*/
-        eventHub.emit('logs', {
-          page,
-          maxPages,
-          logs,
-          stats
-        })
-        lastLog = newLog
-      }
-
-      const friends = await db.friends.find({ sharedLogs: { $gte: 10 } }).sort({ sharedLogs: -1 })
-
-      const newFriendsLog = await hashLog(JSON.stringify({ friends }))
-      if (lastFriendsLog !== newFriendsLog) {
-        //console.log("newFriendsLog changed");
-        eventHub.emit('friends', { friends })
-        lastFriendsLog = newFriendsLog
-      }
-    } catch (error) {
-      console.error(error)
     }
 
-    nextTick = setTimeout(updateLogs, 500)
-  }
+    return (async () => {
+      return {
+        kills: await db.logs.count(killsQuery),
+        cmKills: await db.logs.count(cmKillsQuery),
+        fails: await db.logs.count(failsQuery)
+      }
+    })()
+  })
 
-  nextTick = setTimeout(updateLogs, 1)
+  const additionalStats = computed(() => {
+    const stats = {} as LogStats
+    const bossInfo = activeBossInfo.value
+    if (bossInfo !== null) {
+      const bossIcon = fightIconMap[ensureArray(bossInfo.triggerID)[0]]
+      stats.bossIcon = bossIcon
+      stats.bossInfo = bossInfo
+    }
+    if (logData.logFilters.config.cmOnly) {
+      stats.cmOnly = true
+    }
+    if (logData.logFilters.config.favOnly) {
+      stats.favOnly = true
+    }
+    return stats
+  })
+
+  const activeFriendInfo = computed(() => {
+    if (logData.friendsChange < 0) {
+      return Promise.resolve(null) // required to effectively update the logs when db.logs is updated
+    }
+    if (!activePlayerAccount.value) {
+      return Promise.resolve(null)
+    }
+
+    const friendQuery = { account: activePlayerAccount.value }
+
+    return (async () => {
+      const res = await db.friends.findOne(friendQuery)
+      return res
+    })()
+  })
+
+  watchSyncEffect(async () => {
+    if (logData.logChange < 0) {
+      return // required to effectively update the logs when db.logs is updated
+    }
+
+    const query = activeQueryConfig.value
+    const plainLogs = await db.logs
+      .find(query)
+      .sort({ timeEndMs: -1 })
+      .skip(logData.logFilters.p * 50)
+      .limit(50)
+
+    const logs = enhanceLogs(plainLogs)
+
+    const stats = {
+      ...additionalStats.value,
+      ...(await baseStats.value)
+    } as LogStats
+
+    if (stats.bossInfo && !stats.bossInfo.name_en) {
+      stats.bossInfo.name_en =
+        (logs?.[0]?.fightName && logs[0].fightName.replace(/\s+CM\s*$/, '')) || '???'
+    }
+    if (stats.bossInfo && !stats.bossInfo.name_de) {
+      stats.bossInfo.name_de = stats.bossInfo.name_en
+    }
+    if (stats.bossInfo && !stats.bossInfo.name_fr) {
+      stats.bossInfo.name_fr = stats.bossInfo.name_en
+    }
+
+    if (activePlayerAccount.value) {
+      let friend = await activeFriendInfo.value
+      if (!friend && logs.length > 0) {
+        friend = await db.friends.insert({
+          account: activePlayerAccount.value,
+          chars: [],
+          sharedLogs: 0
+        })
+      }
+      stats.friend = friend
+    }
+
+    eventHub.emit('logs', {
+      logs: toRaw(logs),
+      page: logData.logFilters.p,
+      maxPages: toRaw(logData.maxPages),
+      stats
+    })
+  })
+
+  watchSyncEffect(async () => {
+    if (logData.friendsChange < 0) {
+      return // required to effectively update the logs when db.logs is updated
+    }
+
+    const friends = await db.friends.find({ sharedLogs: { $gte: 10 } }).sort({ sharedLogs: -1 })
+    eventHub.emit('friends', {
+      friends
+    })
+  })
 
   async function respondWithFile(buffer: Buffer) {
     const mime = (await fileTypeFromBuffer(buffer))?.mime || ''
@@ -296,6 +338,12 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
             uploadLog(log).catch((err) => {
               console.error(new ErrorWithStack(err))
             })
+          } else if (searchParams.get('action') === 'favourite') {
+            await setFavourite(log, true)
+            log.favourite = true
+          } else if (searchParams.get('action') === 'unfavourite') {
+            await setFavourite(log, false)
+            log.favourite = false
           }
 
           if (await fs.pathExists(`${log.htmlFile}z`)) {
@@ -357,14 +405,18 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
     })
   })
 
+  async function setFavourite(log: KnownNedbDocument<NedbDocumentLogs>, fav: boolean) {
+    if (log) {
+      log.favourite = fav
+      await db.logs.update({ _id: log._id }, { $set: { favourite: log.favourite } })
+    }
+  }
+
   async function uploadLog(log: KnownNedbDocument<NedbDocumentLogs>) {
     if (log && log.entry && !log.permalink) {
-      logsUploading[log.hash] = true
+      logData.logsUploading[log.hash] = true
       log.permalinkFailed = false
       await db.logs.update({ _id: log._id }, { $set: { permalinkFailed: log.permalinkFailed } })
-      clearTimeout(nextTick)
-      lastLog = emptyLogFilter
-      nextTick = setTimeout(updateLogs, 1)
       let evtcPath = path.join(baseConfig.logsPath, log.entry)
       const evtcDonePath = path.join(baseConfig.logsPath, '.raid-tool', log.entry)
       if (await fs.pathExists(evtcDonePath)) {
@@ -381,26 +433,24 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
           log.permalink = res.data.permalink
           await db.logs.update({ _id: log._id }, { $set: { permalink: log.permalink } })
         }
-        delete logsUploading[log.hash]
-        clearTimeout(nextTick)
-        lastLog = emptyLogFilter
-        nextTick = setTimeout(updateLogs, 1)
+        delete logData.logsUploading[log.hash]
       } catch (error) {
         console.error(error)
         log.permalinkFailed = true
-        delete logsUploading[log.hash]
+        delete logData.logsUploading[log.hash]
         await db.logs.update({ _id: log._id }, { $set: { permalinkFailed: log.permalinkFailed } })
-        clearTimeout(nextTick)
-        lastLog = emptyLogFilter
-        nextTick = setTimeout(updateLogs, 1)
       }
     }
   }
 
   eventHub.on('uploadLog', async ({ hash }) => {
-    //console.log(`starting upload: ${hash}`);
     const log = await db.logs.findOne({ hash })
-    uploadLog(log)
+    await uploadLog(log)
+  })
+
+  eventHub.on('setFavoriteLog', async ({ hash, favorite }) => {
+    const log = await db.logs.findOne({ hash })
+    await setFavourite(log, favorite)
   })
 
   const maxage = 31556952000

@@ -79,11 +79,21 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
         {{ i18n.cmOnlyLabel }}</label
       >
     </div>
+    <div class="mt-0 mb-1">
+      <label
+        ><input
+          v-model="data.logFilters.config.favOnly"
+          type="checkbox"
+          @change="showLogPage(data.logsPage, null, $event as ClickEvent)"
+        />
+        {{ i18n.favOnlyLabel }}</label
+      >
+    </div>
     <div class="list-group">
       <a
         v-for="log in data.logs"
         :key="log.hash"
-        :href="'gw2-log:' + log.hash"
+        :href="'gw2-log://' + log.hash"
         target="arc-log-display-iframe"
         rel="noreferrer noopener"
         :class="{
@@ -119,7 +129,10 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
             class="arc-list-img-logby badge bg-primary badge-pill"
             >{{ log.recordedBy }}</span
           >
-          <span v-if="log.isUploading">⬆️</span>
+          <div>
+            <span v-if="log.isUploading">⬆️</span>
+            <span v-if="log.favourite">⭐</span>
+          </div>
         </template>
         <template v-if="!log.displayCollapse">
           <div class="arc-list-img-box">
@@ -146,7 +159,10 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
             </div>
           </div>
           <span class="arc-list-img-logby badge bg-primary badge-pill">{{ log.recordedBy }}</span>
-          <span v-if="log.isUploading">⬆️</span>
+          <div>
+            <span v-if="log.isUploading">⬆️</span>
+            <span v-if="log.favourite">⭐</span>
+          </div>
         </template>
       </a>
       <nav>

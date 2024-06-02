@@ -172,17 +172,17 @@ export interface NedbDocument {
 
 export type NedbDatabaseQuery<T extends NedbDocument> = {
   [prop in keyof Partial<T>]:
-    | T[prop]
-    | undefined
+    | Readonly<T[prop]>
+    | Readonly<undefined>
     | {
-        $ne?: T[prop]
-        $gt?: T[prop]
-        $gte?: T[prop]
-        $lt?: T[prop]
-        $lte?: T[prop]
-        $in?: T[prop][]
-        $nin?: T[prop][]
-        $elemMatch?: T[prop] extends Array<any> ? T[prop][0] : never
+        $ne?: Readonly<T[prop]>
+        $gt?: Readonly<T[prop]>
+        $gte?: Readonly<T[prop]>
+        $lt?: Readonly<T[prop]>
+        $lte?: Readonly<T[prop]>
+        $in?: Readonly<T[prop][]>
+        $nin?: Readonly<T[prop][]>
+        $elemMatch?: T[prop] extends Array<any> ? Readonly<T[prop][0]> : never
       }
 } & {
   $or?: Array<NedbDatabaseQuery<T>>
@@ -212,6 +212,7 @@ export interface NedbDocumentLogs extends NedbDocument {
   players: Array<string>
   permalink?: string
   permalinkFailed?: boolean
+  favourite?: boolean
 }
 
 export interface UiLogs extends NedbDocumentLogs {
@@ -359,8 +360,11 @@ export type OptionalId<T extends NedbDocument> = Omit<T, '_id'> & {
   _id?: T['_id']
 }
 
+type NedbDocumentKey<T extends NedbDocument> = keyof T | string
+
 export interface NedbDatastore<T extends NedbDocument> {
   ensureIndex(index: { fieldName: keyof T; unique?: boolean; sparse?: boolean }): Promise<void>
+  removeIndex(fieldName: keyof T): Promise<void>
   find(query: NedbDatabaseQuery<T>): NedbDatastoreFindWithSort<T, T[]>
   findOne(query: NedbDatabaseQuery<T>): NedbDatastoreFindWithSort<T, T | null>
   insert(doc: OptionalId<T>): Promise<T>
@@ -371,6 +375,83 @@ export interface NedbDatastore<T extends NedbDocument> {
   ): Promise<number>
   remove(query: NedbDatabaseQuery<T>, options?: { multi: boolean }): Promise<number>
   count(query: NedbDatabaseQuery<T>): Promise<number>
+  on(event: 'load', handler: (datastore: NedbDatastore<T>) => void): void
+  on(event: 'insert', handler: (datastore: NedbDatastore<T>, doc: OptionalId<T>) => void): void
+  on(
+    event: 'update',
+    handler: (
+      datastore: NedbDatastore<T>,
+      result: number,
+      query: NedbDatabaseQuery<T>,
+      update: OptionalId<T> | { $set: Partial<T> },
+      updateOps?: { multi?: true }
+    ) => void
+  ): void
+  on(
+    event: 'remove',
+    handler: (
+      datastore: NedbDatastore<T>,
+      result: number,
+      query: NedbDatabaseQuery<T>,
+      options?: { multi: boolean }
+    ) => void
+  ): void
+  on(
+    event: 'ensureIndex',
+    handler: (
+      datastore: NedbDatastore<T>,
+      result: void,
+      index: { fieldName: NedbDocumentKey<T> }
+    ) => void
+  ): void
+  on(
+    event: 'removeIndex',
+    handler: (datastore: NedbDatastore<T>, result: void, fieldName: NedbDocumentKey<T>) => void
+  ): void
+  on(
+    event: '__error__',
+    handler: (
+      datastore: NedbDatastore<T>,
+      op: 'load' | 'insert' | 'update' | 'remove' | 'ensureIndex' | 'removeIndex',
+      error: Error
+    ) => void
+  ): void
+  on(event: 'loadError', handler: (datastore: NedbDatastore<T>, error: Error) => void): void
+  on(
+    event: 'insertError',
+    handler: (datastore: NedbDatastore<T>, error: Error, doc: OptionalId<T>) => void
+  ): void
+  on(
+    event: 'updateError',
+    handler: (
+      datastore: NedbDatastore<T>,
+      error: Error,
+      query: NedbDatabaseQuery<T>,
+      update: OptionalId<T> | { $set: Partial<T> },
+      updateOps?: { multi?: true }
+    ) => void
+  ): void
+  on(
+    event: 'removeError',
+    handler: (
+      datastore: NedbDatastore<T>,
+      error: Error,
+      query: NedbDatabaseQuery<T>,
+      options?: { multi: boolean }
+    ) => void
+  ): void
+  on(
+    event: 'ensureIndexError',
+    handler: (
+      datastore: NedbDatastore<T>,
+      error: Error,
+      index: { fieldName: NedbDocumentKey<T> }
+    ) => void
+  ): void
+  on(
+    event: 'removeIndexError',
+    handler: (datastore: NedbDatastore<T>, error: Error, fieldName: NedbDocumentKey<T>) => void
+  ): void
 }
 type NedbDatabaseInternal = {
   [db_name in NedbDatabaseTableNames]: NedbDatastore<NedbDocument>
@@ -420,6 +501,7 @@ export type KnownEvents = {
   }
   friends: { friends: Array<NedbDocumentFriends> }
   uploadLog: { hash: string }
+  setFavoriteLog: { hash: string; favorite: boolean }
   selectPage: { page: PageId; info: PageInfo }
   keyRules: { keyRules: NedbDocumentBlockedKeyRules[] }
   logFilter: LogFilter
@@ -433,7 +515,7 @@ export type KnownEvents = {
 
 export type Build = TODO
 
-export type PageAction = 'upload' | undefined
+export type PageAction = 'upload' | 'favourite' | 'unfavourite' | undefined
 export type PageId =
   | 'overview'
   | 'logs'
@@ -539,7 +621,8 @@ export const exposedSenders = exposeKnownEvents([
   'disableArcUpdates',
   'updateKeyRule',
   'deleteKeyRule',
-  'addKeyRule'
+  'addKeyRule',
+  'setFavoriteLog'
 ] as const)
 export type ExposedSenderKeys = KeysOfKnownEvents<typeof exposedSenders>
 
@@ -589,7 +672,7 @@ export interface WingsRef {
   isFractal?: true
 }
 
-export type WingsRes = Array<WingsRef>
+export type WingsRes = Readonly<Array<WingsRef>>
 
 export interface ClickEvent<T extends HTMLElement = HTMLElement> extends MouseEvent {
   target: T
@@ -610,6 +693,7 @@ export interface LogFilter {
     bossId?: string
     friend?: string
     cmOnly?: boolean
+    favOnly?: boolean
   }
 }
 
@@ -618,6 +702,7 @@ export interface LogStats {
   bossInfo?: WingsResStep
   friend?: KnownNedbDocument<NedbDocumentFriends>
   cmOnly?: boolean
+  favOnly?: boolean
   kills?: number
   fails?: number
   cmKills?: number

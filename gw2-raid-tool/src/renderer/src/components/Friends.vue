@@ -104,7 +104,7 @@ const isPerfectMatch = computed(() => {
         <div class="card-footer d-flex align-items-center justify-content-between">
           <a
             v-if="filteredFriends[0].item._id !== 'new'"
-            :href="'gw2-log:logs/friends/' + encodeURIComponent(filteredFriends[0].item.account)"
+            :href="'gw2-log://logs/friends/' + encodeURIComponent(filteredFriends[0].item.account)"
             class="btn btn-primary me-1"
           >
             {{ i18n.friendsPerfectMatchButton }}
@@ -128,7 +128,7 @@ const isPerfectMatch = computed(() => {
         <div class="friends-table-cell">
           <a
             v-if="friend.item._id !== 'new'"
-            :href="'gw2-log:logs/friends/' + encodeURIComponent(friend.item.account)"
+            :href="'gw2-log://logs/friends/' + encodeURIComponent(friend.item.account)"
             >{{ friend.item.account }}</a
           >
           <span v-else>{{ friend.item.account }}</span>

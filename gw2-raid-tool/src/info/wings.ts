@@ -664,3 +664,5 @@ const wings: WingsRes = [
 ]
 
 export default wings
+
+export const kittyGolemTriggerIds = [16199, 19645, 19676] as const

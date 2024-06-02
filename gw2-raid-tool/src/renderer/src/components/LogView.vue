@@ -7,9 +7,9 @@ import { computed } from 'vue'
 function logPath(activeLog: string | null, logs: UiLogs[]) {
   const log = logs.find((l) => l.hash === activeLog)
   if (log?.isUploading) {
-    return `gw2-log:${activeLog}?is=uploading`
+    return `gw2-log://${activeLog}?is=uploading`
   }
-  return `gw2-log:${activeLog}`
+  return `gw2-log://${activeLog}`
 }
 
 const log = computed(() => {

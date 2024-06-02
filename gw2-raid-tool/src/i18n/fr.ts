@@ -112,6 +112,7 @@ const lang = {
   keyRuleRequireAdmin:
     "L'outil de raid doit être lancé en tant qu'administrateur pour pouvoir bloquer les clés.",
   cmOnlyLabel: "n'affiche que le CM",
+  favOnlyLabel: "n'affiche que les favoris",
   friendsSearch: 'Recherchez les amis',
   friendsPerfectMatchButton: 'Afficher',
   killproofButton: 'Vérifier sur killproof.me',

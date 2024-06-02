@@ -110,6 +110,7 @@ const lang = {
   keyRuleRequireAdmin:
     'Das Raid-Tool muss als Adminitrator gestartet werden, um Tasten sperren zu können.',
   cmOnlyLabel: 'nur CM anzeigen',
+  favOnlyLabel: 'nur Favoriten anzeigen',
   friendsSearch: 'nach Freunden suchen',
   friendsPerfectMatchButton: 'Anzeigen',
   killproofButton: 'Check auf killproof.me',

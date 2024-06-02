@@ -1,5 +1,8 @@
 import { NedbDocumentLogs } from '../../raid-tool'
 
+const starFilled = `<svg style="height: 1em; width: 1em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g class="" style="" transform="translate(0,0)"><path d="M256 38.013c-22.458 0-66.472 110.3-84.64 123.502-18.17 13.2-136.674 20.975-143.614 42.334-6.94 21.358 84.362 97.303 91.302 118.662 6.94 21.36-22.286 136.465-4.116 149.665 18.17 13.2 118.61-50.164 141.068-50.164 22.458 0 122.9 63.365 141.068 50.164 18.17-13.2-11.056-128.306-4.116-149.665 6.94-21.36 98.242-97.304 91.302-118.663-6.94-21.36-125.444-29.134-143.613-42.335-18.168-13.2-62.182-123.502-84.64-123.502z" fill="#fff" fill-opacity="1"></path></g></svg>`
+const starEmpty = `<svg style="height: 1em; width: 1em;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g class="" style="" transform="translate(0,0)"><path d="M256 38.013c-22.458 0-66.472 110.3-84.64 123.502-18.17 13.2-136.674 20.975-143.614 42.334-6.94 21.358 84.362 97.303 91.302 118.662 6.94 21.36-22.286 136.465-4.116 149.665 18.17 13.2 118.61-50.164 141.068-50.164 22.458 0 122.9 63.365 141.068 50.164 18.17-13.2-11.056-128.306-4.116-149.665 6.94-21.36 98.242-97.304 91.302-118.663-6.94-21.36-125.444-29.134-143.613-42.335-18.168-13.2-62.182-123.502-84.64-123.502z" fill="#ffffff" fill-opacity="0" stroke="#ffffff" stroke-opacity="1" stroke-width="16"></path></g></svg>`
+
 const customStyles = `
 .ei-container-big{
   min-width: 1600px;
@@ -106,37 +109,49 @@ href="/static/style.css"
 
   const poweredBy =
     '<div class="d-flex flex-row justify-content-center align-items-center"><a href="https://baaron4.github.io/GW2-Elite-Insights-Parser/" target="_top">parsed with Elite-Insights</a></div>'
+
+  let customButtons = `${poweredBy}`
+
+  if (log.favourite) {
+    customButtons += `<div class="d-flex flex-row justify-content-center align-items-center">
+    <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
+    <a href="gw2-log://${log.hash}/?action=unfavourite" target="_self" class="btn btn-primary active">${starFilled} Favourite</a>
+    </div>
+    </div>`
+  } else {
+    customButtons += `<div class="d-flex flex-row justify-content-center align-items-center">
+    <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
+    <a href="gw2-log://${log.hash}/?action=favourite" target="_self" class="btn btn-primary">${starEmpty} Favourite</a>
+    </div>
+    </div>`
+  }
+
   if (query.get('is') === 'uploading') {
-    file = file.replace(
-      /<div v-if="(cr(\s*\|\|\s*healingExtShow)?)"/,
-      `${poweredBy}<div class="d-flex flex-row justify-content-center align-items-center">
+    customButtons += `<div class="d-flex flex-row justify-content-center align-items-center">
     <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
     ... uploading
     </div>
-    </div><div v-if="$1"`
-    )
+    </div>`
   } else if (log.permalink) {
-    file = file.replace(
-      /<div v-if="(cr(\s*\|\|\s*healingExtShow)?)"/,
-      `${poweredBy}<div class="d-flex flex-row justify-content-center align-items-center">
+    customButtons += `<div class="d-flex flex-row justify-content-center align-items-center">
     <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
     <input class="form-control" onclick="this.select();" type="text" value="${log.permalink}" readonly="readonly">
     </div>
-    </div><div v-if="$1"`
-    )
+    </div>`
   } else if (log.entry) {
-    file = file.replace(
-      /<div v-if="(cr(\s*\|\|\s*healingExtShow)?)"/,
-      `${poweredBy}<div class="d-flex flex-row justify-content-center align-items-center">
+    customButtons += `<div class="d-flex flex-row justify-content-center align-items-center">
   <div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">
   <ul class="nav nav-pills" style="pointer-events:auto;">
   <li class="nav-item">
-  <a href="gw2-log:${log.hash}/?action=upload" target="_self" class="nav-link btn btn-primary">Upload</a>
+  <a href="gw2-log://${log.hash}/?action=upload" target="_self" class="nav-link btn btn-primary">Upload</a>
   </li>
   </ul>
   </div>
-  </div><div v-if="$1"`
-    )
+  </div>`
   }
+  file = file.replace(
+    /<div v-if="(cr(\s*\|\|\s*healingExtShow)?)"/,
+    `${customButtons}<div v-if="$1"`
+  )
   return file
 }
