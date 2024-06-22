@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { api, data, i18n } from '@renderer/preload-api'
+import { img } from '../util'
 </script>
 <template>
   <main id="credits" :class="{ 'with-bg': !data.baseConfig?.boringBg }">
     <div class="container pb-5">
+      <img
+        :src="img('/img/logo5-1.png')"
+        alt="Logo of GW2 Raid Tool"
+        style="display: block; width: 20rem; height: 20rem; margin: 0 auto"
+      />
       <h1>Credits</h1>
       <h3 class="credits-name">GW2-Elite-Insights-Parser</h3>
       <div>
@@ -68,7 +74,7 @@ import { api, data, i18n } from '@renderer/preload-api'
     </div>
   </main>
   <template v-if="!data.baseConfig?.boringBg">
-    <img class="bg-video" src="../assets/2560px-Travel_Room_concept_art.jpg" alt="" />
+    <img class="bg-video" src="../assets/00010-3482606706.png" alt="" />
     <div class="bg-glow"></div>
     <div class="bg-glow"></div>
     <div class="bg-glow"></div>

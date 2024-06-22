@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs-extra'
 
 import * as RaidToolDef from '../raid-tool'
-import appIcon from '../../resources/icon.ico?asset'
+import appIcon from '../../resources/logo5-1.ico?asset'
 
 const { BrowserWindow, shell, Menu, MenuItem } = electron
 

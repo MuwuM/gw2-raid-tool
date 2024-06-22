@@ -62,6 +62,22 @@ onUpdated(() => {
 <template>
   <nav class="navbar navbar-expand navbar-dark bg-primary sticky-top">
     <ul class="navbar-nav mr-auto">
+      <li class="navbar-brand">
+        <img
+          :src="img('/img/logo5-1.png')"
+          alt=""
+          style="
+            display: block;
+            width: 2em;
+            height: 2em;
+            margin-top: -0.5em;
+            margin-bottom: -0.5em;
+            margin-left: var(--bs-navbar-brand-margin-end);
+            line-height: 1em;
+          "
+          title="GW2 Raid Tool"
+        />
+      </li>
       <template v-if="data.accounts.length >= 1">
         <li class="nav-item active">
           <a class="nav-link" href="#" tabindex="-1" @click="selectPage('overview', {}, $event)">{{
