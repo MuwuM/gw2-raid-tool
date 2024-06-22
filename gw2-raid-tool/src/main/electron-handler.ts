@@ -34,7 +34,7 @@ export default async ({
     let config = {} as Partial<RaidToolDef.RaidToolConfig>
     try {
       config = await fs.readJSON(configFilePath)
-    } catch (error) {
+    } catch {
       config = {}
     }
 

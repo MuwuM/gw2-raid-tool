@@ -38,7 +38,7 @@ async function readStats(access: Buffer, parseUiStates: any): Promise<MumbleLink
   let identity: MumbleLinkDataIdentity | undefined
   try {
     identity = JSON.parse(identityPlain)
-  } catch (error) {
+  } catch {
     // ignore invalid identity
   }
   const data = {

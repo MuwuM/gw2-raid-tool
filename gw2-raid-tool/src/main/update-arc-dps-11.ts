@@ -171,7 +171,7 @@ async function replaceCurrentArcdpsFileWithBackup(
   if (await fs.pathExists(currentArcFile)) {
     try {
       await fs.move(currentArcFile, `${currentArcFile}.old`)
-    } catch (error) {
+    } catch {
       if (dialogs) {
         await dialog.showMessageBox({
           title: 'arcdps nicht installiert',

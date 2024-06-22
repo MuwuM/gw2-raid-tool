@@ -2,5 +2,5 @@
   "emmet.includeLanguages": {
     "ejs": "html",
   },
-  "eslint.experimental.useFlatConfig": false,
+  "eslint.useFlatConfig": true
 }

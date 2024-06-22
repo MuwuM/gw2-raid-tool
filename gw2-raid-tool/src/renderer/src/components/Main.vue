@@ -21,8 +21,8 @@ function startGame(event?: ClickEvent) {
 }
 
 function handleScrollUpdate() {
-  const navBar = document.querySelector('nav.navbar') as HTMLElement
-  const stickyElements = document.querySelectorAll('.sticky-top') as NodeListOf<HTMLElement>
+  const navBar = document.querySelector<HTMLElement>('nav.navbar')
+  const stickyElements = document.querySelectorAll<HTMLElement>('.sticky-top')
   let prev = navBar
   for (const stickyElement of stickyElements) {
     if (stickyElement === prev) {

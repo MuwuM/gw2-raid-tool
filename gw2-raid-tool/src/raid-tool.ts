@@ -223,8 +223,8 @@ export interface UiLogs extends NedbDocumentLogs {
 export interface UiAccounts extends NedbDocumentAccounts {
   color?: string
 }
-export interface UiFriends extends NedbDocumentFriends {}
-export interface UiBlockedKeyRules extends NedbDocumentBlockedKeyRules {}
+export type UiFriends = NedbDocumentFriends
+export type UiBlockedKeyRules = NedbDocumentBlockedKeyRules
 
 export interface NedbDocumentKnownFriends extends NedbDocument {
   status: 'done' | 'failed'
@@ -317,7 +317,7 @@ export interface Kps {
   unopenedBoxes: UnopenedBoxes[]
 }
 
-export interface TotalKps extends Kps {}
+export type TotalKps = Kps
 export interface KpsOfAccount extends Kps {
   account: string
 }

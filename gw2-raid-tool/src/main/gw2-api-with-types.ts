@@ -80,7 +80,7 @@ interface GW2ApiClientAccountRaids {
   get(): Promise<GW2ApiResponseAccountRaidId[]>
 }
 
-export interface GW2ApiResponseAccountInfo extends GW2AccountInfo {}
+export type GW2ApiResponseAccountInfo = GW2AccountInfo
 
 export interface GW2ApiResponseInventory {
   inventory: GW2ApiResponseInventoryItem[]
@@ -218,9 +218,9 @@ export interface GW2ApiResponseCharacter {
   }[]
 }
 
-export interface GW2ApiResponseInventoryItem extends InventoryItem {}
+export type GW2ApiResponseInventoryItem = InventoryItem
 
-export interface GW2ApiResponseSharedInventoryItem extends GW2ApiResponseInventoryItem {}
+export type GW2ApiResponseSharedInventoryItem = GW2ApiResponseInventoryItem
 
 export interface GW2ApiResponseBankInventoryItem extends GW2ApiResponseInventoryItem {
   dyes?: number[]
@@ -256,7 +256,7 @@ export interface GW2ApiResponseEquipmentItem extends GW2ApiResponseInventoryItem
   bound_to?: string
   dyes?: number[]
 }
-export interface GW2ApiResponseLegendaryArmoryItem extends GW2ApiResponseInventoryItem {}
+export type GW2ApiResponseLegendaryArmoryItem = GW2ApiResponseInventoryItem
 
 export interface GW2ApiResponseBagInventoryItem extends GW2ApiResponseInventoryItem {
   id: number
