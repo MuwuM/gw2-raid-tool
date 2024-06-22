@@ -1,16 +1,21 @@
 import path from 'path'
 import fs from 'fs-extra'
-import { Octokit } from '@octokit/rest'
-const octokit = new Octokit()
 import urllib from 'urllib'
 import JSZip from 'jszip'
 import semver from 'semver'
+import type { Octokit as OctokitClass } from '@octokit/rest/dist-types'
 
 import * as RaidToolDef from '../raid-tool'
 
 const eiRepo = {
   owner: 'baaron4',
   repo: 'GW2-Elite-Insights-Parser'
+}
+
+async function getOctokit(): Promise<OctokitClass> {
+  //@ts-ignore-next-line
+  const { Octokit } = await import('@octokit/rest')
+  return new Octokit() as OctokitClass
 }
 
 export default async ({
@@ -25,6 +30,7 @@ export default async ({
   let eiPath = null as null | string
   let ei_version = null as null | string
   try {
+    const octokit = await getOctokit()
     const eiReleases = await octokit.repos.getLatestRelease({
       owner: eiRepo.owner,
       repo: eiRepo.repo

@@ -10,6 +10,6 @@
   ],
   "compilerOptions": {
     "resolveJsonModule": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
   },
 }
