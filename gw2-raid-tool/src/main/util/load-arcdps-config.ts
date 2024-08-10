@@ -59,6 +59,9 @@ export default async function loadArcdpsConfig(
 
   baseConfig.logsPath =
     savedConfig.logsPath ||
-    path.join(electronApp.getPath('documents'), 'Guild Wars 2/addons/arcdps/arcdps.cbtlogs')
+    path.join(electronApp.getPath('documents'), 'Guild Wars 2/addons/arcdps')
+  if (!baseConfig.logsPath.endsWith(path.sep + 'arcdps.cbtlogs')) {
+    baseConfig.logsPath = path.join(baseConfig.logsPath, 'arcdps.cbtlogs')
+  }
   baseConfig.eiConfig = eiConfPath
 }
