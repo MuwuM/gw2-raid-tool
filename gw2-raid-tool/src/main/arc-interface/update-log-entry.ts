@@ -101,7 +101,7 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
       try {
         await execDetached(
           `${await baseConfig.eiPath}`,
-          ['-c', `${await baseConfig.eiConfig}`, '-p', `${logFilePath}`],
+          ['-c', `${await baseConfig.eiConfig}`, `${logFilePath}`],
           { cwd: path.dirname(logFilePath) }
         )
         await waitFor([entry.replace(/\.z?evtc$/, '.log')], logsPath)

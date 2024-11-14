@@ -37,16 +37,21 @@ export default async ({
     })
     ei_version = eiReleases.data.name
     if (ei_version) {
-      console.info(`Latest EI-Version: ${ei_version}`)
-      const versionFolder = path.join(eiLocalPath, ei_version)
+      const beforeCLISplit = !!ei_version.match(/v[12]\./)
+      const versionFolder = path.join(eiLocalPath, `${ei_version}${beforeCLISplit ? '' : '-cli'}`)
+      console.info(`Latest EI-Version: ${ei_version}${beforeCLISplit ? '' : ' (CLI)'}`)
+      const eiZip = beforeCLISplit ? 'GW2EI.zip' : 'GW2EICLI.zip'
       if (!(await fs.pathExists(versionFolder))) {
-        const zipFile = eiReleases.data.assets.find((a) => a.name === 'GW2EI.zip')
+        const zipFile = eiReleases.data.assets.find((a) => a.name === eiZip)
         if (zipFile) {
           const zibFileContent = await urllib.request(zipFile.browser_download_url, {
             timeout: 60000,
             followRedirect: true
           })
-          await fs.outputFile(path.join(eiLocalPath, `${ei_version}.zip`), zibFileContent.data)
+          await fs.outputFile(
+            path.join(eiLocalPath, `${ei_version}${beforeCLISplit ? '' : '-cli'}.zip`),
+            zibFileContent.data
+          )
           //console.log({data: zibFileContent.data});
           await fs.ensureDir(versionFolder)
           const zip = JSZip()
@@ -69,11 +74,11 @@ export default async ({
             await unzipEntry()
           }
           //console.log(zibFileContent);
-
-          console.info(`Updated EI-Version: ${ei_version}`)
         }
       }
-      eiPath = path.join(versionFolder, 'GuildWars2EliteInsights.exe')
+      ei_version = beforeCLISplit ? ei_version : `${ei_version}-cli`
+      console.info(`Updated EI-Version: ${ei_version}`)
+      eiPath = path.join(versionFolder, 'GuildWars2EliteInsights-CLI.exe')
     }
   } catch (error) {
     console.error(error)
@@ -82,9 +87,17 @@ export default async ({
     const versions = await fs.readdir(eiLocalPath)
 
     let maxVersion = '0.0'
+    let beforeCLISplit = true
 
     for (const version of versions) {
-      if (!version.match(/^[\d.]+$/)) {
+      if (beforeCLISplit && version.match(/-cli$/)) {
+        beforeCLISplit = false
+        maxVersion = version
+      }
+      if (
+        (!beforeCLISplit && !version.match(/^[\d.]+-cli$/)) ||
+        (beforeCLISplit && !version.match(/^[\d.]+$/))
+      ) {
         continue
       }
       if (semver.gt(version, maxVersion)) {
@@ -92,7 +105,7 @@ export default async ({
       }
     }
     ei_version = maxVersion
-    eiPath = path.join(eiLocalPath, ei_version, 'GuildWars2EliteInsights.exe')
+    eiPath = path.join(eiLocalPath, ei_version, 'GuildWars2EliteInsights-CLI.exe')
   }
   if (!eiPath) {
     throw new Error('Could not find Elite Insights')
