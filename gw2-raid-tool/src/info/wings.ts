@@ -309,6 +309,44 @@ const wings: WingsRes = [
     ]
   },
   {
+    w: 8,
+    id: 'mount_balrior',
+    map_id: 1564,
+    steps: [
+      {
+        id: 'greer',
+        type: 'Boss',
+        name_en: 'Greer the Blightbringer',
+        name_de: 'Greer der Pestbringer',
+        name_fr: 'Greer le Porteur de peste',
+        triggerID: 26725,
+        img: 'Greers_Blighted_Touch.png',
+        hasCM: true
+      },
+      {
+        id: 'decima',
+        type: 'Boss',
+        name_en: 'Decima, the Stormsinger',
+        name_de: 'Decima, die Sturmsängerin',
+        name_fr: 'Decima, la Chantelame',
+        triggerID: 26774,
+        img: 'Mini_Lucid_Boulder.png',
+        hasCM: true
+      },
+      {
+        id: 'ura',
+        type: 'Boss',
+        name_en: 'Ura, the Steamshrieker',
+        name_de: 'Ura, die Dampfschreierin',
+        name_fr: 'Ura, la hurleuse de vapeur',
+        triggerID: 26712,
+        img: 'Mini_Ventshot.png',
+        hasCM: true
+      }
+    ],
+    missingApi: true
+  },
+  {
     w: 'StrikeS1',
     w_img: 'Mastery_point_Central_Tyria.png',
     isStrike: true,

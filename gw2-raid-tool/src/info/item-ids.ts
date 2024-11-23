@@ -40,7 +40,10 @@ const raidBossKpItems = {
   97132: 'harvest_temple',
   99165: 'old_lions_court',
   100068: 'dagda',
-  100858: 'cerus'
+  100858: 'cerus',
+  104047: 'greer',
+  103754: 'decima',
+  103996: 'ura'
 } as { [id: number]: string }
 
 const raidBossCofferItems = {
@@ -66,7 +69,10 @@ const raidBossCofferItems = {
   91200: 'adina',
   91241: 'sabir',
   91260: 'qadim_the_peerless',
-  91184: 'bandit_trio'
+  91184: 'bandit_trio',
+  103783: 'greer',
+  103926: 'decima',
+  103946: 'ura'
 } as { [id: number]: string }
 
 const legendaryInsight = 77302

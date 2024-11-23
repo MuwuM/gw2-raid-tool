@@ -16,14 +16,29 @@ import ensureArray from '../ensure-array'
 const strikeWings = wings.filter((w) => w.isStrike)
 
 const strikeIds = [] as number[]
-const strikeIdsWeekly = [] as number[]
+const strikeRaidIdsWeekly = [] as number[]
 for (const w of strikeWings) {
   for (const step of w.steps) {
     for (const triggerID of ensureArray(step.triggerID)) {
       if (w.isStrikeWeekly) {
-        strikeIdsWeekly.push(triggerID)
+        strikeRaidIdsWeekly.push(triggerID)
       }
       strikeIds.push(triggerID)
+    }
+  }
+}
+
+const raidWings = wings.filter((w) => typeof w.w == 'number')
+
+for (const w of raidWings) {
+  if (!w.missingApi) {
+    continue
+  }
+  for (const step of w.steps) {
+    for (const triggerID of ensureArray(step.triggerID)) {
+      if (typeof triggerID === 'number') {
+        strikeRaidIdsWeekly.push(triggerID)
+      }
     }
   }
 }
@@ -362,7 +377,7 @@ export const localUpdates = async ({
         $gt: startOfStrikeWeeklyReset.toMillis(),
         $lte: endOfStrikeWeeklyReset.toMillis()
       },
-      triggerID: { $in: strikeIdsWeekly },
+      triggerID: { $in: strikeRaidIdsWeekly },
       players: { $elemMatch: account.accountInfo.name },
       success: true
     })

@@ -43,6 +43,11 @@ function overviewStatus(accounts: UiAccounts[], step: WingsResStep, wing: WingsR
     accounts.find((a) => a.completedFractalsDaily?.[firstTrigger(step)])
   ) {
     completed = true
+  } else if (
+    wing.missingApi &&
+    accounts.find((a) => a.completedStrikesWeekly?.[firstTrigger(step)])
+  ) {
+    completed = true
   } else if (accounts.find((a) => a.completedSteps?.includes(step.id))) {
     completed = true
   }
@@ -205,6 +210,8 @@ function overviewStatusAcc(step: WingsResStep, wing: WingsRef, acc: UiAccounts) 
   } else if (wing.isFractal && acc.completedFractalsDaily?.[firstTriggerId(step)]) {
     completed = true
     completedCM = acc.completedCMs?.[firstTriggerId(step)] || false
+  } else if (wing.missingApi && acc.completedStrikesWeekly?.[firstTriggerId(step)]) {
+    completed = true
   } else if (acc.completedSteps?.includes(step.id)) {
     completed = true
   }

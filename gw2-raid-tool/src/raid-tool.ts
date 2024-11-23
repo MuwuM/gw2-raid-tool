@@ -661,6 +661,7 @@ export interface WingsRef {
 
   isStrike?: true
   isStrikeWeekly?: true
+  missingApi?: true
   name_en?: string
   name_de?: string
   name_fr?: string
