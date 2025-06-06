@@ -104,7 +104,7 @@ href="/static/style.css"
 
   file = file.replace(
     /<h3 class="card-header text-center">{{ encounter\.name }}<\/h3>/,
-    '<h3 class="card-header text-center"><a :href="\'/boss/\'+encodeURIComponent(encounter.triggerID)" target="_top">{{encounter.name}}</a></h3>'
+    '<h3 class="card-header text-center"><a :href="\'/boss/\'+encodeURIComponent(logData.triggerID)" target="_top">{{encounter.name}}</a></h3>'
   )
 
   const poweredBy =
