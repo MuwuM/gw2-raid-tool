@@ -99,6 +99,11 @@ export default async function updateKnownFriends({
   if (knownFriendCacheBefore) {
     await db.known_friends.update({ _id: knownFriendCacheBefore._id }, { $set: knownFriendCache })
   } else {
-    knownFriendCache = await db.known_friends.insert(knownFriendCache)
+    knownFriendCacheBefore = await db.known_friends.findOne({ entry })
+    if (knownFriendCacheBefore) {
+      await db.known_friends.update({ _id: knownFriendCacheBefore._id }, { $set: knownFriendCache })
+    } else {
+      knownFriendCache = await db.known_friends.insert(knownFriendCache)
+    }
   }
 }

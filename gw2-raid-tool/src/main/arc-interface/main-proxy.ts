@@ -42,14 +42,15 @@ export const db = new Proxy({} as any, {
         {},
         {
           get(_s, method: keyof NedbDatabase[keyof NedbDatabase]) {
-            return (...options: any[]) =>
-              new Promise((res, rej) => {
+            return (...options: any[]) => {
+              const stack = new Error().stack
+              return new Promise((res, rej) => {
                 reqIdCount++
                 const reqId = reqIdCount
                 const respHandler: ResponseHandler = (resp) => {
                   if (resp && resp.msg === 'error' && resp.reqId === reqId) {
                     unregisterMessage(respHandler)
-                    rej(resp.err)
+                    rej(resp.err + '\nStack trace:\n' + stack)
                     return
                   }
                   if (!resp || resp.msg !== 'dbres' || resp.reqId !== reqId) {
@@ -67,6 +68,7 @@ export const db = new Proxy({} as any, {
                   options
                 })
               })
+            }
           }
         }
       )

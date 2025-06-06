@@ -9,12 +9,13 @@ export default async ({ backendConfig }: { backendConfig: RaidToolDef.BackendCon
       filename: path.resolve(backendConfig.dbBaseDir, `${enabledDB}.nedb`)
     }) as any
   }
+  /* disable index to prevent inconsytency
   await db.known_friends
-    .ensureIndex({
+  .ensureIndex({
       fieldName: 'entry',
       unique: true
     })
-    .catch((err) => console.warn(err))
+    .catch((err) => console.warn(err))*/
   await db.friends
     .ensureIndex({
       fieldName: 'account',
