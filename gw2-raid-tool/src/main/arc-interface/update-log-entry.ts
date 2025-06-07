@@ -35,7 +35,7 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
       } catch (error) {
         console.error(new ErrorWithStack(error))
       }
-      return updateLogEntry(logsPath, targetEntry)
+      return // end prosessing, as renamed file will be detected
     }
     const baseFile = path.dirname(entry)
     const dateInfo = entry.match(/(^|\/)(\d{8})-(\d+)\.z?evtc$/)
@@ -50,10 +50,10 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
 
     if (known && knownFriendCache && knownFriendCache.status !== 'failed') {
       await fs.move(path.resolve(logsPath, entry), path.resolve(logsPath, '.raid-tool', entry))
-      //console.log(`already known: ${entry}`);
+      //console.log(`already known: ${entry}`)
       return
     }
-    //console.log(`try to find: ${entry}`);
+    //console.log(`try to find: ${entry}`)
     const htmlFiles = await fg(
       [
         `${baseFile}/${dateName}_*.html`.replace(/^\.\//, ''),
@@ -67,7 +67,7 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
 
     const htmlFile =
       htmlFiles && htmlFiles[0] && path.join(logsPath, htmlFiles[0].replace(/\.htmlz$/, '.html'))
-    //console.log({htmlFile});
+    //console.log({ htmlFile })
 
     if (htmlFile && (!knownFriendCache || knownFriendCache.status === 'failed')) {
       await updateKnownFriends({
@@ -78,7 +78,7 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
         throw new ErrorWithStack(err)
       })
     }
-    //console.log({known});
+    //console.log({ known })
     if (known) {
       return
     }
@@ -98,16 +98,23 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
 
       logHeap('execDetached')
       const logFilePath = path.join(logsPath, entry)
+      const logFileName = entry.replace(/\.z?evtc$/, '.log')
       try {
         await execDetached(
           `${await baseConfig.eiPath}`,
           ['-c', `${await baseConfig.eiConfig}`, `${logFilePath}`],
           { cwd: path.dirname(logFilePath) }
         )
-        await waitFor([entry.replace(/\.z?evtc$/, '.log')], logsPath)
+        await waitFor(
+          (p, stats) => (stats?.isFile() && !p.endsWith(logFileName)) || false,
+          logsPath
+        )
       } catch (error) {
         console.error(new ErrorWithStack(error))
-        await waitFor([entry.replace(/\.z?evtc$/, '.log')], logsPath)
+        await waitFor(
+          (p, stats) => (stats?.isFile() && !p.endsWith(logFileName)) || false,
+          logsPath
+        )
         if (!(await checkLogs(logsPath, baseFile, dateName, entry, true))) {
           return
         }
@@ -126,27 +133,35 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
       console.info(`Log parsed: ${entry}`)
 
       logHeap('waitForHtml')
-      const waitForHtml = waitFor(
-        [
-          `${baseFile}/${dateName}_*.html`.replace(/^\.\//, ''),
-          `${baseFile}/${dateName}_*.htmlz`.replace(/^\.\//, '')
-        ],
-        logsPath
-      )
-      const waitForJson = waitFor(
-        [
-          `${baseFile}/${dateName}_*.json`.replace(/^\.\//, ''),
-          `${baseFile}/${dateName}_*.jsonz`.replace(/^\.\//, '')
-        ],
-        logsPath
-      )
+      const baseFilePath = path.join(logsPath, baseFile)
+      const waitForHtml = waitFor((p, stats) => {
+        const relativePath = path.relative(baseFilePath, p)
+        return (
+          (stats?.isFile() &&
+            !(
+              relativePath.startsWith(`${dateName}_`) &&
+              (relativePath.endsWith('.html') || relativePath.endsWith('.htmlz'))
+            )) ||
+          false
+        )
+      }, baseFilePath)
+      const waitForJson = waitFor((p, stats) => {
+        const relativePath = path.relative(baseFilePath, p)
+        return (
+          (stats?.isFile() &&
+            relativePath.startsWith(`${dateName}_`) &&
+            (relativePath.endsWith('.json') || relativePath.endsWith('.jsonz'))) ||
+          false
+        )
+      }, baseFilePath)
 
       const htmlInnerFile = await waitForHtml
       await waitForJson
       console.info(`JSON/HTML ready: ${entry}`)
 
       const htmlFile2 =
-        htmlInnerFile && path.join(logsPath, htmlInnerFile.replace(/\.htmlz$/, '.html'))
+        htmlInnerFile && path.join(baseFilePath, htmlInnerFile.replace(/\.htmlz$/, '.html'))
+      //console.log({ entry, htmlFile2 })
       if (htmlFile2) {
         if (
           !(await checkLogs(logsPath, baseFile, dateName, entry, false).catch(
@@ -161,7 +176,7 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
         await assignLog(logsPath, htmlFile2, entry).catch((err) => {
           throw new ErrorWithStack(err)
         })
-        //console.log("log assigned");
+        //console.log('log assigned')
         if (htmlFile2 && (!knownFriendCache || knownFriendCache.status === 'failed')) {
           await updateKnownFriends({
             knownFriendCache,
@@ -170,12 +185,13 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
           }).catch((err: { stack: any }) => {
             throw new ErrorWithStack(err)
           })
-          //console.log("updateKnownFriends");
+          //console.log('updateKnownFriends')
         }
       } else {
         console.error(path.join(logsPath, entry))
         return
       }
+      //console.log(`handled htmlFile2: ${htmlFile2}`)
     } else if (htmlFile) {
       if (
         !(await checkLogs(logsPath, baseFile, dateName, entry, false).catch(
@@ -184,13 +200,18 @@ export default async function updateLogEntry(logsPath: string, entry: LogEntryRe
           }
         ))
       ) {
+        //console.log(`Returning, due to htmlFile and not checkLogs: ${entry}`)
         return
       }
       await assignLog(logsPath, htmlFile, entry).catch((err) => {
         throw new ErrorWithStack(err)
       })
+      //console.info(`Log assigned: ${entry}`)
     }
+    //console.info(`Move log to .raid-tool: ${entry}`)
     await fs.move(path.resolve(logsPath, entry), path.resolve(logsPath, '.raid-tool', entry))
+    //console.info(`Moved log to .raid-tool: ${entry}`)
+    console.info(`Log entry updated: ${entry}`)
   } catch (error) {
     console.error(new ErrorWithStack(error))
   }

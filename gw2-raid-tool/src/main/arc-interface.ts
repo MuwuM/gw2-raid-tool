@@ -33,15 +33,19 @@ import arcFileHandlerInit from './arc-interface/arc-file-handler'
   const arcFileHandler = arcFileHandlerInit(logsPath, counter)
 
   const start = Date.now()
-  const watcher = chokidar.watch(
-    ['**/*.?(z)evtc', '**/*.json', '**/*.html', '*.?(z)evtc', '*.json', '*.html'],
-    {
-      cwd: logsPath,
-      ignoreInitial: false,
-      awaitWriteFinish: true,
-      ignored: ['.raid-tool/**']
-    }
-  )
+  const watcher = chokidar.watch('.', {
+    ignored: (p: string, stats) => {
+      const relativePath = path.relative(logsPath, p)
+      const isIgnored =
+        relativePath.startsWith('.raid-tool') ||
+        (stats?.isFile() &&
+          (!relativePath.match(/\.(z?evtc|json|html)$/) || (stats?.size || 0) < 1))
+      return isIgnored || false
+    },
+    cwd: logsPath,
+    ignoreInitial: false,
+    awaitWriteFinish: true
+  })
   watcher.on('add', async (chokPath) => {
     const entry = chokPath.replace(/\\/g, '/')
     if (entry.match(/\.z?evtc$/)) {

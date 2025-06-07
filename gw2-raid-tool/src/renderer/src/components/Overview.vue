@@ -517,7 +517,7 @@ function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
     </template>
   </main>
   <template v-if="!data.baseConfig?.boringBg">
-    <img class="bg-video" src="../assets/00010-3482606706.png" alt="" />
+    <img class="bg-video" src="../assets/d2d70793-858c-40df-bcd7-38dfba3df667.png" alt="" />
     <div class="bg-glow"></div>
     <div class="bg-glow"></div>
     <div class="bg-glow"></div>

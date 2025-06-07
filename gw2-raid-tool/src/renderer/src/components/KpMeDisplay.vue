@@ -23,7 +23,7 @@ const props = defineProps({ account: String })
       </a>
     </div>
     <div class="li-section li-section-inline">
-      <template v-for="kp in killproofMeStats(props.account)" :key="'friend' || kp">
+      <template v-for="kp in killproofMeStats(props.account)" :key="`friend-${typeof kp}`">
         <div v-if="kp.totalKps === null" class="li-display">
           <span class="li-display-number-details">{{ i18n.killproofLoading }}</span>
         </div>

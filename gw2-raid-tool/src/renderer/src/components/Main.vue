@@ -64,7 +64,7 @@ onUpdated(() => {
     <ul class="navbar-nav mr-auto">
       <li class="navbar-brand">
         <img
-          :src="img('/img/logo5-1.png')"
+          :src="img('/img/logo5-3.png')"
           alt=""
           style="
             display: block;

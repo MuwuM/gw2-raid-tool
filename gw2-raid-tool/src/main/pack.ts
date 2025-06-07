@@ -32,7 +32,7 @@ import { Stats } from 'fs'
 
   console.info('Packing')
 
-  const appIcon = path.resolve(dataDir, 'resources', 'logo5-1.ico')
+  const appIcon = path.resolve(dataDir, 'resources', 'logo5-3.ico')
   const installerIcon = path.resolve(dataDir, 'resources', 'installer.ico')
 
   const appPaths = await packager.packager({

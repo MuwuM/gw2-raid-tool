@@ -6,7 +6,7 @@ import { img } from '../util'
   <main id="credits" :class="{ 'with-bg': !data.baseConfig?.boringBg }">
     <div class="container pb-5">
       <img
-        :src="img('/img/logo5-1.png')"
+        :src="img('/img/logo5-3.png')"
         alt="Logo of GW2 Raid Tool"
         style="display: block; width: 20rem; height: 20rem; margin: 0 auto"
       />
@@ -74,7 +74,7 @@ import { img } from '../util'
     </div>
   </main>
   <template v-if="!data.baseConfig?.boringBg">
-    <img class="bg-video" src="../assets/00010-3482606706.png" alt="" />
+    <img class="bg-video" src="../assets/d2d70793-858c-40df-bcd7-38dfba3df667.png" alt="" />
     <div class="bg-glow"></div>
     <div class="bg-glow"></div>
     <div class="bg-glow"></div>

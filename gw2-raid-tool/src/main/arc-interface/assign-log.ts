@@ -21,7 +21,9 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
   const logFile = htmlFile.replace(/\.html$/, '.json')
   let json: LogJsonData | null = null
   try {
+    //console.log(`read log: ${logFile}`)
     json = await readLogJsonFiltered(logFile)
+    //console.log(`read log done: ${logFile}`)
   } catch (error) {
     console.error(new ErrorWithStack(error))
     let htmlStats: fs.Stats | null = null
@@ -46,10 +48,12 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
   }
 
   if (!json) {
+    //console.log(`No JSON data found for: ${logFile}`)
     return
   }
 
   try {
+    //console.log(`insert log: ${htmlFile}`)
     await db.logs.insert({
       hash: await hashLog(htmlFile),
       htmlFile,
@@ -79,12 +83,13 @@ export default async function assignLog(logsPath: string, htmlFile: string, entr
       entry,
       players: json.players.map((p) => p.account)
     })
+    //console.log(`Log inserted: ${htmlFile}`)
   } catch (error) {
     console.warn(error)
     const known = await db.logs.findOne({ htmlFile })
     if (known) {
       await db.logs.update({ _id: known._id }, { $set: { entry } })
-      //console.log(known);
+      //console.log(known)
       return
     }
   }

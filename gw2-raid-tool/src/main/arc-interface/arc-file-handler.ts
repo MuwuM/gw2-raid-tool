@@ -1,6 +1,9 @@
 import { progressConfig } from './main-proxy'
 import updateLogEntry from './update-log-entry'
 import handleCompress from './handle-compress'
+import path from 'path'
+import fs from 'fs-extra'
+import ErrorWithStack from '../error-with-stack'
 
 type QueueParam = { mode: 'log' | 'compress'; entry: string }
 
@@ -33,6 +36,17 @@ const arcFileHandlerInit = (
   async function handleQueue(add: QueueParam) {
     if (add.mode === 'log') {
       const entry = add.entry
+      if (entry.match(/[()]/)) {
+        console.info(`rename: ${path.resolve(logsPath, entry)}`)
+        const targetEntry = entry.replace(/[()]/g, '')
+        try {
+          await fs.move(path.resolve(logsPath, entry), path.resolve(logsPath, targetEntry))
+          console.info(`renamed to: ${targetEntry}`)
+        } catch (error) {
+          console.error(new ErrorWithStack(error))
+        }
+        return // end prosessing, as renamed file will be detected
+      }
       console.info(`adding: ${entry}`)
       counter.i++
       progressConfig.parsingLogs = counter.i

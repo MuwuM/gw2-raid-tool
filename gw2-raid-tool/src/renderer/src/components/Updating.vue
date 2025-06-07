@@ -8,7 +8,7 @@ import { InitStatusStatusCode } from '../../../raid-tool'
     <h1 class="center-big-splash">
       <span class="center-big-splash-status"
         ><img
-          :src="img('/img/logo5-1.png')"
+          :src="img('/img/logo5-3.png')"
           alt=""
           style="
             display: inline-block;
@@ -30,7 +30,7 @@ import { InitStatusStatusCode } from '../../../raid-tool'
       <span class="center-big-splash-step">{{ data.loading.step || '' }}</span>
     </div>
   </div>
-  <img class="bg-video" src="../assets/00010-3482606706.png" alt="" />
+  <img class="bg-video" src="../assets/d2d70793-858c-40df-bcd7-38dfba3df667.png" alt="" />
   <div class="bg-glow"></div>
   <div class="bg-glow"></div>
   <div class="bg-glow"></div>
