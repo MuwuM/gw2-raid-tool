@@ -13,7 +13,7 @@ const wings: WingsRes = [
         name_de: 'Tal-Wächter',
         name_fr: 'Gardien',
         triggerID: 15438,
-        img: '64px-Mini_Vale_Guardian.png',
+        img: 'bosses/vg.png',
         hasCM: false
       },
       {
@@ -22,7 +22,7 @@ const wings: WingsRes = [
         name_en: 'Spirit Woods',
         name_de: 'Geisterlauf',
         name_fr: 'Bois des esprits',
-        img: 'Soul_River_Glider.png',
+        img: 'bosses/spirit-run.png',
         hasCM: false
       },
       {
@@ -32,7 +32,7 @@ const wings: WingsRes = [
         name_de: 'Gorseval der Facettenreiche',
         name_fr: 'Gorseval',
         triggerID: 15429,
-        img: '64px-Mini_Gorseval_the_Multifarious.png',
+        img: 'bosses/gorse.png',
         hasCM: false
       },
       {
@@ -42,7 +42,7 @@ const wings: WingsRes = [
         name_de: 'Sabetha die Saboteurin',
         name_fr: 'Sabetha',
         triggerID: 15375,
-        img: '64px-Mini_Sabetha.png',
+        img: 'bosses/sabetha.png',
         hasCM: false
       }
     ]
@@ -59,7 +59,7 @@ const wings: WingsRes = [
         name_de: 'Faultierion',
         name_fr: 'Paressor',
         triggerID: 16123,
-        img: '64px-Mini_Slothasor.png',
+        img: 'bosses/sloth.png',
         hasCM: false
       },
       {
@@ -69,7 +69,7 @@ const wings: WingsRes = [
         name_de: 'Banditen-Trio',
         name_fr: 'Bandit Trio',
         triggerID: 16088,
-        img: 'Mini_Zane.png',
+        img: 'bosses/trio.png',
         hasCM: false
       },
       {
@@ -79,7 +79,7 @@ const wings: WingsRes = [
         name_de: 'Matthias Gabrel',
         name_fr: 'Matthias',
         triggerID: 16115,
-        img: 'Mini_Matthias_Abomination.png',
+        img: 'bosses/matthi.png',
         hasCM: false
       }
     ]
@@ -95,7 +95,7 @@ const wings: WingsRes = [
         name_en: 'Siege the Stronghold',
         name_de: 'Belagert die Festung',
         name_fr: 'Escorte',
-        img: 'Mini_McLeod_the_Silent.png',
+        img: 'bosses/escort.png',
         triggerID: 16253,
         hasCM: false
       },
@@ -106,7 +106,7 @@ const wings: WingsRes = [
         name_de: 'Festenkonstrukt',
         name_fr: 'Titan du fort',
         triggerID: 16235,
-        img: 'Mini_Keep_Construct.png',
+        img: 'bosses/kc.png',
         hasCM: true
       },
       {
@@ -116,7 +116,7 @@ const wings: WingsRes = [
         name_de: 'Verdrehtes Schloss',
         name_fr: 'Château corrompu',
         triggerID: 16247,
-        img: 'Bloodstone-Infused_Ectoplasm.png',
+        img: 'bosses/tc.png',
         hasCM: false
       },
       {
@@ -126,7 +126,7 @@ const wings: WingsRes = [
         name_de: 'Xera',
         name_fr: 'Xera',
         triggerID: 16246,
-        img: 'Mini_Xera.png',
+        img: 'bosses/xera.png',
         hasCM: false
       }
     ]
@@ -143,7 +143,7 @@ const wings: WingsRes = [
         name_de: 'Cairn der Unbeugsame',
         name_fr: 'Cairn',
         triggerID: 17194,
-        img: 'Mini_Cairn_the_Indomitable.png',
+        img: 'bosses/cairn.png',
         hasCM: true
       },
       {
@@ -153,7 +153,7 @@ const wings: WingsRes = [
         name_de: 'Mursaat-Aufseher',
         name_fr: 'Surveillant mursaat',
         triggerID: 17172,
-        img: 'Mini_Mursaat_Overseer.png',
+        img: 'bosses/mo.png',
         hasCM: true
       },
       {
@@ -163,7 +163,7 @@ const wings: WingsRes = [
         name_de: 'Samarog',
         name_fr: 'Samarog',
         triggerID: 17188,
-        img: 'Mini_Samarog.png',
+        img: 'bosses/sama.png',
         hasCM: true
       },
       {
@@ -173,7 +173,7 @@ const wings: WingsRes = [
         name_de: 'Deimos',
         name_fr: 'Deimos',
         triggerID: 17154,
-        img: 'Mini_Ragged_White_Mantle_Figurehead.png',
+        img: 'bosses/deimos.png',
         hasCM: true
       }
     ]
@@ -190,7 +190,7 @@ const wings: WingsRes = [
         name_de: 'Seelenloser Schrecken',
         name_fr: 'Horreur sans âme',
         triggerID: 19767,
-        img: 'Mini_Desmina.png',
+        img: 'bosses/desmina.png',
         hasCM: true
       },
       {
@@ -200,7 +200,7 @@ const wings: WingsRes = [
         name_de: 'Fluss der Seelen',
         name_fr: 'Rivière des âmes',
         triggerID: 19828,
-        img: 'Silver_River_of_Souls_Trophy.png',
+        img: 'bosses/river.png',
         hasCM: false
       },
       {
@@ -210,7 +210,7 @@ const wings: WingsRes = [
         name_de: 'Statuen des Grenth',
         name_fr: 'Statues de Grenth',
         triggerID: [19691, 19536, 19651],
-        img: 'Bronze_Statue_of_Grenth_Trophy.png',
+        img: 'bosses/statues.png',
         hasCM: false
       },
       {
@@ -220,7 +220,7 @@ const wings: WingsRes = [
         name_de: 'Dhuum',
         name_fr: 'Dhuum',
         triggerID: 19450,
-        img: 'Mini_Dhuum.png',
+        img: 'bosses/dhuum.png',
         hasCM: true
       }
     ]
@@ -237,7 +237,7 @@ const wings: WingsRes = [
         name_de: 'Beschworene Verschmelzung',
         name_fr: 'Amalgame conjuré',
         triggerID: 43974,
-        img: 'Gold_Conjured_Amalgamate_Trophy.png',
+        img: 'bosses/ca.png',
         hasCM: true
       },
       {
@@ -247,7 +247,7 @@ const wings: WingsRes = [
         name_de: 'Zwillings-Largos',
         name_fr: 'Jumeaux largos',
         triggerID: 21105,
-        img: 'Mini_Kenut.png',
+        img: 'bosses/twin-largos.png',
         hasCM: true
       },
       {
@@ -257,7 +257,7 @@ const wings: WingsRes = [
         name_de: 'Qadim',
         name_fr: 'Qadim',
         triggerID: 20934,
-        img: 'Mini_Qadim.png',
+        img: 'bosses/q1.png',
         hasCM: true
       }
     ]
@@ -273,7 +273,7 @@ const wings: WingsRes = [
         name_en: 'Gates of Ahdashim',
         name_de: 'Tore von Ahdashim',
         name_fr: 'Porte',
-        img: 'Mini_Key_of_Ahdashim.png',
+        img: 'bosses/gate.png',
         hasCM: false
       },
       {
@@ -283,7 +283,7 @@ const wings: WingsRes = [
         name_de: 'Kardinal Adina',
         name_fr: 'Adina',
         triggerID: 22006,
-        img: 'Mini_Earth_Djinn.png',
+        img: 'bosses/adina.png',
         hasCM: true
       },
       {
@@ -293,7 +293,7 @@ const wings: WingsRes = [
         name_de: 'Kardinal Sabir',
         name_fr: 'Sabir',
         triggerID: 21964,
-        img: 'Mini_Air_Djinn.png',
+        img: 'bosses/sabir.png',
         hasCM: true
       },
       {
@@ -303,7 +303,7 @@ const wings: WingsRes = [
         name_de: 'Qadim der Unvergleichliche',
         name_fr: 'Qadim 2',
         triggerID: 22000,
-        img: 'Mini_Qadim_the_Peerless.png',
+        img: 'bosses/q2.png',
         hasCM: true
       }
     ]
@@ -320,7 +320,7 @@ const wings: WingsRes = [
         name_de: 'Greer der Pestbringer',
         name_fr: 'Greer le Porteur de peste',
         triggerID: 26725,
-        img: 'Greers_Blighted_Touch.png',
+        img: 'bosses/greer.png',
         hasCM: true
       },
       {
@@ -330,7 +330,7 @@ const wings: WingsRes = [
         name_de: 'Decima, die Sturmsängerin',
         name_fr: 'Decima, la Chantelame',
         triggerID: 26774,
-        img: 'Mini_Lucid_Boulder.png',
+        img: 'bosses/decima.png',
         hasCM: true
       },
       {
@@ -340,7 +340,7 @@ const wings: WingsRes = [
         name_de: 'Ura, die Dampfschreierin',
         name_fr: 'Ura, la hurleuse de vapeur',
         triggerID: 26712,
-        img: 'Mini_Ventshot.png',
+        img: 'bosses/ura.png',
         hasCM: true
       }
     ],
@@ -364,7 +364,7 @@ const wings: WingsRes = [
         name_de: 'Alter Löwenhof',
         name_fr: 'Cour du vieux lion',
         triggerID: [25413, 25414, 25415, 25416, 25419, 25423],
-        img: 'Mini_Vermilion_Assault_Knight.png',
+        img: 'bosses/olc.png',
         hasCM: true,
         dailyIndex: 0
       }
@@ -387,7 +387,7 @@ const wings: WingsRes = [
         name_de: 'Zittergipfel-Pass',
         name_fr: 'Col des Cimefroides',
         triggerID: 22154,
-        img: 'Icebrood_Construct.png',
+        img: 'bosses/ic.png',
         hasCM: false,
         dailyIndex: 3
       },
@@ -398,7 +398,7 @@ const wings: WingsRes = [
         name_de: 'Stimme und Klaue der Gefallenen',
         name_fr: 'Voix et Griffe légendaires des déchus',
         triggerID: 22343,
-        img: 'KodanVoiceAndClaw.png',
+        img: 'bosses/kodanbros.png',
         hasCM: false,
         dailyIndex: 4
       },
@@ -409,7 +409,7 @@ const wings: WingsRes = [
         name_de: 'Fraenir Jormags',
         name_fr: 'Fraenir de Jormag',
         triggerID: 22492,
-        img: 'Fraenir_of_Jormag.png',
+        img: 'bosses/fraenir.png',
         hasCM: false,
         dailyIndex: 2
       },
@@ -420,7 +420,7 @@ const wings: WingsRes = [
         name_de: 'Knochenhäuter',
         name_fr: 'Désosseur',
         triggerID: 22521,
-        img: 'Boneskinner.png',
+        img: 'bosses/boneskinner.png',
         hasCM: false,
         kpName: 'boneSkinner',
         dailyIndex: 0
@@ -432,7 +432,7 @@ const wings: WingsRes = [
         name_de: 'Geflüster des Jormag',
         name_fr: 'Murmure de Jormag',
         triggerID: 22711,
-        img: 'Whisper_of_Jormag.png',
+        img: 'bosses/woj.png',
         hasCM: false,
         dailyIndex: 5
       }
@@ -456,7 +456,7 @@ const wings: WingsRes = [
         name_de: 'Aetherblade Hideout',
         name_fr: 'Aetherblade Hideout',
         triggerID: 24033,
-        img: 'MaiTrin.png',
+        img: 'bosses/aetherblade.png',
         hasCM: true,
         dailyIndex: 1
       },
@@ -467,7 +467,7 @@ const wings: WingsRes = [
         name_de: 'Xunlai Jade Junkyard',
         name_fr: 'Xunlai Jade Junkyard',
         triggerID: 23957,
-        img: 'Ankka.png',
+        img: 'bosses/ankka.png',
         hasCM: true,
         dailyIndex: 2
       },
@@ -478,7 +478,7 @@ const wings: WingsRes = [
         name_de: 'Kaineng Overlook',
         name_fr: 'Kaineng Overlook',
         triggerID: [24485, 24266],
-        img: 'MinisterLi.png',
+        img: 'bosses/ko.png',
         hasCM: true,
         dailyIndex: 3
       },
@@ -489,7 +489,7 @@ const wings: WingsRes = [
         name_de: 'Harvest Temple',
         name_fr: 'Harvest Temple',
         triggerID: [43488, 1378],
-        img: 'DragonVoid.png',
+        img: 'bosses/ht.png',
         hasCM: true,
         dailyIndex: 4
       }
@@ -513,7 +513,7 @@ const wings: WingsRes = [
         name_de: 'Angriffsmission "Kosmisches Observatorium"',
         name_fr: "Mission d'attaque : Observatoire cosmique",
         triggerID: 25705,
-        img: 'Mini_Dagda.png',
+        img: 'bosses/dagda.png',
         hasCM: true,
         dailyIndex: 1
       },
@@ -524,7 +524,30 @@ const wings: WingsRes = [
         name_de: 'Angriffsmission "Tempel von Febe"',
         name_fr: "Mission d'attaque : Temple de Febe",
         triggerID: 25989,
-        img: 'Mini_Cerus.png',
+        img: 'bosses/cerus.png',
+        hasCM: true,
+        dailyIndex: 0
+      }
+    ]
+  },
+  {
+    w: 'FractalCMs',
+    w_img: 'Fraktal-Relikt_Icon.png',
+    w_img_text: '95',
+    isFractal: true,
+    name_en: 'Fractals of the Mists CM',
+    name_de: 'Fraktale der Nebel CM',
+    name_fr: 'Fractales des Brumes CM',
+    id: 'fractal_cms_kinfall',
+    steps: [
+      {
+        id: 'kinfall_fractal_whispering_shadow',
+        type: 'Boss',
+        name_en: 'Kinfall Fractal: Whispering Shadow',
+        name_de: 'Sippenfall-Fraktal: Flüsternder Schatten',
+        name_fr: 'Fractales du Deuil du foyer: Ombre murmurante',
+        triggerID: 27010,
+        img: 'bosses/woj.png',
         hasCM: true,
         dailyIndex: 0
       }
