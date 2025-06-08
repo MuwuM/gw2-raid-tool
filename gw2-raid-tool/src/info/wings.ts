@@ -706,7 +706,8 @@ const wings: WingsRes = [
         name_de: 'Fraktal "Einsamer Turm": Deimos & Cerus',
         name_fr: 'Fractale de la Tour solitaire: Deimos & Cerus',
         img: 'bosses/cerus-deimos.png',
-        hasCM: true,
+        triggerID: [26257, 26226],
+        hasCM: false,
         dailyIndex: 0
       },
       {

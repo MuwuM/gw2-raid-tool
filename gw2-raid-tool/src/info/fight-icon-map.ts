@@ -2,9 +2,9 @@ import wings from './wings'
 
 const fightIconMap: Record<number, string> = {
   // Golems
-  16199: '/img/Mini_Professor_Miau_Icon.png',
-  19645: '/img/Mini_Mister_Mittens.png',
-  19676: '/img/Mini_Baron_von_Scrufflebutt.png',
+  16199: '/img/bosses/golem1.png',
+  19645: '/img/bosses/golem2.png',
+  19676: '/img/bosses/golem3.png',
   // WvW
   1: '/img/WvW_Menu_Bar_icon.png'
 }

@@ -77,6 +77,7 @@ href="/static/style.css"
     /https:\/\/render\.guildwars2\.com\/file\/([/%_-\w.]+)\.png/g,
     '/gwrenderapi/$1.jpg'
   )
+  file = file.replace(/:src="encounter\.icon"/g, `:src="'${log.fightIcon || ''}'||encounter.icon"`)
 
   file = file.replace(
     /<div class="d-flex flex-column justify-content-center align-items-center ml-5">\s*<div class="d-flex flex-row justify-content-center align-items-center mt-2 mb-2">[\s\S]+?<\/div>/g,

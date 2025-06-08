@@ -398,6 +398,11 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
           `https://render.guildwars2.com/file/${file}`
         )
         return respondWithFile(url.body)
+      } else if (pathname.startsWith('/img/bosses/')) {
+        const file = pathname.replace(/^\/img\/bosses\//, '')
+        const defaultPath = require.resolve('../../resources/img/bosses/' + file)
+        const fileUrl = pathToFileURL(defaultPath).toString()
+        return net.fetch(fileUrl)
       }
 
       //console.log('gw2-log', { host, pathname, searchParams })

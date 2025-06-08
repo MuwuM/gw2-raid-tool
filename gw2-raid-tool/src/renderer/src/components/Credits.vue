@@ -30,14 +30,6 @@ import { img } from '../util'
       </div>
       <span class="li-display-number-details">{{ i18n.licenseMit }}</span>
 
-      <h3 class="credits-name">Game-icons.net</h3>
-      <div>
-        {{ i18n.creditsGameIconsPart1 }}
-        <a href="https://game-icons.net/">Game-icons.net</a>
-        {{ i18n.creditsGameIconsPart2 }}
-      </div>
-      <span class="li-display-number-details">{{ i18n.licenseCCBY }}</span>
-
       <h2 class="credits-section">{{ i18n.licenseLabel }}</h2>
       <h3 class="credits-name">GW2 Raid Tool v{{ data.baseConfig.appVersion }}</h3>
       <div class="credits-law">

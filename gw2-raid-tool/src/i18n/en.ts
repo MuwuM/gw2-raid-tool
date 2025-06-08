@@ -19,8 +19,6 @@ const lang = {
   licenseCCBY: 'Licence: CC-BY',
   creditsElectronPart1: 'For the display of the Raid Tool,',
   creditsElectronPart2: 'is used.',
-  creditsGameIconsPart1: 'Icons from',
-  creditsGameIconsPart2: 'are used to display the Raid Tool.',
   licenseLabel: 'Licence',
   creditsMorePackages: 'Other software packages used',
   sharedLogsLabel: 'Kill-Score',
