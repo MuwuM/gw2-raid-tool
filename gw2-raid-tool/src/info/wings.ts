@@ -547,7 +547,7 @@ const wings: WingsRes = [
         name_de: 'Sippenfall-Fraktal: Flüsternder Schatten',
         name_fr: 'Fractales du Deuil du foyer: Ombre murmurante',
         triggerID: 27010,
-        img: 'bosses/woj.png',
+        img: 'bosses/whispering-shadow.png',
         hasCM: true,
         dailyIndex: 0
       }
@@ -570,7 +570,7 @@ const wings: WingsRes = [
         name_de: 'Albtraum-Fraktal: MAMA',
         name_fr: 'Fractale des Cauchemars: MAMA',
         triggerID: 17021,
-        img: 'MAMA.png',
+        img: 'bosses/mama.png',
         hasCM: true,
         dailyIndex: 0
       },
@@ -581,7 +581,7 @@ const wings: WingsRes = [
         name_de: 'Albtraum-Fraktal: Siax',
         name_fr: 'Fractale des Cauchemars: Siax',
         triggerID: 17028,
-        img: 'Siax.png',
+        img: 'bosses/siax.png',
         hasCM: true,
         dailyIndex: 0
       },
@@ -592,7 +592,7 @@ const wings: WingsRes = [
         name_de: 'Albtraum-Fraktal: Ensolyss',
         name_fr: 'Fractale des Cauchemars: Ensolyss',
         triggerID: 16948,
-        img: 'Ensolyss.png',
+        img: 'bosses/ensolyss.png',
         hasCM: true,
         dailyIndex: 0
       }
@@ -615,7 +615,7 @@ const wings: WingsRes = [
         name_de: 'Fraktal Zerschmettertes Observatorium: Skorvald',
         name_fr: "Fractale de l'Observatoire détruit: Skorvald",
         triggerID: 17632,
-        img: 'Skorvald_the_Shattered.png',
+        img: 'bosses/skorvald.png',
         hasCM: true,
         dailyIndex: 0
       },
@@ -626,7 +626,7 @@ const wings: WingsRes = [
         name_de: 'Fraktal Zerschmettertes Observatorium: Artsariiv/Viirastra',
         name_fr: "Fractale de l'Observatoire détruit: Artsariiv/Viirastra",
         triggerID: 17949,
-        img: 'Artsariiv.png',
+        img: 'bosses/artsariiv.png',
         hasCM: true,
         dailyIndex: 0
       },
@@ -637,7 +637,7 @@ const wings: WingsRes = [
         name_de: 'Fraktal Zerschmettertes Observatorium: Arkk',
         name_fr: "Fractale de l'Observatoire détruit: Arkk",
         triggerID: 17759,
-        img: 'Arkk.png',
+        img: 'bosses/arkk.png',
         hasCM: true,
         dailyIndex: 0
       }
@@ -660,7 +660,7 @@ const wings: WingsRes = [
         name_de: 'Fraktal Sunqua-Gipfel',
         name_fr: 'Fractale du Pic de Sunqua',
         triggerID: 23254,
-        img: 'Ai.png',
+        img: 'bosses/ai.png',
         hasCM: true,
         dailyIndex: 0
       }
@@ -683,7 +683,7 @@ const wings: WingsRes = [
         name_de: 'Fraktal "Stumme Brandung"',
         name_fr: 'Fractale du Ressac silencieux',
         triggerID: [25572, 25577],
-        img: 'Mini_Kanaxai.png',
+        img: 'bosses/kanaxai.png',
         hasCM: true,
         dailyIndex: 0
       }
@@ -705,7 +705,7 @@ const wings: WingsRes = [
         name_en: 'Lonely Tower Fractal: Deimos & Cerus',
         name_de: 'Fraktal "Einsamer Turm": Deimos & Cerus',
         name_fr: 'Fractale de la Tour solitaire: Deimos & Cerus',
-        img: 'Cerus-Deimos.png',
+        img: 'bosses/cerus-deimos.png',
         hasCM: true,
         dailyIndex: 0
       },
@@ -716,7 +716,7 @@ const wings: WingsRes = [
         name_de: 'Fraktal "Einsamer Turm": Eparch',
         name_fr: 'Fractale de la Tour solitaire: Eparch',
         triggerID: 26231,
-        img: 'Mini_Eparch.png',
+        img: 'bosses/eparch.png',
         hasCM: true,
         dailyIndex: 0
       }
