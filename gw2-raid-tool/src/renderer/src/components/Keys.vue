@@ -4,7 +4,6 @@ import { preventDefault, img } from '@renderer/util'
 import {
   ChangeOnInputEvent,
   ChangeOnSelectEvent,
-  ClickOnButtonEvent,
   UiBlockedKeyRules
 } from 'src/raid-tool'
 const validAhkKeys =
@@ -30,11 +29,11 @@ function updateKeyRuleActive(keyRule: UiBlockedKeyRules, event: ChangeOnInputEve
   keyRule.active = event.target.checked
   api.ipc.send.updateKeyRule({ keyRule })
 }
-function deleteKeyRule(keyRule: UiBlockedKeyRules, event: ClickOnButtonEvent) {
+function deleteKeyRule(keyRule: UiBlockedKeyRules, event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.deleteKeyRule({ keyRule })
 }
-function addKeyRule(event: ClickOnButtonEvent) {
+function addKeyRule(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.addKeyRule({})
 }
@@ -45,22 +44,36 @@ function addKeyRule(event: ClickOnButtonEvent) {
       <table class="table">
         <thead>
           <tr class="sticky-top bg-dark">
-            <th scope="col" class="col-3">
+            <th
+              scope="col"
+              class="col-3"
+            >
               <div>{{ i18n.buildClassHeaderName }}</div>
             </th>
-            <th scope="col" class="col-2">
+            <th
+              scope="col"
+              class="col-2"
+            >
               <div>{{ i18n.keySlotHeaderName }}</div>
             </th>
-            <th scope="col" class="col-2">
+            <th
+              scope="col"
+              class="col-2"
+            >
               <a href="https://www.autohotkey.com/docs/KeyList.htm#keyboard">
-                {{ i18n.keyKeysHeaderName }}</a
-              >
+                {{ i18n.keyKeysHeaderName }}</a>
             </th>
-            <th scope="col" class="col-2">{{ i18n.keyActiveHeaderName }}</th>
+            <th
+              scope="col"
+              class="col-2"
+            >{{ i18n.keyActiveHeaderName }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="keyRule in data.keyRules || []" :key="keyRule._id">
+          <tr
+            v-for="keyRule in data.keyRules || []"
+            :key="keyRule._id"
+          >
             <td>
               <div class="build-row-profession">
                 <img
@@ -75,7 +88,11 @@ function addKeyRule(event: ClickOnButtonEvent) {
                   @change="updateKeyRuleSpec(keyRule, $event as ChangeOnSelectEvent)"
                 >
                   <option value="">{{ i18n.keyRuleAllSpecs }}</option>
-                  <option v-for="spec in uniqueSpecs" :key="spec" :value="spec">
+                  <option
+                    v-for="spec in uniqueSpecs"
+                    :key="spec"
+                    :value="spec"
+                  >
                     {{ spec }}
                   </option>
                 </select>
@@ -109,8 +126,7 @@ function addKeyRule(event: ClickOnButtonEvent) {
                   v-for="key in (keyRule.keys || '').split(' ').filter((s) => s)"
                   :key="key"
                   class="m-1"
-                  ><kbd :class="{ 'bg-danger': !key.match(validAhkKeys) }">{{ key }}</kbd></span
-                >
+                ><kbd :class="{ 'bg-danger': !key.match(validAhkKeys) }">{{ key }}</kbd></span>
               </div>
             </td>
             <td>
@@ -124,7 +140,7 @@ function addKeyRule(event: ClickOnButtonEvent) {
                 <button
                   v-if="!keyRule.active"
                   class="btn btn-outline-danger ms-3"
-                  @click="deleteKeyRule(keyRule, $event as ClickOnButtonEvent)"
+                  @click="deleteKeyRule(keyRule, $event)"
                 >
                   {{ i18n.keyRuleDelete }}
                 </button>
@@ -133,7 +149,10 @@ function addKeyRule(event: ClickOnButtonEvent) {
           </tr>
         </tbody>
       </table>
-      <button class="btn btn-primary" @click="addKeyRule($event as ClickOnButtonEvent)">
+      <button
+        class="btn btn-primary"
+        @click="addKeyRule($event)"
+      >
         {{ i18n.addKeyRule }}
       </button>
     </div>

@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import urllib from 'urllib'
 import JSZip from 'jszip'
 import semver from 'semver'
-import type { Octokit as OctokitClass } from '@octokit/rest/dist-types'
+import type { Octokit as OctokitClass } from '@octokit/rest'
 
 import * as RaidToolDef from '../raid-tool'
 
@@ -42,7 +42,7 @@ export default async ({
       console.info(`Latest EI-Version: ${ei_version}${beforeCLISplit ? '' : ' (CLI)'}`)
       const eiZip = beforeCLISplit ? 'GW2EI.zip' : 'GW2EICLI.zip'
       if (!(await fs.pathExists(versionFolder))) {
-        const zipFile = eiReleases.data.assets.find((a) => a.name === eiZip)
+        const zipFile = eiReleases.data.assets.find((a: { name: string }) => a.name === eiZip)
         if (zipFile) {
           const zibFileContent = await urllib.request(zipFile.browser_download_url, {
             timeout: 60000,

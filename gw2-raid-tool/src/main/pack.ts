@@ -71,18 +71,13 @@ import { Stats } from 'fs'
     },
 
     afterCopy: [
-      async (buildPath, electronVersion, _platform, arch, callback) => {
-        try {
-          console.info(`rebuilding: ${buildPath}`)
-          await rebuild.rebuild({
-            buildPath,
-            electronVersion,
-            arch
-          })
-          callback()
-        } catch (error) {
-          callback(error as Error)
-        }
+      async ({ buildPath, electronVersion, arch }) => {
+        console.info(`rebuilding: ${buildPath}`)
+        await rebuild.rebuild({
+          buildPath,
+          electronVersion,
+          arch
+        })
       }
     ]
   })

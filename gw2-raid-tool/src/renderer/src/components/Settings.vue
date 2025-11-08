@@ -1,52 +1,52 @@
 <script setup lang="ts">
 import { data, i18n, api } from '@renderer/preload-api'
 import { preventDefault } from '../util'
-import { ClickEvent, ClickOnButtonEvent, Lang } from 'src/raid-tool'
+import { Lang } from 'src/raid-tool'
 
-function removeAccount(token: string, event: ClickEvent) {
+function removeAccount(token: string, event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.removeAccount({ token })
 }
-function addAccount(token: string, event: ClickEvent) {
+function addAccount(token: string, event: MouseEvent) {
   preventDefault(event)
   //console.log({ token });
   api.ipc.send.addAccount({ token })
   data.token = ''
 }
-function changeLang(lang: Lang, event?: ClickEvent) {
+function changeLang(lang: Lang, event?: MouseEvent) {
   preventDefault(event)
   api.ipc.send.changeLang({ lang })
 }
-function selectGw2Dir(event: ClickEvent) {
+function selectGw2Dir(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.selectGw2Dir({})
 }
-function selectLaunchBuddyDir(event: ClickEvent) {
+function selectLaunchBuddyDir(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.selectLaunchBuddyDir({})
 }
-function removeLaunchBuddyDir(event: ClickEvent) {
+function removeLaunchBuddyDir(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.removeLaunchBuddyDir({})
 }
-function resetAllLogs(confirmReset: string, event: ClickEvent) {
+function resetAllLogs(confirmReset: string, event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.resetAllLogs({ confirmReset })
   data.confirmReset = ''
 }
-function enableArcUpdates(event: ClickEvent) {
+function enableArcUpdates(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.enableArcUpdates({})
 }
-function updateArcDps11(event: ClickEvent) {
+function updateArcDps11(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.updateArcDps11({})
 }
-function checkArcUpdates(event: ClickEvent) {
+function checkArcUpdates(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.checkArcUpdates({})
 }
-function disableArcUpdates(event: ClickEvent) {
+function disableArcUpdates(event: MouseEvent) {
   preventDefault(event)
   api.ipc.send.disableArcUpdates({})
 }
@@ -72,7 +72,7 @@ function disableArcUpdates(event: ClickEvent) {
             <td>
               <button
                 class="btn btn-danger"
-                @click="removeAccount(acc.token, $event as ClickOnButtonEvent)"
+                @click="removeAccount(acc.token, $event)"
               >
                 Löschen
               </button>
@@ -99,7 +99,7 @@ function disableArcUpdates(event: ClickEvent) {
           <button
             class="btn btn-primary"
             type="submit"
-            @click="addAccount(data.token, $event as ClickOnButtonEvent)"
+            @click="addAccount(data.token, $event)"
           >
             {{ i18n.settingsAddTokenToken }}
           </button>
@@ -131,7 +131,7 @@ function disableArcUpdates(event: ClickEvent) {
         <button
           class="btn btn-primary"
           type="submit"
-          @click="selectGw2Dir($event as ClickOnButtonEvent)"
+          @click="selectGw2Dir($event)"
         >
           {{ i18n.settingsChangeButton }}
         </button>
@@ -157,14 +157,14 @@ function disableArcUpdates(event: ClickEvent) {
         <button
           class="btn btn-primary"
           type="submit"
-          @click="selectLaunchBuddyDir($event as ClickOnButtonEvent)"
+          @click="selectLaunchBuddyDir($event)"
         >
           {{ i18n.settingsChangeButton }}
         </button>
         <button
           v-if="data.baseConfig.launchBuddyDir"
           class="btn btn-danger"
-          @click="removeLaunchBuddyDir($event as ClickOnButtonEvent)"
+          @click="removeLaunchBuddyDir($event)"
         >
           {{ i18n.settingsDeleteButton }}
         </button>
@@ -181,7 +181,7 @@ function disableArcUpdates(event: ClickEvent) {
         <button
           class="btn btn-primary"
           type="submit"
-          @click="resetAllLogs(data.confirmReset, $event as ClickOnButtonEvent)"
+          @click="resetAllLogs(data.confirmReset, $event)"
         >
           {{ i18n.settingsResetButton }}
         </button>
@@ -193,7 +193,7 @@ function disableArcUpdates(event: ClickEvent) {
 
         <template v-if="data.baseConfig.arcDisabled">
           <div class="font-italic">{{ i18n.settingsArcDpsSetDisabled }}</div>
-          <a class="btn btn-success" href="#" @click="enableArcUpdates($event as ClickEvent)">{{
+          <a class="btn btn-success" href="#" @click="enableArcUpdates($event)">{{
             i18n.settingsEnableButton
           }}</a>
         </template>
@@ -204,15 +204,15 @@ function disableArcUpdates(event: ClickEvent) {
               arcdps (Dx 11): {{ data.baseConfig.arcdps11VersionDate }}
               <a
                 v-if="data.baseConfig.arcdps11VersionHasUpdates"
-                @click="updateArcDps11($event as ClickEvent)"
+                @click="updateArcDps11($event)"
                 >Update verfügbar</a
               >
             </div>
           </div>
-          <a class="btn btn-success" href="#" @click="checkArcUpdates($event as ClickEvent)">{{
+          <a class="btn btn-success" href="#" @click="checkArcUpdates($event)">{{
             i18n.settingsCheckUpdatesButton
           }}</a>
-          <a class="btn btn-danger" href="#" @click="disableArcUpdates($event as ClickEvent)">{{
+          <a class="btn btn-danger" href="#" @click="disableArcUpdates($event)">{{
             i18n.settingsDisableButton
           }}</a>
         </template>

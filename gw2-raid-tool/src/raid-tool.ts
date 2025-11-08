@@ -674,18 +674,10 @@ export interface WingsRef {
 }
 
 export type WingsRes = Readonly<Array<WingsRef>>
-
-export interface ClickEvent<T extends HTMLElement = HTMLElement> extends MouseEvent {
-  target: T
-}
+export type ChangeOnSelectEvent = ChangeEvent<HTMLSelectElement>
 export interface ChangeEvent<T extends HTMLElement> extends Event {
   target: T
 }
-
-export type ClickOnInputEvent = ClickEvent<HTMLInputElement>
-export type ClickOnButtonEvent = ClickEvent<HTMLButtonElement>
-
-export type ChangeOnSelectEvent = ChangeEvent<HTMLSelectElement>
 export type ChangeOnInputEvent = ChangeEvent<HTMLInputElement>
 
 export interface LogFilter {

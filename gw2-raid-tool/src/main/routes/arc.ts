@@ -317,7 +317,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
 
   async function respondWithFile(buffer: Buffer) {
     const mime = (await fileTypeFromBuffer(buffer))?.mime || ''
-    return new Response(buffer, {
+    return new Response(buffer as unknown as BodyInit, {
       headers: {
         'content-type': mime,
         'cache-control': `max-age=${(maxage / 1000) | 0},immutable`

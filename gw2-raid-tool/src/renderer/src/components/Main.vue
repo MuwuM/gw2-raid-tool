@@ -6,7 +6,7 @@ import Overview from './Overview.vue'
 import Settings from './Settings.vue'
 import Logs from './Logs.vue'
 import Boss from './Boss.vue'
-import { ClickEvent, SpecsJson } from '../../../raid-tool'
+import { SpecsJson } from '../../../raid-tool'
 import { onUpdated } from 'vue'
 import Friends from './Friends.vue'
 import Credits from './Credits.vue'
@@ -15,7 +15,7 @@ import Keys from './Keys.vue'
 
 const specs = specsSrc as SpecsJson
 
-function startGame(event?: ClickEvent) {
+function startGame(event?: MouseEvent) {
   preventDefault(event)
   api.ipc.send.startGame({})
 }
@@ -188,7 +188,7 @@ onUpdated(() => {
           class="btn btn-success"
           href="#"
           tabindex="-1"
-          @click="startGame($event as ClickEvent)"
+          @click="startGame($event)"
           >{{ i18n.startLaunchBuddy }}</a
         >
       </li>
@@ -205,7 +205,7 @@ onUpdated(() => {
           class="btn btn-success"
           href="#"
           tabindex="-1"
-          @click="startGame($event as ClickEvent)"
+          @click="startGame($event)"
           >{{ i18n.startGame }}</a
         >
       </li>

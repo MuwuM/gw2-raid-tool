@@ -2,8 +2,8 @@
 import { data, i18n, api, selectLog } from '@renderer/preload-api'
 import { preventDefault, img } from '../util'
 import { DateTime } from 'luxon'
-import { ClickEvent, LogFilter, UiLogs } from 'src/raid-tool'
-function showLogPage(page: number, filters: LogFilter['config'] | null, event: ClickEvent) {
+import { ChangeOnSelectEvent, LogFilter, UiLogs } from 'src/raid-tool'
+function showLogPage(page: number, filters: LogFilter['config'] | null, event: MouseEvent|ChangeOnSelectEvent) {
   preventDefault(event)
   data.logFilters.p = page
   if (typeof filters === 'object' && filters) {
@@ -25,12 +25,12 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
     <nav style="position: sticky; top: 0; z-index: 10">
       <ul class="pagination justify-content-center">
         <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
-          <a class="page-link" @click="showLogPage(0, null, $event as ClickEvent)">«</a>
+          <a class="page-link" @click="showLogPage(0, null, $event)">«</a>
         </li>
         <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
           <a
             class="page-link"
-            @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event as ClickEvent)"
+            @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event)"
             >‹</a
           >
         </li>
@@ -49,7 +49,7 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
               showLogPage(
                 Math.min(data.logsMaxPages - 1, data.logsPage + 1),
                 null,
-                $event as ClickEvent
+                $event
               )
             "
             >›</a
@@ -63,7 +63,7 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
         >
           <a
             class="page-link"
-            @click="showLogPage(data.logsMaxPages - 1, null, $event as ClickEvent)"
+            @click="showLogPage(data.logsMaxPages - 1, null, $event)"
             >»</a
           >
         </li>
@@ -74,7 +74,7 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
         ><input
           v-model="data.logFilters.config.cmOnly"
           type="checkbox"
-          @change="showLogPage(data.logsPage, null, $event as ClickEvent)"
+          @change="showLogPage(data.logsPage, null, $event as ChangeOnSelectEvent)"
         />
         {{ i18n.cmOnlyLabel }}</label
       >
@@ -84,7 +84,7 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
         ><input
           v-model="data.logFilters.config.favOnly"
           type="checkbox"
-          @change="showLogPage(data.logsPage, null, $event as ClickEvent)"
+          @change="showLogPage(data.logsPage, null, $event as ChangeOnSelectEvent)"
         />
         {{ i18n.favOnlyLabel }}</label
       >
@@ -168,12 +168,12 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
       <nav>
         <ul class="pagination justify-content-center">
           <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
-            <a class="page-link" @click="showLogPage(0, null, $event as ClickEvent)">«</a>
+            <a class="page-link" @click="showLogPage(0, null, $event)">«</a>
           </li>
           <li :class="{ 'page-item': true, disabled: data.logsPage <= 0 }">
             <a
               class="page-link"
-              @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event as ClickEvent)"
+              @click="showLogPage(Math.max(data.logsPage - 1, 0), null, $event)"
               >‹</a
             >
           </li>
@@ -192,7 +192,7 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
                 showLogPage(
                   Math.min(data.logsMaxPages - 1, data.logsPage + 1),
                   null,
-                  $event as ClickEvent
+                  $event
                 )
               "
               >›</a
@@ -206,7 +206,7 @@ function timeEndDiff(log: UiLogs, currenttime: number) {
           >
             <a
               class="page-link"
-              @click="showLogPage(data.logsMaxPages - 1, null, $event as ClickEvent)"
+              @click="showLogPage(data.logsMaxPages - 1, null, $event)"
               >»</a
             >
           </li>

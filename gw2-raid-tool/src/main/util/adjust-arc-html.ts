@@ -103,10 +103,40 @@ href="/static/style.css"
     'name: logData.fightName,\n  triggerID: logData.fightID || logData.triggerID,\n  icon: logData.fightIcon'
   )
 
-  file = file.replace(
-    /<h3 class="card-header text-center">{{ encounter\.name }}<\/h3>/,
-    '<h3 class="card-header text-center"><a :href="\'/boss/\'+encodeURIComponent(logData.triggerID)" target="_top">{{encounter.name}}</a></h3>'
-  )
+  // Helper function to wrap encounter names in links to boss page
+  const wrapEncounterNameWithLink = (propertyPath: string) => {
+    const propertyRegex = propertyPath.replace(/\./g, '\\.')
+    return [
+      // Pattern without attributes
+      {
+        pattern: new RegExp(
+          `<h3 class="card-header text-center">\\{\\{\\s*${propertyRegex}\\s*\\}\\}<\\/h3>`,
+          'g'
+        ),
+        replacement: `<h3 class="card-header text-center"><a :href="'/boss/'+encodeURIComponent(logData.triggerID)" target="_top">{{${propertyPath}}}</a></h3>`
+      },
+      // Pattern with attributes (e.g., v-if)
+      {
+        pattern: new RegExp(
+          `<h3([^>]*) class="card-header text-center">\\s*\\{\\{\\s*${propertyRegex}\\s*\\}\\}\\s*<\\/h3>`,
+          'g'
+        ),
+        replacement: `<h3$1 class="card-header text-center"><a :href="'/boss/'+encodeURIComponent(logData.triggerID)" target="_top">{{${propertyPath}}}</a></h3>`
+      }
+    ]
+  }
+
+  // Apply transformations for all encounter name variations
+  const encounterNameProperties = [
+    'encounter.name',
+    'encounterData.nameNoMode',
+    'encounter.nameNoMode'
+  ]
+  encounterNameProperties.forEach((property) => {
+    wrapEncounterNameWithLink(property).forEach(({ pattern, replacement }) => {
+      file = file.replace(pattern, replacement)
+    })
+  })
 
   const poweredBy =
     '<div class="d-flex flex-row justify-content-center align-items-center"><a href="https://baaron4.github.io/GW2-Elite-Insights-Parser/" target="_top">parsed with Elite-Insights</a></div>'

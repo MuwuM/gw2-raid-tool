@@ -2,6 +2,31 @@ import fs from 'fs-extra'
 import path from 'path'
 import { gw2ApiClient } from './gw2-api-with-types'
 import { SpecsJson } from '../raid-tool'
+
+async function retryOnError<T>(
+  fn: () => Promise<T>,
+  maxRetries = 5,
+  retryDelay = 1000
+): Promise<T> {
+  let lastError: any
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn()
+    } catch (error: any) {
+      lastError = error
+      const is504 = error?.response?.status === 504 || error?.status === 504 || error?.code === 504
+
+      if (is504 && attempt < maxRetries) {
+        console.warn(`HTTP 504 error, retrying (${attempt + 1}/${maxRetries})...`)
+        await new Promise((resolve) => setTimeout(resolve, retryDelay * (attempt + 1)))
+        continue
+      }
+      throw error
+    }
+  }
+  throw lastError
+}
+
 ;(async () => {
   const apiClient = gw2ApiClient()
 
@@ -16,11 +41,11 @@ import { SpecsJson } from '../raid-tool'
 
   const specs = [] as SpecsJson
 
-  for (let index = 1; index <= 72; index++) {
-    const apiEn = await apiClient.language('en').specializations().get(index)
+  for (let index = 1; index <= 81; index++) {
+    const apiEn = await retryOnError(() => apiClient.language('en').specializations().get(index))
     //client.get(`specializations/${index}`, {lang: "en"});
-    const apiDe = await apiClient.language('de').specializations().get(index)
-    const apiFr = await apiClient.language('fr').specializations().get(index)
+    const apiDe = await retryOnError(() => apiClient.language('de').specializations().get(index))
+    const apiFr = await retryOnError(() => apiClient.language('fr').specializations().get(index))
     if (apiEn.elite) {
       specs.push({
         id: apiEn.id,
