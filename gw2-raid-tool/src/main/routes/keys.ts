@@ -389,6 +389,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
             ) {
               //console.log(`show ${rule.slot} overlay`);
               blockingWindows[rule.slot].setOpacity(keyBlockedOpacity)
+              blockingWindows[rule.slot].setIgnoreMouseEvents(false)
             }
           }
           blockingRules.sort()
@@ -404,6 +405,7 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
         for (const [key, win] of Object.entries(blockingWindows)) {
           if (!blockingRules.find((r) => r.slot === key)) {
             win.setOpacity(keyUnblockedOpacity)
+            win.setIgnoreMouseEvents(true)
           }
         }
         if (keysToBlock.length > 0) {
@@ -495,8 +497,10 @@ export default (async ({ db, baseConfig, backendConfig, eventHub }) => {
             focusable: false,
             frame: false,
             hasShadow: false,
+            transparent: true,
             opacity: keyUnblockedOpacity
           })
+          blockingWindows[blockedSlot].setIgnoreMouseEvents(true)
           blockingWindows[blockedSlot].setAlwaysOnTop(true, 'screen-saver')
           blockingWindows[blockedSlot].setVisibleOnAllWorkspaces(true)
           blockingWindows[blockedSlot].loadFile(
