@@ -220,12 +220,55 @@ function overviewStatusAcc(step: WingsResStep, wing: WingsRef, acc: UiAccounts) 
     completedCM
   }
 }
-function isDailyToday(wing: WingsRef, step: WingsResStep, dayOfYear: number) {
-  return (
-    typeof wing.hasDailies === 'number' &&
-    wing.hasDailies > 0 &&
-    step.dailyIndex === dayOfYear % wing.hasDailies
-  )
+
+const dailyRaidBountyRotation = [
+  ['shiverpeaks', 'voice_and_claw', 'fraenir', 'gorseval', 'cairn', 'mursaat_overseer'],
+  [
+    'aetherblade_hideout',
+    'sabir',
+    'whisper_of_jormag',
+    'vale_guardian',
+    'dagda',
+    'cold_war',
+    'boneskinner',
+    'sabetha',
+    'xunlai_jade_junkyard',
+    'cerus',
+    'keep_construct',
+    'guardians_glade'
+  ],
+  [
+    'slothasor',
+    'matthias',
+    'xera',
+    'samarog',
+    'conjured_amalgamate',
+    'twin_largos',
+    'decima',
+    'adina',
+    'old_lions_court',
+    'ura',
+    'kaineng_overlook',
+    'deimos'
+  ],
+  ['qadim', 'qadim_the_peerless', 'soulless_horror', 'harvest_temple', 'voice_in_the_void', 'greer']
+] as const
+
+function todayDailyRaidBountyStepIds(dayOfYear: number) {
+  const result = new Set<string>()
+  for (const slot of dailyRaidBountyRotation) {
+    if (slot.length > 0) {
+      result.add(slot[dayOfYear % slot.length])
+    }
+  }
+  return result
+}
+
+function isDailyToday(_wing: WingsRef, step: WingsResStep, dayOfYear: number) {
+  if (!step.id) {
+    return false
+  }
+  return todayDailyRaidBountyStepIds(dayOfYear).has(step.id)
 }
 </script>
 <template>

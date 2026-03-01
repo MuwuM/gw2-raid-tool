@@ -91,7 +91,7 @@ const lang = {
   buildBenchmarkLargeHitbox: 'Large Hitbox',
   buildBenchmarkConfusion: 'stacks of confusion',
   buildBenchmarkWithAllies: 'with Allies',
-  isDailyToday: 'Daily Strike Mission',
+  isDailyToday: 'Daily Raid Boss',
   lowIntensity: 'Low Intensity',
   removeAccountQuestion: 'Do you really want to delete?',
   removeAccountQuestionConfirm: 'Delete',

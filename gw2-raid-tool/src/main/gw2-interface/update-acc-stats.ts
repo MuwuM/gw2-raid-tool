@@ -28,7 +28,20 @@ for (const w of strikeWings) {
   }
 }
 
+const raidDailyIds = [] as number[]
 const raidWings = wings.filter((w) => typeof w.w == 'number')
+
+for (const w of raidWings) {
+  for (const step of w.steps) {
+    for (const triggerID of ensureArray(step.triggerID)) {
+      if (typeof triggerID === 'number') {
+        raidDailyIds.push(triggerID)
+      }
+    }
+  }
+}
+
+const dailyRaidBossIds = Array.from(new Set([...strikeIds, ...raidDailyIds]))
 
 for (const w of raidWings) {
   if (!w.missingApi) {
@@ -331,7 +344,7 @@ export const localUpdates = async ({
         $gt: startOfStrikeDailyReset.toMillis(),
         $lte: endOfStrikeDailyReset.toMillis()
       },
-      triggerID: { $in: strikeIds },
+      triggerID: { $in: dailyRaidBossIds },
       players: { $elemMatch: account.accountInfo.name },
       success: true
     })

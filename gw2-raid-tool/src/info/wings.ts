@@ -351,9 +351,9 @@ const wings: WingsRes = [
     w_img: 'Mastery_point_Central_Tyria.png',
     isStrike: true,
     isStrikeWeekly: true,
-    name_en: 'Strike Mission: Season 1',
-    name_de: 'Angriffsmission: Staffel 1',
-    name_fr: "Mission d'attaque: Saison 1",
+    name_en: 'Raid Boss: Season 1',
+    name_de: 'Raid-Boss: Staffel 1',
+    name_fr: 'Boss de raid: Saison 1',
     id: 'strikes_core_s1',
     hasDailies: 5,
     steps: [
@@ -374,9 +374,9 @@ const wings: WingsRes = [
     w: 'StrikeIce',
     w_img: 'Mastery_point_Icebrood_Saga.png',
     isStrike: true,
-    name_en: 'Strike Mission: The Icebrood Saga',
-    name_de: 'Angriffsmission: Eisbrut-Saga',
-    name_fr: "Mission d'attaque: L'Épopée du givre",
+    name_en: 'Raid Boss: The Icebrood Saga',
+    name_de: 'Raid-Boss: Eisbrut-Saga',
+    name_fr: "Boss de raid: L'Épopée du givre",
     id: 'strikes_icebrood_saga',
     hasDailies: 6,
     steps: [
@@ -443,9 +443,9 @@ const wings: WingsRes = [
     w_img: 'Mastery_point_End_of_Dragons.png',
     isStrike: true,
     isStrikeWeekly: true,
-    name_en: 'Strike Mission: End of Dragons',
-    name_de: 'Angriffsmission: End of Dragons',
-    name_fr: "Mission d'attaque: End of Dragons",
+    name_en: 'Raid Boss: End of Dragons',
+    name_de: 'Raid-Boss: End of Dragons',
+    name_fr: 'Boss de raid: End of Dragons',
     id: 'strikes_end_of_dragons',
     hasDailies: 5,
     steps: [
@@ -500,18 +500,18 @@ const wings: WingsRes = [
     w_img: 'Mastery_point_Secrets_of_the_Obscure.png',
     isStrike: true,
     isStrikeWeekly: true,
-    name_en: 'Strike Mission: Secrets of the Obscure',
-    name_de: 'Angriffsmission: Secrets of the Obscure',
-    name_fr: "Mission d'attaque: Secrets of the Obscure",
+    name_en: 'Raid Boss: Secrets of the Obscure',
+    name_de: 'Raid-Boss: Secrets of the Obscure',
+    name_fr: 'Boss de raid: Secrets of the Obscure',
     id: 'strikes_secrets_of_the_obscure',
     hasDailies: 2,
     steps: [
       {
         id: 'dagda',
         type: 'Boss',
-        name_en: 'Strike Mission: Cosmic Observatory',
-        name_de: 'Angriffsmission "Kosmisches Observatorium"',
-        name_fr: "Mission d'attaque : Observatoire cosmique",
+        name_en: 'Raid Boss: Cosmic Observatory',
+        name_de: 'Raid-Boss "Kosmisches Observatorium"',
+        name_fr: 'Boss de raid : Observatoire cosmique',
         triggerID: 25705,
         img: 'bosses/dagda.png',
         hasCM: true,
@@ -520,13 +520,35 @@ const wings: WingsRes = [
       {
         id: 'cerus',
         type: 'Boss',
-        name_en: 'Strike Mission: Temple of Febe',
-        name_de: 'Angriffsmission "Tempel von Febe"',
-        name_fr: "Mission d'attaque : Temple de Febe",
+        name_en: 'Raid Boss: Temple of Febe',
+        name_de: 'Raid-Boss "Tempel von Febe"',
+        name_fr: 'Boss de raid : Temple de Febe',
         triggerID: 25989,
         img: 'bosses/cerus.png',
         hasCM: true,
         dailyIndex: 0
+      }
+    ]
+  },
+  {
+    w: 'StrikeVoE',
+    w_img: 'Mastery_point_Visions_of_Eternity.png',
+    isStrike: true,
+    isStrikeWeekly: true,
+    name_en: 'Raid Boss: Visions of Eternity',
+    name_de: 'Raid-Boss: Visions of Eternity',
+    name_fr: 'Boss de raid: Visions of Eternity',
+    id: 'strikes_visions_of_eternity',
+    steps: [
+      {
+        id: 'guardians_glade',
+        type: 'Boss',
+        name_en: 'Kela, Seneschal of Waves',
+        name_de: 'Kela, Seneschallin der Wellen',
+        name_fr: 'Kela, Sénéchale des vagues',
+        triggerID: 27124,
+        img: 'bosses/kela.png',
+        hasCM: true
       }
     ]
   },
