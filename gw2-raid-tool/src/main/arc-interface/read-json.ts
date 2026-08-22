@@ -2,11 +2,11 @@ import fs from 'fs-extra'
 import zlib from 'zlib'
 import { promisify } from 'util'
 const unzip = promisify(zlib.unzip)
-import { chain } from 'stream-chain'
+import chain from 'stream-chain'
 import { parser } from 'stream-json'
-import { ignore } from 'stream-json/filters/Ignore'
+import { ignore } from 'stream-json/filters/ignore.js'
 //import { streamObject } from 'stream-json/streamers/StreamObject'
-import { streamValues } from 'stream-json/streamers/StreamValues'
+import { streamValues } from 'stream-json/streamers/stream-values.js'
 
 import type { Duplex, Readable, Transform, Writable } from 'stream'
 
