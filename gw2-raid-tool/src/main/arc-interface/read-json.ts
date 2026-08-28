@@ -3,7 +3,6 @@ import zlib from 'zlib'
 import { promisify } from 'util'
 const unzip = promisify(zlib.unzip)
 import chain from 'stream-chain'
-import { parser } from 'stream-json'
 import { ignore } from 'stream-json/filters/ignore.js'
 //import { streamObject } from 'stream-json/streamers/StreamObject'
 import { streamValues } from 'stream-json/streamers/stream-values.js'
@@ -315,9 +314,8 @@ export async function readLogJsonFiltered(file: string): Promise<LogJsonData> {
   if (filePath.endsWith('.jsonz')) {
     chainSteps.push(zlib.createUnzip())
   }
-  chainSteps.push(parser())
   chainSteps.push(
-    ignore({
+    ignore.withParser({
       filter(val: ReadonlyArray<number | string | null>) {
         if (val.length === 0) {
           return false
