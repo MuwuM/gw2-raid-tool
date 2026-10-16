@@ -10,6 +10,8 @@ build-dist-dev
 installer-dist
 installer-dist-dev
 installer-dist-old
+installer-staging
+release-archive
 prod
 GuildWars2EliteInsights
 known_friends.json

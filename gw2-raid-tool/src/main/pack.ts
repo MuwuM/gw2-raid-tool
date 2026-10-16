@@ -3,15 +3,14 @@ import * as rebuild from '@electron/rebuild'
 import * as electronInstaller from 'electron-winstaller'
 import * as path from 'path'
 import * as fs from 'fs-extra'
-import fg from 'fast-glob'
 import * as semver from 'semver'
 import { minimatch } from 'minimatch'
-import Client from 'ssh2-sftp-client'
-
-import uploadConfig from '../../../upload-config.json'
-import { Stats } from 'fs'
+import { archiveBuild, publishBuild } from './release-publish'
+import { connectReleases, releaseFeed, releaseTarget } from './release-storage'
+import type { Channel, ReleaseConfig } from './release-storage'
 ;(async () => {
   const rootDir = path.resolve(__dirname, '../../../')
+  const uploadConfig: ReleaseConfig = await fs.readJSON(path.join(rootDir, 'upload-config.json'))
 
   const dataDir = path.resolve(rootDir, 'gw2-raid-tool')
   const pgk = await fs.readJSON(path.resolve(dataDir, 'package.json'))
@@ -19,15 +18,16 @@ import { Stats } from 'fs'
 
   const electronVersion = pgkLock.packages['node_modules/electron'].version
 
-  const parsedVersion = semver.parse(pgk.version) as semver.SemVer
+  const parsedVersion = semver.parse(pgk.version)
+  if (!parsedVersion) throw new Error(`Invalid package version: ${pgk.version}`)
   const isDevBuild = parsedVersion.prerelease.includes('dev')
+  const channel: Channel = isDevBuild ? 'development' : 'production'
+  releaseTarget(uploadConfig, channel)
   console.info({ isDevBuild })
 
   let buildDir = path.resolve(rootDir, 'build-dist')
-  let installerDir = path.resolve(rootDir, 'installer-dist')
   if (isDevBuild) {
     buildDir = path.resolve(rootDir, 'build-dist-dev')
-    installerDir = path.resolve(rootDir, 'installer-dist-dev')
   }
 
   console.info('Packing')
@@ -56,7 +56,8 @@ import { Stats } from 'fs'
           '/src',
           '/build',
           '/dist',
-          '/out/main/pack.js',
+          '/out/main/{pack,cleanup-releases}.js',
+          '/out/main/chunks/release-*.js',
           '/electron.vite.config.{js,ts,mjs,cjs}',
           '/{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}',
           '/{.editorconfig,electron-builder.yml}',
@@ -86,6 +87,10 @@ import { Stats } from 'fs'
   console.info({ targetDir })
 
   const exeName = pgk.name.replace(/-/g, '_')
+  const stagingRoot = path.join(rootDir, 'installer-staging')
+  await fs.ensureDir(stagingRoot)
+  const installerDir = await fs.mkdtemp(path.join(stagingRoot, `${channel}-`))
+  console.info(`Installer staging: ${installerDir}`)
   await electronInstaller.createWindowsInstaller({
     appDirectory: targetDir,
     outputDirectory: installerDir,
@@ -99,59 +104,46 @@ import { Stats } from 'fs'
     setupIcon: installerIcon,
     setupExe: `${exeName}_installer.exe`,
     setupMsi: `${exeName}_installer.msi`,
-    remoteReleases: uploadConfig.uploadDomain,
+    remoteReleases: uploadConfig.noUpload ? undefined : releaseFeed(uploadConfig, channel),
+    noDelta: true,
     noMsi: true
   })
   console.info('It worked!')
 
+  const archived = await archiveBuild(
+    uploadConfig,
+    rootDir,
+    channel,
+    installerDir,
+    exeName,
+    pgk.version
+  )
+  if (!uploadConfig.noUpload) {
+    console.info('Uploading files')
+    const sftp = await connectReleases(uploadConfig, rootDir)
+    try {
+      await publishBuild(
+        sftp,
+        uploadConfig,
+        rootDir,
+        channel,
+        installerDir,
+        exeName,
+        pgk.version,
+        archived
+      )
+    } finally {
+      await sftp.end()
+    }
+    console.info('Upload Completed')
+  }
+
   parsedVersion.patch = 1 + parsedVersion.patch
   pgk.version = parsedVersion.format()
   await fs.outputJSON(path.join(dataDir, 'package.json'), pgk, { spaces: 2 })
-  if (!uploadConfig.noUpload) {
-    let uploadConfigTargetPath = uploadConfig.targetPath
-    if (isDevBuild) {
-      uploadConfigTargetPath = uploadConfig.targetPathDev
-    }
-
-    console.info('Uploading files')
-    // eslint-disable-next-line no-async-promise-executor
-    const sftp = new Client()
-
-    await sftp.connect({
-      host: uploadConfig.host,
-      port: uploadConfig.port,
-      username: uploadConfig.username,
-      privateKey: await fs.readFile(uploadConfig.privateKey)
-    })
-
-    const filesToUpload = await fg(['**/*'], {
-      dot: true,
-      cwd: installerDir
-    })
-    for (const fileToUpload of filesToUpload) {
-      const onlineFile = path.posix.join(uploadConfigTargetPath, fileToUpload)
-      const offlineFile = path.join(installerDir, fileToUpload)
-
-      try {
-        const onlineStat = await sftp.stat(onlineFile)
-        const offlineStats: Stats = await fs.stat(offlineFile)
-        if (onlineStat && offlineStats.mtimeMs <= onlineStat.modifyTime) {
-          console.info(`Skipping: ${fileToUpload}`)
-          continue
-        }
-      } catch {
-        // cannot skip uploading
-      }
-
-      console.info(`Uploading: ${fileToUpload}`)
-
-      await sftp.fastPut(offlineFile, `${onlineFile}.tmp`)
-      await sftp.delete(onlineFile, true)
-      await sftp.rename(`${onlineFile}.tmp`, onlineFile)
-    }
-    await sftp.end()
-    console.info('Upload Completed')
-  }
+  if (path.dirname(installerDir) !== stagingRoot)
+    throw new Error('Refusing to remove an unexpected staging directory')
+  await fs.remove(installerDir)
 })().catch((err) => {
   console.error(err)
   process.exit(1)

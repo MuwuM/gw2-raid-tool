@@ -5,6 +5,9 @@
   "username": "name",
   "privateKey":"./key.ssh",
   "targetPath":"/var/dist/raid-tool-dist",
-  "targetPathDev":"/var/dist/raid-tool-dist",
-  "uploadDomain":"https://127.0.0.1/"
+  "targetPathDev":"/var/dist/raid-tool-dist/dev",
+  "uploadDomain":"https://127.0.0.1/",
+  "uploadDomainDev":"https://127.0.0.1/dev/",
+  "archiveDirectory":"release-archive",
+  "remoteHashMode":"ssh"
 }
